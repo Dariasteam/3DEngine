@@ -13,6 +13,5 @@ RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
 void RenderEngine::main_loop () {
   rasteriser->rasterize();  
   world->move_right();
-
 }
 

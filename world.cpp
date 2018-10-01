@@ -1,48 +1,52 @@
 #include "world.h"
 
 World::World() {
-  /*
-  elements.push_back({0,  0, 20});
-  elements.push_back({0,  1, 21});
-  elements.push_back({0,  2, 22});
-  elements.push_back({0,  3, 23});
-  elements.push_back({0,  4, 24});
 
-  elements.push_back({0,  3, 25});
-  elements.push_back({0,  2, 26});
-  elements.push_back({0,  1, 27});
-  elements.push_back({0,  0, 28});
+  Mesh* a_mesh = new Mesh;
 
-  elements.push_back({0,  -1, 27});
-  elements.push_back({0,  -2, 26});
-  elements.push_back({0,  -3, 25});
-  elements.push_back({0,  -4, 24});
-
-  elements.push_back({0,  -3, 23});
-  elements.push_back({0,  -2, 22});
-  elements.push_back({0,  -1, 21});
-  */
-
-  Mesh* a = new Mesh {
-    { // face list
-      { // one face
-        {0, 0, 20},   // vertex a
-        {0, 10, 25},  // vertex b
-        {0, -10, 20}, // vertex c
-      }
-    }
+  a_mesh->basis = {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
   };
 
-  meshes.push_back(a);
+  a_mesh->position = {0, 0, 50};
+
+  a_mesh->faces =
+    { // face list
+      { // one face
+        {-5,  0, 0},   // vertex a
+        { 5,  0, 0},   // vertex b
+        { 0,-10, 5},   // vertex c
+      },
+
+      {
+        {-5, 0,  10},   // vertex a
+        { 5, 0,  10},   // vertex b
+        { 0,-10,  5},   // vertex c
+      },
+
+      {
+        {-5, 0,  0},   // vertex a
+        {-5, 0, 10},   // vertex b
+        { 0,10,  5},   // vertex c
+      },
+
+      {
+        { 5, 0,  0},   // vertex a
+        { 5, 0, 10},   // vertex b
+        { 0,10,  5},   // vertex c
+      },
+
+    };
+
+  meshes.push_back(a_mesh);
 
 }
 
 void World::move_right() {
   for (auto& mesh : meshes) {
-    for (auto& face : mesh->faces) {
-      face.a.x += 0.01;
-      face.b.x += 0.01;
-      face.c.x += 0.01;
-    }
+    mesh->position += {0.01, 0.01, 0};
   }
 }
+

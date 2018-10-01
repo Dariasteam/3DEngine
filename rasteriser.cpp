@@ -11,9 +11,17 @@ void Rasteriser::rasterize() {
   camera_plane = camera->get_plane();
   camera_bounds = camera->get_bounds();
 
+  Basis3 basis {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+  };
+
   std::vector <Triangle2> projected_elements;
   for (const auto& mesh : world->get_elements()) {
-    for (const auto& face : mesh->faces) {
+    // Change basis
+    Mesh* aux_mesh = mesh->express_in_different_basis(basis);
+    for (const auto& face : aux_mesh->faces) {
 
       // Calculate intersection points with the plane
 
@@ -59,7 +67,7 @@ Point2 Rasteriser::calculate_cut_point(Point3 p) {
   // Recta
   Line3 r = {p1, v1, 0};
 
-  // Punto común
+  // Punto de corte recta - plano
   double parameter = (r.point.z + r.vector.z) / camera_plane.z;
 
   return { r.point.x + r.vector.x * parameter,
