@@ -68,7 +68,7 @@ Point2 Rasteriser::calculate_cut_point(Point3 p) {
   Line3 r = {p1, v1, 0};
 
   // Punto de corte recta - plano
-  double parameter = (r.point.z + r.vector.z) / camera_plane.z;
+  double parameter = camera_plane.z / (r.point.z + r.vector.z);
 
   return { r.point.x + r.vector.x * parameter,
            r.point.y + r.vector.y * parameter,

@@ -10,7 +10,7 @@ World::World() {
     {0, 0, 1},
   };
 
-  a_mesh->position = {0, 0, 50};
+  a_mesh->position = {0, 0, 40};
 
   a_mesh->faces =
     { // face list
@@ -44,9 +44,14 @@ World::World() {
 
 }
 
+#include <iostream>
+
 void World::move_right() {
   for (auto& mesh : meshes) {
-    mesh->position += {0.01, 0.01, 0};
+    mesh->position += {0.01, 0.01, -0.01};
+
+    if (mesh->position.z < 0)
+      std::cout << mesh->position.z << std::endl;
   }
 }
 
