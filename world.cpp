@@ -10,32 +10,32 @@ World::World() {
     {0, 0, 1},
   };
 
-  a_mesh->position = {0, 0, 40};
+  a_mesh->position = {0, 0, 50};
 
   a_mesh->faces =
     { // face list
       { // one face
-        {-5,  0, 0},   // vertex a
-        { 5,  0, 0},   // vertex b
-        { 0,-10, 5},   // vertex c
+        {-5,  0, -5},   // vertex a
+        { 5,  0, -5},   // vertex b
+        { 0,-15, 0},   // vertex c
       },
 
       {
-        {-5, 0,  10},   // vertex a
-        { 5, 0,  10},   // vertex b
-        { 0,-10,  5},   // vertex c
+        {-5, 0,  5},   // vertex a
+        { 5, 0,  5},   // vertex b
+        { 0,-15, 0},   // vertex c
       },
 
       {
-        {-5, 0,  0},   // vertex a
-        {-5, 0, 10},   // vertex b
-        { 0,10,  5},   // vertex c
+        {-5, 0, -5},   // vertex a
+        {-5, 0,  5},   // vertex b
+        { 0,15,  0},   // vertex c
       },
 
       {
-        { 5, 0,  0},   // vertex a
-        { 5, 0, 10},   // vertex b
-        { 0,10,  5},   // vertex c
+        { 5, 0, -5},   // vertex a
+        { 5, 0, 5},   // vertex b
+        { 0,15, 0},   // vertex c
       },
 
     };
@@ -44,14 +44,12 @@ World::World() {
 
 }
 
-#include <iostream>
-
 void World::move_right() {
   for (auto& mesh : meshes) {
-    mesh->position += {0.01, 0.01, -0.01};
-
-    if (mesh->position.z < 0)
-      std::cout << mesh->position.z << std::endl;
+    //mesh->position += {0.01, 0.01, -0.01};
+    mesh->rotate_x(0.001);
+    mesh->rotate_y(0.001);
+    //mesh->basis.a += {-0.0001, 0, 0};
   }
 }
 
