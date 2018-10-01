@@ -1,12 +1,13 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+#include "point2d.h"
+
 #include <QWidget>
 #include <QPainter>
 #include <vector>
 #include <QResizeEvent>
-
-#include "point2d.h"
+#include <QPolygonF>
 
 class Canvas : public QWidget {
   Q_OBJECT
@@ -17,15 +18,14 @@ private:
   double v_factor;
   double h_factor;
 
-  Rect screen_size;
 
-  std::vector<Point2> points;
+  std::vector<Triangle2> triangles;
 
   inline QPoint adjust_coordinates (Point2 p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);  
-  void update_frame (std::vector<Point2> elements, Rect bounds);
+  void update_frame (const std::vector<Triangle2>& elements, Rect bounds);
   void resizeEvent(QResizeEvent *event);
 signals:
 

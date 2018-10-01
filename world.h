@@ -7,10 +7,10 @@
 
 class World {
 private:
-  std::vector <Point3> elements;
+  std::vector <Mesh*> meshes;
 public:
   World();
-  inline const std::vector <Point3>& get_elements () { return elements; }
+  inline const std::vector <Mesh*>& get_elements () { return meshes; }
   void move_right ();
 };
 

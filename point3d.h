@@ -39,7 +39,7 @@ struct Face3 {
 };
 
 struct Mesh {
-  std::vector<Triangle3> faces;
+  std::vector<Face3> faces;
 };
 
 struct SpatialVector : public Spatial{

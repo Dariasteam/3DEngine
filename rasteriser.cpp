@@ -11,11 +11,31 @@ void Rasteriser::rasterize() {
   camera_plane = camera->get_plane();
   camera_bounds = camera->get_bounds();
 
-  std::vector <Point2> projected_elements;
-  for (const auto&  element : world->get_elements()) {
-    Point2 aux = calculate_cut_point(element);
-    if (is_point_between_camera_bounds(aux))
-      projected_elements.push_back(aux);
+  std::vector <Triangle2> projected_elements;
+  for (const auto& mesh : world->get_elements()) {
+    for (const auto& face : mesh->faces) {
+
+      // Calculate intersection points with the plane
+
+      Point2 a = calculate_cut_point(face.a);
+      Point2 b = calculate_cut_point(face.b);
+      Point2 c = calculate_cut_point(face.c);
+
+      // Check if at least one is captured by camera
+
+      bool should_be_rendered = false;
+
+      if (is_point_between_camera_bounds(a) &&
+          is_point_between_camera_bounds(b) &&
+          is_point_between_camera_bounds(c)) {
+
+        should_be_rendered = true;
+      }
+
+      // If should be rendered push a triangle
+      if (should_be_rendered)
+        projected_elements.push_back(Triangle2{a,b,c});
+    }
   }
   canvas->update_frame(projected_elements, camera_bounds);
 }

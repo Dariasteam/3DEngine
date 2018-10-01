@@ -27,6 +27,12 @@ struct Rect {
   }
 };
 
+struct Triangle2 {
+  Point2 a;
+  Point2 b;
+  Point2 c;
+};
+
 class Point2D {
 public:
   Point2D();

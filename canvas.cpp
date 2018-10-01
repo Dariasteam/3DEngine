@@ -5,18 +5,26 @@ Canvas::Canvas(QWidget *parent) : QWidget(parent) {
 
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
-  for (const auto& element : points) {    
-    QPoint aux = adjust_coordinates(element);
-    p.drawPoint(aux);
-    //p.drawEllipse(adjust_coordinates(element), 3, 3);
+  for (const auto& triangle: triangles) {
+
+    //QPoint aux = adjust_coordinates(element);
+    //p.drawPoint(aux);
+    //p.drawEllipse(adjust_coordinates(element), 2, 2);
+
+    QPoint a = adjust_coordinates(triangle.a);
+    QPoint b = adjust_coordinates(triangle.b);
+    QPoint c = adjust_coordinates(triangle.c);
+
+    QPolygon poly ({a, b, c});
+
+    p.drawPolygon(poly);
   }
 
   //p.drawLine(QPoint(0,0), QPoint(10,10));
 }
 
-void Canvas::update_frame(std::vector<Point2> elements, Rect b) {
-  points = elements;
-  screen_size = b;
+void Canvas::update_frame(const std::vector<Triangle2>& elements, Rect b) {
+  triangles = elements;
 
   v_factor = size().height() / b.size_y();
   h_factor = size().width() / b.size_x();
