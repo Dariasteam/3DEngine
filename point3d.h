@@ -4,10 +4,40 @@
 #include <cmath>
 #include <vector>
 
+
 struct Point3 {
   double x;
   double y;
   double z;
+
+  Point3 () {}
+  Point3 (double X, double Y, double Z) :
+     x (X),
+     y (Y),
+     z (Z)
+  {}
+
+  double& operator[] (unsigned i) {
+    switch (i) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      default:
+        return z;
+    }
+  }
+
+  double operator[] (unsigned i) const {
+    switch (i) {
+      case 0:
+        return x;
+      case 1:
+        return y;
+      default:
+        return z;
+    }
+  }
 
   Point3 operator+ (const Point3& vec) const {
     return Point3 {
@@ -22,33 +52,43 @@ struct Point3 {
     y += vec.y;
     z += vec.z;
   }
-
 };
 
-struct Vector3 {
-  double x;
-  double y;
-  double z;
+typedef Point3 Vector3;
 
-  Vector3 operator+ (const Vector3& vec) {
-    return Vector3 {
-      x + vec.x,
-      y + vec.y,
-      z + vec.z,
-    };
-  }
-
-  void operator += (const Vector3& vec) {
-    x += vec.x;
-    y += vec.y;
-    z += vec.z;
-  }
+/*
+struct Vector3 : public Point3 {
+  Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
+  Vector3 () {}
 };
+*/
 
 struct Basis3 {
   Vector3 a;
   Vector3 b;
   Vector3 c;
+
+  Vector3& operator[] (unsigned i) {
+    switch (i) {
+      case 0:
+        return a;
+      case 1:
+        return b;
+      default:
+        return c;
+    }
+  }
+
+  Vector3 operator[] (unsigned i) const {
+    switch (i) {
+      case 0:
+        return a;
+      case 1:
+        return b;
+      default:
+        return c;
+    }
+  }
 };
 
 struct Spatial {
@@ -62,11 +102,15 @@ struct Line3 {
   double parameter;
 };
 
+/*
 struct Face3 {
   Point3 a;
   Point3 b;
   Point3 c;
 };
+*/
+
+typedef Basis3 Face3;
 
 #define PI 3.14159265359
 /*
@@ -83,6 +127,28 @@ struct Matrix3 {
   Vector3 row_a = {0, 0, 0};
   Vector3 row_b = {0, 0, 0};
   Vector3 row_c = {0, 0, 0};
+
+  Vector3& operator[] (unsigned i) {
+    switch (i) {
+      case 0:
+        return row_a;
+      case 1:
+        return row_b;
+      default:
+        return row_c;
+    }
+  }
+
+  Vector3 operator[] (unsigned i) const {
+    switch (i) {
+      case 0:
+        return row_a;
+      case 1:
+        return row_b;
+      default:
+        return row_c;
+    }
+  }
 
   Point3 be_multiplicated_by (Point3 p) const {
     Point3 aux;
@@ -104,19 +170,18 @@ struct Mesh : public Spatial {
     aux_mesh->basis = new_basis;
 
     // Calcular matriz de cambio de base
-
     Matrix3 basis_changer;
+    for (unsigned i = 0; i < 3; i++)
+      basis_changer[i][i] = new_basis[i][i] / basis[i][i];
 
-    basis_changer.row_a.x = new_basis.a.x / basis.a.x;
-    basis_changer.row_b.y = new_basis.b.y / basis.b.y;
-    basis_changer.row_c.z = new_basis.c.z / basis.c.z;
 
+    // Calcular los puntos de cada cara expresados en la nueva base
+    Face3 aux_face;
     for (const auto& face : faces) {
-      Point3 aux_a = basis_changer.be_multiplicated_by(face.a + position);
-      Point3 aux_b = basis_changer.be_multiplicated_by(face.b + position);
-      Point3 aux_c = basis_changer.be_multiplicated_by(face.c + position);
+      for (unsigned i = 0; i < 3; i++)
+        aux_face[i] = basis_changer.be_multiplicated_by((face[i] + position));
 
-      aux_mesh->faces.push_back({aux_a, aux_b, aux_c});
+      aux_mesh->faces.push_back(aux_face);
     }
 
     return aux_mesh;
@@ -124,9 +189,8 @@ struct Mesh : public Spatial {
 
   Point3 apply_matrix (const Matrix3& matrix) {
     for (auto& face : faces) {
-      face.a = matrix.be_multiplicated_by(face.a);
-      face.b = matrix.be_multiplicated_by(face.b);
-      face.c = matrix.be_multiplicated_by(face.c);
+      for (unsigned i = 0; i < 3; i++)
+        face[i] = matrix.be_multiplicated_by(face[i]);
     }
   }
 
@@ -138,6 +202,7 @@ struct Mesh : public Spatial {
 
     apply_matrix(rotation_matrix);
   }
+
 
   void rotate_y (double deg) {
     Matrix3 rotation_matrix;
@@ -156,32 +221,6 @@ struct Mesh : public Spatial {
 
     apply_matrix(rotation_matrix);
   }
-
 };
-
-struct SpatialVector : public Spatial{
-  double x;
-  double y;
-  double z;
-};
-
-struct SpatialPoint : public Spatial{
-  double x;
-  double y;
-  double z;
-};
-
-struct SpatialTriangle : public Spatial {
-  Point3 v1;
-  Point3 v2;
-  Point3 v3;
-};
-
-struct SpatialLine : public Spatial {
-  SpatialPoint a;
-  SpatialPoint b;
-};
-
-
 
 #endif // POINT3D_H

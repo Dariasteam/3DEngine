@@ -30,7 +30,6 @@ void Rasteriser::rasterize() {
       Point2 c = calculate_cut_point(face.c);
 
       // Check if at least one is captured by camera
-
       bool should_be_rendered = false;
 
       if (is_point_between_camera_bounds(a) &&
@@ -57,7 +56,7 @@ bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
 
 Point2 Rasteriser::calculate_cut_point(Point3 p) {
   Point3 p1 = camera_fuge;
-  Point3 p2 = p;
+  Point3 p2 = p + camera->position;
 
   // Vector director de la recta
   Vector3 v1 = {p2.x - p1.x,

@@ -4,7 +4,7 @@
 #include "point3d.h"
 #include "point2d.h"
 
-class Camera {
+class Camera : public Spatial {
 private:
   Point3 fuge;
   Vector3 plane;

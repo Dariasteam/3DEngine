@@ -1,6 +1,8 @@
 #include "world.h"
 
-World::World() {
+World::World(Camera* cm) :
+  camera (cm)
+  {
 
   Mesh* a_mesh = new Mesh;
 
@@ -10,7 +12,7 @@ World::World() {
     {0, 0, 1},
   };
 
-  a_mesh->position = {0, 0, 50};
+  a_mesh->position = {-40, 0, 150};
 
   a_mesh->faces =
     { // face list
@@ -46,9 +48,11 @@ World::World() {
 
 void World::move_right() {
   for (auto& mesh : meshes) {
-    //mesh->position += {0.01, 0.01, -0.01};
+    mesh->position += {0.01, 0, 0};
     mesh->rotate_x(0.001);
     mesh->rotate_y(0.001);
+
+    camera->position += {0, 0, -0.07};
     //mesh->basis.a += {-0.0001, 0, 0};
   }
 }

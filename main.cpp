@@ -12,10 +12,10 @@ int main(int argc, char *argv[])
   MainWindow w;
   w.show();  
 
-  World world;
   Camera camera;
+  World world (&camera);
   Rasteriser rasteriser (w.get_canvas(), &camera, &world);
-  RenderEngine engine (&rasteriser, &camera, &world);
+  RenderEngine engine (&rasteriser, &camera, &world);  
 
   engine.main_loop();
 
