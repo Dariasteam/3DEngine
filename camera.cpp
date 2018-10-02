@@ -4,7 +4,7 @@ Camera::Camera() {
   fuge = {0, 0, 0};
   plane = {0, 0, 1};
 
-  bounds = {-10, -10, 10, 10};
+  bounds = {-30, -30, 30, 30};
 
   position = {0, 0, 0};
 
@@ -19,19 +19,17 @@ Camera::Camera() {
 #include <iostream>
 
 void Camera::apply_matrix(const Matrix3 &matrix) {
+  /*
   projection_plane.v1 = matrix.be_multiplicated_by(projection_plane.v1);
   projection_plane.v2 = matrix.be_multiplicated_by(projection_plane.v2);
-
-
-
   projection_plane.p  = matrix.be_multiplicated_by(projection_plane.p);
+  */
 
   // plane = matrix.be_multiplicated_by(plane);
 
   basis.a = matrix.be_multiplicated_by(basis.a);
   basis.b = matrix.be_multiplicated_by(basis.b);
-  basis.c = matrix.be_multiplicated_by(basis.c);
-
+  basis.c = matrix.be_multiplicated_by(basis.c);  
 
 /*
   std::cout << projection_plane.v2.x << ", " <<
