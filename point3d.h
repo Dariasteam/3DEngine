@@ -56,13 +56,6 @@ struct Point3 {
 
 typedef Point3 Vector3;
 
-/*
-struct Vector3 : public Point3 {
-  Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
-  Vector3 () {}
-};
-*/
-
 struct Basis3 {
   Vector3 a;
   Vector3 b;
@@ -91,37 +84,7 @@ struct Basis3 {
   }
 };
 
-struct Spatial {
-  Basis3 basis;
-  Point3 position;
-};
-
-struct Line3 {
-  Point3 point;
-  Vector3 vector;
-  double parameter;
-};
-
-/*
-struct Face3 {
-  Point3 a;
-  Point3 b;
-  Point3 c;
-};
-*/
-
 typedef Basis3 Face3;
-
-#define PI 3.14159265359
-/*
-double deg2rad (double deg) {
-  return deg * (PI / 180.0);
-}
-
-double rad2deg (double rad) {
-  return rad * (180.0 / PI);
-}
-*/
 
 struct Matrix3 {
   Vector3 row_a = {0, 0, 0};
@@ -151,15 +114,75 @@ struct Matrix3 {
   }
 
   Point3 be_multiplicated_by (Point3 p) const {
-    Point3 aux;
+    Point3 aux {0, 0, 0};
 
-    aux.x = (row_a.x * p.x + row_a.y * p.y + row_a.z * p.z);
-    aux.y = (row_b.x * p.x + row_b.y * p.y + row_b.z * p.z);
-    aux.z = (row_c.x * p.x + row_c.y * p.y + row_c.z * p.z);
+    for (unsigned i = 0; i < 3; i++) {
+      for (unsigned j = 0; j < 3; j++) {
+        aux[i] += p[j] * this->operator[](j)[i];
+      }
+    }
 
     return aux;
   }
+};
 
+
+struct Line3 {
+  Point3 point;
+  Vector3 vector;
+  double parameter;
+};
+
+struct Plane3 {
+  Vector3 v1;
+  Vector3 v2;
+  Point3 p;
+  double parameter;
+};
+
+#define PI 3.14159265359
+/*
+double deg2rad (double deg) {
+  return deg * (PI / 180.0);
+}
+
+double rad2deg (double rad) {
+  return rad * (180.0 / PI);
+}
+*/
+
+struct Spatial {
+  Basis3 basis;
+  Point3 position;
+
+  virtual void apply_matrix (const Matrix3& matrix) {}
+
+  void rotate_x (double deg) {
+    Matrix3 rotation_matrix;
+    rotation_matrix.row_a = {1, 0, 0};
+    rotation_matrix.row_b = {0, std::cos(deg), -std::sin(deg)};
+    rotation_matrix.row_c = {0, std::sin(deg),  std::cos(deg)};
+
+    apply_matrix(rotation_matrix);
+  }
+
+  void rotate_y (double deg) {
+    Matrix3 rotation_matrix;
+    rotation_matrix.row_a = {std::cos(deg), 0, std::sin(deg)};
+    rotation_matrix.row_b = {0, 1, 0};
+    rotation_matrix.row_c = {-std::sin(deg), 0, std::cos(deg)};
+
+    apply_matrix(rotation_matrix);
+  }
+
+  void rotate_z (double deg) {
+    Matrix3 rotation_matrix;
+    rotation_matrix.row_a = {std::cos(deg), -std::sin(deg), 0};
+    rotation_matrix.row_b = {std::sin(deg),  std::cos(deg), 0};
+    rotation_matrix.row_c = {0, 0, 1};
+
+    apply_matrix(rotation_matrix);
+  }
 };
 
 struct Mesh : public Spatial {
@@ -187,39 +210,11 @@ struct Mesh : public Spatial {
     return aux_mesh;
   }
 
-  Point3 apply_matrix (const Matrix3& matrix) {
+  void apply_matrix (const Matrix3& matrix) {
     for (auto& face : faces) {
       for (unsigned i = 0; i < 3; i++)
         face[i] = matrix.be_multiplicated_by(face[i]);
     }
-  }
-
-  void rotate_x (double deg) {
-    Matrix3 rotation_matrix;
-    rotation_matrix.row_a = {1, 0, 0};
-    rotation_matrix.row_b = {0, std::cos(deg), -std::sin(deg)};
-    rotation_matrix.row_c = {0, std::sin(deg),  std::cos(deg)};
-
-    apply_matrix(rotation_matrix);
-  }
-
-
-  void rotate_y (double deg) {
-    Matrix3 rotation_matrix;
-    rotation_matrix.row_a = {std::cos(deg), 0, std::sin(deg)};
-    rotation_matrix.row_b = {0, 1, 0};
-    rotation_matrix.row_c = {-std::sin(deg), 0, std::cos(deg)};
-
-    apply_matrix(rotation_matrix);
-  }
-
-  void rotate_z (double deg) {
-    Matrix3 rotation_matrix;
-    rotation_matrix.row_a = {std::cos(deg), -std::sin(deg), 0};
-    rotation_matrix.row_b = {std::sin(deg),  std::cos(deg), 0};
-    rotation_matrix.row_c = {0, 0, 1};
-
-    apply_matrix(rotation_matrix);
   }
 };
 

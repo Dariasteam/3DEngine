@@ -14,8 +14,8 @@ private:
   Point2 calculate_cut_point (Point3);
   bool is_point_between_camera_bounds (Point2);    
 
-  Point3  camera_fuge;
-  Vector3 camera_plane;
+  Point3  camera_fuge;  
+  Vector3 camera_plane;  
   Rect camera_bounds;
 
 public:
