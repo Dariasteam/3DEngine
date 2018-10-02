@@ -48,11 +48,11 @@ World::World(Camera* cm) :
 
 void World::move_right() {
   for (auto& mesh : meshes) {
-    //mesh->position += {0.01, 0, 0};
+    mesh->position += {0.01, 0, 0};
     //mesh->rotate_x(0.001);
-    //mesh->rotate_y(0.001);
+    mesh->rotate_y(0.001);
 
-    camera->position += {0.000, 0.001, 0.00};
+    //camera->position += {0.000, 0.001, 0.00};
     //camera->rotate_y(0.001);
     //mesh->basis.a += {-0.0001, 0, 0};
   }

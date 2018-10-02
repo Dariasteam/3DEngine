@@ -1,9 +1,10 @@
 #ifndef POINT3D_H
 #define POINT3D_H
 
+#include "matrix.h"
+
 #include <cmath>
 #include <vector>
-
 
 struct Point3 {
   double x;
@@ -157,6 +158,38 @@ struct Spatial {
 
   virtual void apply_matrix (const Matrix3& matrix) {}
 
+  Matrix3 generate_basis_change_matrix (Basis3 new_basis) {
+    Matrix r(1,1);
+    Matrix m(3, 4);
+
+    for (unsigned i = 0; i < 3; i++) {
+      for (unsigned j = 0; j < 3; j++) {
+        m.set(i, j, new_basis[i][j]);
+      }
+    }
+
+    Matrix3 basis_matrix;
+    Gauss g;
+
+    std::vector <double> solutions (3);
+
+    for (unsigned i = 0; i < 3; i++) {
+      // Copy the first vector of current basis in last column
+      for (unsigned j = 0; j < 3; j++)
+        m.set(j, 3, basis[i][j]);
+
+      // Make gauss
+      g (m, r);
+
+      // Obtain the solutions
+      unsigned size = m.size_v();
+      for (unsigned j = 0; j < size; j++)
+        basis_matrix[j][i] = r.get(j, size) * r.get(j,j);
+    }
+
+    return basis_matrix;
+  }
+
   void rotate_x (double deg) {
     Matrix3 rotation_matrix;
     rotation_matrix.row_a = {1, 0, 0};
@@ -192,11 +225,8 @@ struct Mesh : public Spatial {
     Mesh* aux_mesh = new Mesh;
     aux_mesh->basis = new_basis;
 
-    // Calcular matriz de cambio de base
-    Matrix3 basis_changer;
-    for (unsigned i = 0; i < 3; i++)
-      basis_changer[i][i] = new_basis[i][i] / basis[i][i];
-
+    // Calcular matriz de cambio de base    
+    Matrix3 basis_changer = generate_basis_change_matrix(new_basis);
 
     // Calcular los puntos de cada cara expresados en la nueva base
     Face3 aux_face;
@@ -210,11 +240,19 @@ struct Mesh : public Spatial {
     return aux_mesh;
   }
 
-  void apply_matrix (const Matrix3& matrix) {
+  void apply_matrix (const Matrix3& matrix) {    
+
+    /*
+    basis[0] = matrix.be_multiplicated_by(basis[0]);
+    basis[1] = matrix.be_multiplicated_by(basis[1]);
+    basis[2] = matrix.be_multiplicated_by(basis[2]);
+*/
+
     for (auto& face : faces) {
       for (unsigned i = 0; i < 3; i++)
         face[i] = matrix.be_multiplicated_by(face[i]);
     }
+
   }
 };
 

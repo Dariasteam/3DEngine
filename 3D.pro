@@ -33,7 +33,8 @@ SOURCES += \
     camera.cpp \
     rasteriser.cpp \
     point2d.cpp \
-    triangle.cpp
+    triangle.cpp \
+    matrix.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -44,7 +45,8 @@ HEADERS += \
     camera.h \
     rasteriser.h \
     point2d.h \
-    triangle.h
+    triangle.h \
+    matrix.h
 
 FORMS += \
         mainwindow.ui

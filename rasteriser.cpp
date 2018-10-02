@@ -22,11 +22,6 @@ void Rasteriser::rasterize() {
   camera_bounds = aux_camera->get_bounds();
   camera_fuge = aux_camera->get_fuge();
 
-  std::cout << camera_plane.x << " "
-            << camera_plane.y << " "
-            << camera_plane.z << " "
-            << std::endl;
-
   std::vector <Triangle2> projected_elements;
   for (const auto& mesh : world->get_elements()) {
     // Change basis
@@ -41,14 +36,15 @@ void Rasteriser::rasterize() {
       // Check if at least one is captured by camera
       bool should_be_rendered = false;
 
-      if (is_point_between_camera_bounds(a) ||
-          is_point_between_camera_bounds(b) ||
+      if (is_point_between_camera_bounds(a) &&
+          is_point_between_camera_bounds(b) &&
           is_point_between_camera_bounds(c)) {
 
         should_be_rendered = true;
       }
 
-      // If should be rendered push a triangle
+      // If should be rendered push a triangle      
+
       if (should_be_rendered)
         projected_elements.push_back(Triangle2{a,b,c});
     }
@@ -66,6 +62,7 @@ bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
 Point2 Rasteriser::calculate_cut_point(Point3 p) {
   Point3 p1 = camera_fuge;
   Point3 p2 = p;
+
 
   // Vector director de la recta
   Vector3 v1 = {p2.x - p1.x,
@@ -95,7 +92,38 @@ Point2 Rasteriser::calculate_cut_point(Point3 p) {
 
   double parameter = T1 / T2;
 
-  return { r.point.x + r.vector.x * parameter,
-           r.point.y + r.vector.y * parameter,
-         };
+  Point3 cut_point = {
+    p1.x + parameter * v1.x,
+    p1.y + parameter * v1.y,
+    p1.z + parameter * v1.z,
+  };
+
+  // Intersection in global coordiantes
+  Point3 absolute_point = { r.point.x + r.vector.x * parameter,
+                            r.point.y + r.vector.y * parameter,
+                            0
+                            //r.point.z + r.vector.z * parameter,
+                          };
+
+
+  Basis3 basis {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+  };
+
+    //std::cout << "x :" << camera->basis[0][0] << std::endl;
+
+    // Calcular matriz de cambio de base
+    Matrix3 basis_changer;
+    for (unsigned i = 0; i < 3; i++)
+      basis_changer[i][i] = basis[i][i] / camera->basis[i][i];
+
+    // Calcular los puntos de cada cara expresados en la nueva base
+    absolute_point = basis_changer.be_multiplicated_by(absolute_point);
+
+    //std::cout << "x :" << absolute_point.x << std::endl;
+
+
+  return {absolute_point.x, absolute_point.y};
 }

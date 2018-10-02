@@ -12,8 +12,8 @@
 class Canvas : public QWidget {
   Q_OBJECT
 private:
-  double x_equivalence; // adjust x = 0 point to the center of screen
-  double y_equivalence; // adjust y = 0 point to the center of screen
+  double x_offset; // adjust x = 0 point to the center of screen
+  double y_offset; // adjust y = 0 point to the center of screen
 
   double v_factor;
   double h_factor;
