@@ -48,9 +48,9 @@ void Rasteriser::rasterize() {
     Point3 c = SpatialOps::change_basis(M2, face.c);
 
     // Cambiar la base de los puntos del plano a la base de la pantalla
-    Point2 a2D = PlanarOps::change_basis(M3, {a.x, a.y});
-    Point2 b2D = PlanarOps::change_basis(M3, {b.x, b.y});
-    Point2 c2D = PlanarOps::change_basis(M3, {c.x, c.y});
+    Point2 a2D = PlanarOps::change_basis(M3, {a.x(), a.y()});
+    Point2 b2D = PlanarOps::change_basis(M3, {b.x(), b.y()});
+    Point2 c2D = PlanarOps::change_basis(M3, {c.x(), c.y()});
 
     // Comprobar si debe ser pintado
     bool should_be_rendered = false;
@@ -81,27 +81,27 @@ bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
 bool Rasteriser::calculate_cut_point(Point3 vertex, Point3& point) {
 
   // Vector director de la recta
-  Vector3 v = {vertex.x - camera_fuge.x,
-               vertex.y - camera_fuge.y,
-               vertex.z - camera_fuge.z };
+  Vector3 v = {vertex.x() - camera_fuge.x(),
+               vertex.y() - camera_fuge.y(),
+               vertex.z() - camera_fuge.z() };
 
   // Calcular el punto de corte recta - plano
 
-  double A = camera_plane_vector.x;
-  double B = camera_plane_vector.y;
-  double C = camera_plane_vector.z;
+  double A = camera_plane_vector.x();
+  double B = camera_plane_vector.y();
+  double C = camera_plane_vector.z();
 
-  double D = -(camera_plane_point.x * A +
-               camera_plane_point.y * B +
-               camera_plane_point.z * C);
+  double D = -(camera_plane_point.x() * A +
+               camera_plane_point.y() * B +
+               camera_plane_point.z() * C);
 
-  double a = vertex.x;
-  double c = vertex.y;
-  double e = vertex.z;
+  double a = vertex.x();
+  double c = vertex.y();
+  double e = vertex.z();
 
-  double b = v.x;
-  double d = v.y;
-  double f = v.z;
+  double b = v.x();
+  double d = v.y();
+  double f = v.z();
 
   double T1 = D - (A*a + B*c + C*e);
   double T2 = (A*b + B*d + C*f);

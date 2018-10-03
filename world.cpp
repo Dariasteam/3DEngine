@@ -51,10 +51,10 @@ void World::move_right() {
   for (auto& mesh : meshes) {
     //mesh->position += {0.0, -0.01, 0};
     //mesh->rotate_z(0.001);
-    mesh->rotate_y(0.001);
+    //mesh->rotate_y(0.001);
   }
 
-  camera->position += {0.0, 0.0, 0.01};
+  //camera->position += Point3 {0.0, 0.0, 0.01};
   //camera->rotate_x(0.0008);
   //camera->basis.b += {0, -1, 0};
 }

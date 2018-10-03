@@ -6,53 +6,89 @@
 #include <cmath>
 #include <vector>
 
-struct Point3 {
-  double x;
-  double y;
-  double z;
+struct AbstractMatrix {
+  std::vector<std::vector<double>> matrix;
 
-  Point3 () {}
-  Point3 (double X, double Y, double Z) :
-     x (X),
-     y (Y),
-     z (Z)
-  {}
+  inline unsigned size_v () const { return matrix.size(); }
+  inline unsigned size_h () const { return matrix[0].size(); }
 
-  double& operator[] (unsigned i) {
-    switch (i) {
-      case 0:
-        return x;
-      case 1:
-        return y;
-      default:
-        return z;
+  inline double get (unsigned i, unsigned j) const { return matrix[i][j]; }
+  inline void set (unsigned i, unsigned j, double v) { matrix[i][j] = v;  }
+
+  AbstractMatrix (unsigned rows, unsigned cols) {
+    matrix.resize(rows);
+    for (auto& row : matrix)
+      row.resize(cols);
+  }
+
+  AbstractMatrix (const AbstractMatrix& mtx) {
+    matrix = mtx.matrix;
+  }
+
+  AbstractMatrix operator+ (const AbstractMatrix& mtx) const {
+    unsigned n_rows = size_v();
+    unsigned n_cols = size_h();
+
+    AbstractMatrix aux (n_rows, n_cols);
+
+    if (mtx.size_h() == size_h() && mtx.size_v() == size_v()) {
+      for (unsigned i = 0; i < n_rows; i++) {
+        for (unsigned j = 0; j < n_cols; j++) {
+          aux.set(i, j, mtx.get(i, j) + get(i, j));
+        }
+      }
+    }
+    return aux;
+  }
+
+  void operator+= (const AbstractMatrix& mtx) {
+    unsigned n_rows = size_v();
+    unsigned n_cols = size_h();
+
+    if (mtx.size_h() == size_h() && mtx.size_v() == size_v()) {
+      for (unsigned i = 0; i < n_rows; i++) {
+        for (unsigned j = 0; j < n_cols; j++) {
+          matrix[i][j] += mtx.get(i, j);
+        }
+      }
     }
   }
 
-  double operator[] (unsigned i) const {
-    switch (i) {
-      case 0:
-        return x;
-      case 1:
-        return y;
-      default:
-        return z;
+  void operator= (const AbstractMatrix& mtx) {
+    unsigned n_rows = mtx.size_v();
+    unsigned n_cols = mtx.size_h();
+
+    matrix.clear();
+    matrix.resize(n_rows);
+    for (unsigned i = 0; i < n_rows; i++) {
+      matrix[i].resize(n_cols);
+      for (unsigned j = 0; j < n_cols; j++) {
+        matrix[i][j] = mtx.get (i, j);
+      }
     }
   }
+};
 
-  Point3 operator+ (const Point3& vec) const {
-    return Point3 {
-      x + vec.x,
-      y + vec.y,
-      z + vec.z,
-    };
+struct Point3 : public AbstractMatrix {
+
+  Point3 () : Point3 (0, 0, 0) {}
+  Point3 (double x, double y, double z) : AbstractMatrix (1, 3) {
+    matrix[0][0] = x;
+    matrix[0][1] = y;
+    matrix[0][2] = z;
   }
 
-  void operator += (const Point3& vec) {
-    x += vec.x;
-    y += vec.y;
-    z += vec.z;
-  }
+  double& operator[] (unsigned i) { return matrix[0][i]; }
+  double operator[] (unsigned i) const { return matrix[0][i]; }
+
+  inline double& x() { return matrix[0][0];}
+  inline double& y() { return matrix[0][1];}
+  inline double& z() { return matrix[0][2];}
+
+  inline void x(double v) { matrix[0][0] = v; }
+  inline void y(double v) { matrix[0][1] = v; }
+  inline void z(double v) { matrix[0][2] = v; }
+
 };
 
 typedef Point3 Vector3;
