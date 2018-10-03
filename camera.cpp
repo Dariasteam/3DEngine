@@ -14,30 +14,29 @@ Camera::Camera() {
     {0, 0, 1}
   };
 
+
 }
 
-#include <iostream>
+Camera *Camera::express_in_different_basis(Basis3 new_basis) {
+  Camera* aux_camera = new Camera;
+  aux_camera->basis = new_basis;
+
+
+  // Calcular matriz de cambio de base
+  Matrix3 basis_changer = SpatialOps::
+                              generate_basis_change_matrix(basis, new_basis);
+
+  // Calcular los puntos de cada cara expresados en la nueva base
+  aux_camera->fuge = basis_changer.be_multiplicated_by((fuge));
+  aux_camera->fuge += position;
+  aux_camera->plane = basis_changer.be_multiplicated_by((plane));
+  aux_camera->plane += position;
+
+  return aux_camera;
+}
 
 void Camera::apply_matrix(const Matrix3 &matrix) {
-  /*
-  projection_plane.v1 = matrix.be_multiplicated_by(projection_plane.v1);
-  projection_plane.v2 = matrix.be_multiplicated_by(projection_plane.v2);
-  projection_plane.p  = matrix.be_multiplicated_by(projection_plane.p);
-  */
-
-  // plane = matrix.be_multiplicated_by(plane);
-
   basis.a = matrix.be_multiplicated_by(basis.a);
   basis.b = matrix.be_multiplicated_by(basis.b);
-  basis.c = matrix.be_multiplicated_by(basis.c);  
-
-/*
-  std::cout << projection_plane.v2.x << ", " <<
-               projection_plane.v2.y << ", " <<
-               projection_plane.v2.z << std::endl;
-
-  std::cout << plane.x << ", " <<
-               plane.y << ", " <<
-               plane.z << std::endl;
-               */
+  basis.c = matrix.be_multiplicated_by(basis.c);
 }

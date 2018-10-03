@@ -16,6 +16,7 @@ void Rasteriser::rasterize() {
     {0, 0, 1},
   };
 
+  // Transform camera to new basis
   Camera* aux_camera = camera->express_in_different_basis(basis);
 
   camera_plane = camera->get_plane();
@@ -31,7 +32,7 @@ void Rasteriser::rasterize() {
     Mesh* aux_mesh = mesh->express_in_different_basis(basis);
     for (const auto& face : aux_mesh->faces) {
 
-      // Calculate intersection points with the plane      
+      // Calculate intersection points with the plane
       Point3 a = calculate_cut_point(face.a);
       Point3 b = calculate_cut_point(face.b);
       Point3 c = calculate_cut_point(face.c);
@@ -41,17 +42,15 @@ void Rasteriser::rasterize() {
   }
 
   // Adjust to camera basis
-  Mesh projected_mesh;
+  Matrix3 M2 = SpatialOps::generate_basis_change_matrix (basis, camera->basis);
+  for (auto& face : projected_faces) {
+    Point3 a = SpatialOps::change_basis(M2, face.a);
+    Point3 b = SpatialOps::change_basis(M2, face.b);
+    Point3 c = SpatialOps::change_basis(M2, face.c);
 
-  projected_mesh.basis = basis;
-  projected_mesh.faces = projected_faces;
-
-  Mesh* aux = projected_mesh.express_in_different_basis (camera->basis);
-
-  for (const auto& face : aux->faces) {
-    Point2 a2D = {face.a.x, face.a.y};
-    Point2 b2D = {face.b.x, face.b.y};
-    Point2 c2D = {face.c.x, face.c.y};
+    Point2 a2D = {a.x, a.y};
+    Point2 b2D = {b.x, b.y};
+    Point2 c2D = {c.x, c.y};
 
     bool should_be_rendered = false;
 
@@ -63,7 +62,6 @@ void Rasteriser::rasterize() {
     }
 
     // If should be rendered push a triangle
-
     if (should_be_rendered)
       projected_elements.push_back(Triangle2{a2D, b2D, c2D});
   }
@@ -121,7 +119,7 @@ Point3 Rasteriser::calculate_cut_point(Point3 p) {
   Point3 absolute_point = { r.point.x + r.vector.x * parameter,
                             r.point.y + r.vector.y * parameter,
                             r.point.z + r.vector.z * parameter,
-                          };  
+                          };
 
   return absolute_point;
 }

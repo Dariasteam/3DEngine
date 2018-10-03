@@ -94,8 +94,8 @@ void World::move_right() {
     mesh->rotate_x(0.001);
     mesh->rotate_y(0.001);
 
-    //camera->position += {0.000, 0.001, 0.00};
-    camera->rotate_y(0.00001);
+    camera->position += {0.000, 0.00, 0.1};
+    //camera->rotate_y(-0.0002);
     //mesh->basis.a += {-0.0001, 0, 0};
   }
 }

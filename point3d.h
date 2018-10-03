@@ -152,19 +152,18 @@ double rad2deg (double rad) {
 }
 */
 
-struct Spatial {
-  Basis3 basis;
-  Point3 position;
 
-  virtual void apply_matrix (const Matrix3& matrix) {}
+struct SpatialOps {
 
-  Matrix3 generate_basis_change_matrix (Basis3 new_basis) {
-    Matrix r(1,1);
-    Matrix m(3, 4);
+  // CHanges from Basis A to B
+  static Matrix3 generate_basis_change_matrix (Basis3 A, Basis3 B) {
+
+    Matrix r(1,1);      // result
+    Matrix m(3, 4);     // equation matrix
 
     for (unsigned i = 0; i < 3; i++) {
       for (unsigned j = 0; j < 3; j++) {
-        m.set(i, j, new_basis[i][j]);
+        m.set(i, j, B[i][j]);
       }
     }
 
@@ -176,7 +175,7 @@ struct Spatial {
     for (unsigned i = 0; i < 3; i++) {
       // Copy the first vector of current basis in last column
       for (unsigned j = 0; j < 3; j++)
-        m.set(j, 3, basis[i][j]);
+        m.set(j, 3, A[i][j]);
 
       // Make gauss
       g (m, r);
@@ -189,6 +188,22 @@ struct Spatial {
 
     return basis_matrix;
   }
+  static Point3 change_basis (Basis3 A, Basis3 B, Point3 element) {
+    Matrix3 basis_changer = generate_basis_change_matrix(A, B);
+    return basis_changer.be_multiplicated_by(element);
+  }
+  static Point3 change_basis (Matrix3 matrix, Point3 element) {
+    return matrix.be_multiplicated_by(element);
+  }
+};
+
+
+
+struct Spatial {
+  Basis3 basis;
+  Point3 position;
+
+  virtual void apply_matrix (const Matrix3& matrix) {}
 
   void rotate_x (double deg) {
     Matrix3 rotation_matrix;
@@ -225,14 +240,17 @@ struct Mesh : public Spatial {
     Mesh* aux_mesh = new Mesh;
     aux_mesh->basis = new_basis;
 
-    // Calcular matriz de cambio de base    
-    Matrix3 basis_changer = generate_basis_change_matrix(new_basis);
+    // Calcular matriz de cambio de base
+    Matrix3 basis_changer = SpatialOps::
+                                generate_basis_change_matrix(basis, new_basis);
 
     // Calcular los puntos de cada cara expresados en la nueva base
     Face3 aux_face;
     for (const auto& face : faces) {
-      for (unsigned i = 0; i < 3; i++)
-        aux_face[i] = basis_changer.be_multiplicated_by((face[i] + position));
+      for (unsigned i = 0; i < 3; i++) {
+        aux_face[i] = basis_changer.be_multiplicated_by((face[i]));
+        aux_face[i] += position;
+      }
 
       aux_mesh->faces.push_back(aux_face);
     }
@@ -240,19 +258,17 @@ struct Mesh : public Spatial {
     return aux_mesh;
   }
 
-  void apply_matrix (const Matrix3& matrix) {    
-
-    /*
+  void apply_matrix (const Matrix3& matrix) {
     basis[0] = matrix.be_multiplicated_by(basis[0]);
     basis[1] = matrix.be_multiplicated_by(basis[1]);
     basis[2] = matrix.be_multiplicated_by(basis[2]);
-*/
 
+/*
     for (auto& face : faces) {
       for (unsigned i = 0; i < 3; i++)
         face[i] = matrix.be_multiplicated_by(face[i]);
     }
-
+*/
   }
 };
 
