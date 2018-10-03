@@ -41,7 +41,7 @@ World::World(Camera* cm) :
     };
 
 
-  a_mesh->position = {0, 0, 100};
+  a_mesh->position = {0, 0, 200};
 
   meshes.push_back(a_mesh);
 
@@ -50,12 +50,12 @@ World::World(Camera* cm) :
 void World::move_right() {
   for (auto& mesh : meshes) {
     //mesh->position += {0.0, -0.01, 0};
-    //mesh->rotate_x(0.001);
-    mesh->rotate_y(-0.001);
+    //mesh->rotate_z(0.001);
+    //mesh->rotate_y(0.001);
   }
 
-  //camera->position += {0.0, 0.01, 0.01};
-  camera->rotate_y(-0.001);
-  //mesh->basis.a += {-0.0001, 0, 0};
+  camera->position += {0.0, 0.01, 0.1};
+  //camera->rotate_y(-0.001);
+  //camera->basis.b += {0, -1, 0};
 }
 

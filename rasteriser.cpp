@@ -41,8 +41,16 @@ void Rasteriser::rasterize() {
     }
   }
 
+  Basis2 basis2 {
+    {1, 0},
+    {0, 1},
+  };
+
   // Adjust to camera basis
+
   Matrix3 M2 = SpatialOps::generate_basis_change_matrix (basis, camera->basis);
+  Matrix2 M3 = PlanarOps::generate_basis_change_matrix (camera->get_projected_basis(), basis2);
+
   for (auto& face : projected_faces) {
     Point3 a = SpatialOps::change_basis(M2, face.a);
     Point3 b = SpatialOps::change_basis(M2, face.b);
@@ -51,6 +59,12 @@ void Rasteriser::rasterize() {
     Point2 a2D = {a.x, a.y};
     Point2 b2D = {b.x, b.y};
     Point2 c2D = {c.x, c.y};
+
+    // Cambiar la base de los puntos del plano a la base de la pantalla
+
+    a2D = PlanarOps::change_basis(M3, a2D);
+    b2D = PlanarOps::change_basis(M3, b2D);
+    c2D = PlanarOps::change_basis(M3, c2D);
 
     bool should_be_rendered = false;
 
@@ -80,8 +94,8 @@ Point3 Rasteriser::calculate_cut_point(Point3 p) {
 
   // Vector director de la recta
   Vector3 v = {p.x - camera_fuge.x,
-                p.y - camera_fuge.y,
-                p.z - camera_fuge.z };
+               p.y - camera_fuge.y,
+               p.z - camera_fuge.z };
 
   // Calcular el punto de corte recta - plano
 

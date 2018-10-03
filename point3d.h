@@ -114,6 +114,18 @@ struct Matrix3 {
     }
   }
 
+  Point3 multiplicate_by (Point3 p) const {
+    Point3 aux {0, 0, 0};
+
+    for (unsigned i = 0; i < 3; i++) {
+      for (unsigned j = 0; j < 3; j++)
+        aux[i] += this->operator[](i)[j] * p[j];
+    }
+
+    return aux;
+  }
+
+
   Point3 be_multiplicated_by (Point3 p) const {
     Point3 aux {0, 0, 0};
 
@@ -223,7 +235,7 @@ struct Spatial {
     apply_matrix(rotation_matrix);
   }
 
-  void rotate_z (double deg) {
+  virtual void rotate_z (double deg) {
     Matrix3 rotation_matrix;
     rotation_matrix.row_a = {std::cos(deg), -std::sin(deg), 0};
     rotation_matrix.row_b = {std::sin(deg),  std::cos(deg), 0};
@@ -259,9 +271,9 @@ struct Mesh : public Spatial {
   }
 
   void apply_matrix (const Matrix3& matrix) {
-    basis[0] = matrix.be_multiplicated_by(basis[0]);
-    basis[1] = matrix.be_multiplicated_by(basis[1]);
-    basis[2] = matrix.be_multiplicated_by(basis[2]);
+    basis[0] = matrix.multiplicate_by(basis[0]);
+    basis[1] = matrix.multiplicate_by(basis[1]);
+    basis[2] = matrix.multiplicate_by(basis[2]);
 
 /*
     for (auto& face : faces) {

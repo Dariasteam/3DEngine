@@ -21,7 +21,7 @@ void Canvas::update_frame(const std::vector<Triangle2>& elements, Rect b) {
   triangles = elements;
 
   v_factor = size().height() / b.size_y();
-  h_factor = size().width() / b.size_x();
+  h_factor = size().width()  / b.size_x();
 
   repaint();
 }
