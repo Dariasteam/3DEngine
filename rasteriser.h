@@ -11,7 +11,7 @@ private:
   Camera* camera;
   Canvas* canvas;
 
-  Point3 calculate_cut_point (Point3);
+  bool calculate_cut_point (Point3, Point3&);
   bool is_point_between_camera_bounds (Point2);    
 
   Point3  camera_fuge;  

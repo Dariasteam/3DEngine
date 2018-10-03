@@ -6,18 +6,9 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   world (wd)
 {}
 
-#include <iostream>
-
 void Rasteriser::rasterize() {
-
-  Basis3 basis {
-    {1, 0, 0},
-    {0, 1, 0},
-    {0, 0, 1},
-  };
-
   // Transform camera to new basis
-  Camera* aux_camera = camera->express_in_different_basis(basis);
+  Camera* aux_camera = camera->express_in_different_basis(world->basis3);
 
   camera_plane_vector = aux_camera->get_plane_vector();
   camera_bounds       = aux_camera->get_bounds();
@@ -29,43 +20,39 @@ void Rasteriser::rasterize() {
 
   for (const auto& mesh : world->get_elements()) {
     // Change basis
-    Mesh* aux_mesh = mesh->express_in_different_basis(basis);
+    Mesh* aux_mesh = mesh->express_in_different_basis(world->basis3);
     for (const auto& face : aux_mesh->faces) {
+      bool visible = true;
+
+      Point3 a;
+      Point3 b;
+      Point3 c;
 
       // Calculate intersection points with the plane
-      Point3 a = calculate_cut_point(face.a);
-      Point3 b = calculate_cut_point(face.b);
-      Point3 c = calculate_cut_point(face.c);
+      visible &= calculate_cut_point(face.a, a);
+      visible &= calculate_cut_point(face.b, b);
+      visible &= calculate_cut_point(face.c, c);
 
-      projected_faces.push_back({a, b, c});
+      if (visible)
+        projected_faces.push_back({a, b, c});
     }
-  }
+  }  
 
-  Basis2 basis2 {
-    {1, 0},
-    {0, 1},
-  };
+  Matrix3 M2 = SpatialOps::generate_basis_change_matrix (world->basis3, camera->basis);
+  Matrix2 M3 = PlanarOps::generate_basis_change_matrix (camera->get_projected_basis(), world->basis2);
 
-  // Adjust to camera basis
-
-  Matrix3 M2 = SpatialOps::generate_basis_change_matrix (basis, camera->basis);
-  Matrix2 M3 = PlanarOps::generate_basis_change_matrix (camera->get_projected_basis(), basis2);
-
+  // Adjust to camera basis  
   for (auto& face : projected_faces) {
     Point3 a = SpatialOps::change_basis(M2, face.a);
     Point3 b = SpatialOps::change_basis(M2, face.b);
     Point3 c = SpatialOps::change_basis(M2, face.c);
 
-    Point2 a2D = {a.x, a.y};
-    Point2 b2D = {b.x, b.y};
-    Point2 c2D = {c.x, c.y};
-
     // Cambiar la base de los puntos del plano a la base de la pantalla
+    Point2 a2D = PlanarOps::change_basis(M3, {a.x, a.y});
+    Point2 b2D = PlanarOps::change_basis(M3, {b.x, b.y});
+    Point2 c2D = PlanarOps::change_basis(M3, {c.x, c.y});
 
-    a2D = PlanarOps::change_basis(M3, a2D);
-    b2D = PlanarOps::change_basis(M3, b2D);
-    c2D = PlanarOps::change_basis(M3, c2D);
-
+    // Comprobar si debe ser pintado
     bool should_be_rendered = false;
 
     if (is_point_between_camera_bounds(a2D) ||
@@ -90,12 +77,13 @@ bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
          p.y < camera_bounds.height;
 }
 
-Point3 Rasteriser::calculate_cut_point(Point3 p) {
+// Calculate the intersection point between teh camera plane and the vertex
+bool Rasteriser::calculate_cut_point(Point3 vertex, Point3& point) {
 
   // Vector director de la recta
-  Vector3 v = {p.x - camera_fuge.x,
-               p.y - camera_fuge.y,
-               p.z - camera_fuge.z };
+  Vector3 v = {vertex.x - camera_fuge.x,
+               vertex.y - camera_fuge.y,
+               vertex.z - camera_fuge.z };
 
   // Calcular el punto de corte recta - plano
 
@@ -107,9 +95,9 @@ Point3 Rasteriser::calculate_cut_point(Point3 p) {
                camera_plane_point.y * B +
                camera_plane_point.z * C);
 
-  double a = p.x;
-  double c = p.y;
-  double e = p.z;
+  double a = vertex.x;
+  double c = vertex.y;
+  double e = vertex.z;
 
   double b = v.x;
   double d = v.y;
@@ -120,9 +108,14 @@ Point3 Rasteriser::calculate_cut_point(Point3 p) {
 
   double parameter = T1 / T2;
 
+  if (f < 0 && C > 0)
+    return false;
+
   // Intersection in global coordiantes
-  return { a + b * parameter,
-           c + d * parameter,
-           e + f * parameter,
+  point = { a + b * parameter,
+            c + d * parameter,
+            e + f * parameter,  // actually we dont need Z because 2D projection
          };
+
+  return true;
 }

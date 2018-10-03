@@ -11,6 +11,18 @@ private:
   Camera* camera;
   std::vector <Mesh*> meshes;
 public:
+
+  const Basis3 basis3 {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+  };
+
+  const Basis2 basis2 {
+    {1, 0},
+    {0, 1}
+  };
+
   World(Camera* camera);
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
   void move_right ();

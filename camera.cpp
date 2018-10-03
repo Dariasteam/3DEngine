@@ -5,7 +5,7 @@ Camera::Camera() {
   vector_plane = {0, 0, 1};
   point_plane = {0, 0, 200};
 
-  bounds = {-50, -50, 50, 50};
+  bounds = {-150, -150, 150, 150};
 
   position = {0, 0, 0};
 
