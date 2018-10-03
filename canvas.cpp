@@ -3,16 +3,8 @@
 Canvas::Canvas(QWidget *parent) : QWidget(parent) {  
 }
 
-#include <iostream>
-
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
-
-/*
-  QPoint aux = adjust_coordinates(triangles[0].a);
-  std::cout << aux.x() << " " << aux.y() << std::endl;
-*/
-
   for (const auto& triangle: triangles) {
 
     QPoint a = adjust_coordinates(triangle.a);

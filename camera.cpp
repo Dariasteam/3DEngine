@@ -2,9 +2,10 @@
 
 Camera::Camera() {
   fuge = {0, 0, 0};
-  plane = {0, 0, 1};
+  vector_plane = {0, 0, 1};
+  point_plane = {0, 0, 50};
 
-  bounds = {-30, -30, 30, 30};
+  bounds = {-50, -50, 50, 50};
 
   position = {0, 0, 0};
 
@@ -27,10 +28,13 @@ Camera *Camera::express_in_different_basis(Basis3 new_basis) {
                               generate_basis_change_matrix(basis, new_basis);
 
   // Calcular los puntos de cada cara expresados en la nueva base
+  aux_camera->vector_plane = basis_changer.be_multiplicated_by((vector_plane));
+
   aux_camera->fuge = basis_changer.be_multiplicated_by((fuge));
-  aux_camera->fuge += position;
-  aux_camera->plane = basis_changer.be_multiplicated_by((plane));
-  aux_camera->plane += position;
+  aux_camera->fuge += position;  
+
+  aux_camera->point_plane = basis_changer.be_multiplicated_by((point_plane));
+  aux_camera->point_plane += position;
 
   return aux_camera;
 }

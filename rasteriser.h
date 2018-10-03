@@ -15,8 +15,9 @@ private:
   bool is_point_between_camera_bounds (Point2);    
 
   Point3  camera_fuge;  
-  Vector3 camera_plane;  
+  Vector3 camera_plane_vector;  
   Rect camera_bounds;
+  Point3 camera_plane_point;
 
 public:
   Rasteriser(Canvas* canvas, Camera* camera, World* world);

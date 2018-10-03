@@ -19,12 +19,12 @@ void Rasteriser::rasterize() {
   // Transform camera to new basis
   Camera* aux_camera = camera->express_in_different_basis(basis);
 
-  camera_plane = camera->get_plane();
-  camera_bounds = aux_camera->get_bounds();
-  camera_fuge = aux_camera->get_fuge();
+  camera_plane_vector = aux_camera->get_plane_vector();
+  camera_bounds       = aux_camera->get_bounds();
+  camera_fuge         = aux_camera->get_fuge();
+  camera_plane_point  = aux_camera->get_plane_point();
 
   std::vector <Triangle2> projected_elements;
-
   std::vector <Face3> projected_faces;
 
   for (const auto& mesh : world->get_elements()) {
@@ -70,56 +70,45 @@ void Rasteriser::rasterize() {
 }
 
 bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
-  return p.x > camera_bounds.x     &&
-         p.x < camera_bounds.width &&
-         p.y > camera_bounds.y     &&
+  return p.x > camera_bounds.x       &&
+         p.x < camera_bounds.width   &&
+         p.y > camera_bounds.y       &&
          p.y < camera_bounds.height;
 }
 
 Point3 Rasteriser::calculate_cut_point(Point3 p) {
-  Point3 p1 = camera_fuge;
-  Point3 p2 = p;
-
 
   // Vector director de la recta
-  Vector3 v1 = {p2.x - p1.x,
-                p2.y - p1.y,
-                p2.z - p1.z };
-
-  // Recta
-  Line3 r = {p1, v1, 0};
+  Vector3 v = {p.x - camera_fuge.x,
+                p.y - camera_fuge.y,
+                p.z - camera_fuge.z };
 
   // Calcular el punto de corte recta - plano
 
-  double A = camera_plane.x;
-  double B = camera_plane.y;
-  double C = camera_plane.z;
-  double D = -80;
+  double A = camera_plane_vector.x;
+  double B = camera_plane_vector.y;
+  double C = camera_plane_vector.z;
 
-  double a = p1.x;
-  double c = p1.y;
-  double e = p1.z;
+  double D = -(camera_plane_point.x * A +
+               camera_plane_point.y * B +
+               camera_plane_point.z * C);
 
-  double b = v1.x;
-  double d = v1.y;
-  double f = v1.z;
+  double a = p.x;
+  double c = p.y;
+  double e = p.z;
+
+  double b = v.x;
+  double d = v.y;
+  double f = v.z;
 
   double T1 = D - (A*a + B*c + C*e);
   double T2 = (A*b + B*d + C*f);
 
   double parameter = T1 / T2;
 
-  Point3 cut_point = {
-    p1.x + parameter * v1.x,
-    p1.y + parameter * v1.y,
-    p1.z + parameter * v1.z,
-  };
-
   // Intersection in global coordiantes
-  Point3 absolute_point = { r.point.x + r.vector.x * parameter,
-                            r.point.y + r.vector.y * parameter,
-                            r.point.z + r.vector.z * parameter,
-                          };
-
-  return absolute_point;
+  return { a + b * parameter,
+           c + d * parameter,
+           e + f * parameter,
+         };
 }
