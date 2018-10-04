@@ -53,8 +53,16 @@ void Rasteriser::rasterize() {
                                   is_point_between_camera_bounds(c2D);
 
         // If should be rendered push a triangle
-        if (should_be_rendered)
-          projected_elements.push_back({a2D, b2D, c2D});
+        if (should_be_rendered) {
+          // Calculate z value (distance to camera)
+          Vector3 v1 = Vector3::create_vector(face.a, camera_fuge);
+          Vector3 v2 = Vector3::create_vector(face.b, camera_fuge);
+          Vector3 v3 = Vector3::create_vector(face.c, camera_fuge);
+
+          double z = (v1.z() + v2.z() + v3.z()) / 3;
+
+          projected_elements.push_back({a2D, b2D, c2D, z});
+        }
       }
     }
     delete aux_mesh;
@@ -71,7 +79,8 @@ inline bool Rasteriser::is_point_between_camera_bounds(const Point2& p) {
 }
 
 // Calculate the intersection point between teh camera plane and the vertex
-bool Rasteriser::calculate_cut_point(const Point3& vertex, Point3& point) {
+bool Rasteriser::calculate_cut_point(const Point3& vertex,
+                                           Point3& point) {
 
   // Vector director de la recta
   Vector3 v = Vector3::create_vector(vertex, camera_fuge);

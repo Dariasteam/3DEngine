@@ -7,6 +7,32 @@ World::World(Camera* cm) :
   Mesh* a_mesh = new Mesh;
   a_mesh->faces =
     { // face list
+      // UPER FACES
+      Face3({
+        {-5, 0, -5},   // vertex a
+        {-5, 0,  5},   // vertex b
+        { 0,15,  0},   // vertex c
+      }),
+
+      Face3({
+        { 5, 0, -5},   // vertex a
+        { 5, 0, 5},    // vertex b
+        { 0,15, 0},    // vertex c
+      }),
+
+      Face3({
+        {-5, 0, -5},   // vertex a
+        { 5, 0, -5},   // vertex b
+        { 0,15,  0},   // vertex c
+      }),
+
+      Face3({
+        { 5, 0, 5},   // vertex a
+        {-5, 0, 5},    // vertex b
+        { 0,15, 0},    // vertex c
+      }),
+
+      // DOWN FACES
       Face3({ // one face
         {-5,  0, -5},   // vertex a
         { 5,  0, -5},   // vertex b
@@ -20,15 +46,15 @@ World::World(Camera* cm) :
       }),
 
       Face3({
-        {-5, 0, -5},   // vertex a
-        {-5, 0,  5},   // vertex b
-        { 0,15,  0},   // vertex c
+        {-5,  0, 5},   // vertex a
+        {-5,  0,-5},   // vertex b
+        { 0,-15, 0},    // vertex c
       }),
 
       Face3({
-        { 5, 0, -5},   // vertex a
-        { 5, 0, 5},    // vertex b
-        { 0,15, 0},    // vertex c
+        { 5,  0, 5},   // vertex a
+        { 5,  0,-5},   // vertex b
+        { 0,-15, 0},    // vertex c
       }),
   };
 
@@ -94,7 +120,7 @@ void World::move_right() {
   }
 
   //camera->position += ;
-  camera->translate_global({0.0, 0.0, 1});
+  camera->translate_global({0.0, 0.0, 0.1});
   //camera->rotate_x(0.0010);
   //camera->basis.b += {0, -1, 0};
 }

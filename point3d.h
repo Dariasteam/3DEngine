@@ -60,7 +60,7 @@ struct Matrix3 : public Matrix {
 
 typedef Matrix3 Basis3;
 
-struct Face3 {
+struct Face3 {   
   Point3 a;
   Point3 b;
   Point3 c;

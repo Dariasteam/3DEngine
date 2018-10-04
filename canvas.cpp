@@ -13,6 +13,10 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
     QPolygonF poly ({a, b, c});
 
+    QBrush brush;
+    brush.setColor(Qt::red);
+    brush.setStyle(Qt::SolidPattern);
+    p.setBrush(brush);
     p.drawConvexPolygon(poly);
     //p.drawPolygon(poly);
   }  
@@ -20,6 +24,11 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
 void Canvas::update_frame(const std::vector<Triangle2>& elements, Rect b) {
   triangles = elements;
+
+  std::sort (triangles.begin(), triangles.end(),
+             [](const Triangle2& a, const Triangle2& b) {
+      return a.z_value > b.z_value;
+    });
 
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();

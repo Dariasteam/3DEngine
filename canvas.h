@@ -5,9 +5,11 @@
 
 #include <QWidget>
 #include <QPainter>
-#include <vector>
 #include <QResizeEvent>
 #include <QPolygonF>
+
+#include <vector>
+#include <algorithm>
 
 class Canvas : public QWidget {
   Q_OBJECT

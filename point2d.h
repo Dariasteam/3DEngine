@@ -68,10 +68,12 @@ struct Rect {
   }
 };
 
-struct Triangle2 {
+struct Triangle2 {  
   Point2 a;
   Point2 b;
   Point2 c;
+
+  double z_value;   // distance to camera
 };
 
 
