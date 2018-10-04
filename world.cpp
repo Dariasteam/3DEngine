@@ -17,7 +17,7 @@ World::World(Camera* cm) :
       Face3({ // one face
         {-5,  0, -5},   // vertex a
         { 5,  0, -5},   // vertex b
-        { 0,-15, 0},   // vertex c
+        { 0,-15, 0},    // vertex c
       }),
 
       Face3({
@@ -34,8 +34,8 @@ World::World(Camera* cm) :
 
       Face3({
         { 5, 0, -5},   // vertex a
-        { 5, 0, 5},   // vertex b
-        { 0,15, 0},   // vertex c
+        { 5, 0, 5},    // vertex b
+        { 0,15, 0},    // vertex c
       }),
 
     };
@@ -54,8 +54,8 @@ void World::move_right() {
     //mesh->rotate_y(0.001);
   }
 
-  camera->position += Point3 {0.0, 0.01, 0.1};
-  //camera->rotate_z(0.0008);
+  //camera->position += Point3 {0.0, 0.01, 0.1};
+  camera->rotate_y(0.0001);
   //camera->basis.b += {0, -1, 0};
 }
 

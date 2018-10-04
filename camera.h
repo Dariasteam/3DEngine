@@ -7,9 +7,7 @@
 class Camera : public Spatial {
 private:
   Basis2 projected_basis;
-
-  Rect bounds;
-  void apply_matrix (const Matrix3& matrix);
+  Rect bounds;  
 
 public:
   Point3 fuge;

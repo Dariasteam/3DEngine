@@ -110,12 +110,14 @@ bool Rasteriser::calculate_cut_point(Point3 vertex, Point3& point) {
 
   if (f < 0 && C > 0)
     return false;
+  else if (f > 0 && C < 0)
+    return false;
 
   // Intersection in global coordiantes
   point = { a + b * parameter,
             c + d * parameter,
             e + f * parameter,  // actually we dont need Z because 2D projection
-         };
+          };
 
   return true;
 }

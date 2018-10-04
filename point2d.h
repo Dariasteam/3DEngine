@@ -158,9 +158,11 @@ struct PlanarOps {
     Matrix2 basis_changer = generate_basis_change_matrix(A, B);
     return basis_changer.multiplicate_by(element);
   }
-  static Point2 change_basis (Matrix2 matrix, Point2 element) {
+
+  static Point2 change_basis (Matrix2 matrix, Point2 element) {    
     return matrix.multiplicate_by(element);
   }
+
 };
 
 

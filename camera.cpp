@@ -3,9 +3,9 @@
 Camera::Camera() {
   fuge = {0, 0, 0};
   vector_plane = {0, 0, 1};
-  point_plane = {0, 0, 200};
+  point_plane = {0, 0, 180};
 
-  bounds = {-150, -150, 150, 150};
+  bounds = {-100, -100, 100, 100};
 
   position = {0, 0, 0};
 
@@ -32,11 +32,10 @@ Camera *Camera::express_in_different_basis(Basis3 new_basis) {
                               generate_basis_change_matrix(basis, new_basis);
 
   // Calcular los puntos de cada cara expresados en la nueva base
-  aux_camera->vector_plane = basis_changer * vector_plane.get_transpose();
-  aux_camera->vector_plane.transpose();
-
-  aux_camera->point_plane = basis_changer * point_plane.get_transpose();
-  aux_camera->point_plane.transpose();
+  aux_camera->vector_plane = SpatialOps::change_basis(basis_changer,
+                                                      aux_camera->vector_plane);
+  aux_camera->point_plane = SpatialOps::change_basis(basis_changer,
+                                                     aux_camera->point_plane);
 
   aux_camera->fuge += position;
   aux_camera->point_plane += position;
@@ -46,12 +45,6 @@ Camera *Camera::express_in_different_basis(Basis3 new_basis) {
 
 
 void Camera::rotate_z(double deg) {
-  /*
-  Matrix3 rotation_matrix_3;
-  rotation_matrix_3.row_a = {std::cos(deg), -std::sin(deg), 0};
-  rotation_matrix_3.row_b = {std::sin(deg),  std::cos(deg), 0};
-  rotation_matrix_3.row_c = {0, 0, 1};
-*/
   Matrix2 rotation_matrix_2 {
     {std::cos(deg), -std::sin(deg)},
     {std::sin(deg), std::cos(deg)},
@@ -59,19 +52,4 @@ void Camera::rotate_z(double deg) {
 
   projected_basis.a = rotation_matrix_2.multiplicate_by(projected_basis.a);
   projected_basis.b = rotation_matrix_2.multiplicate_by(projected_basis.b);
-/*
-
-  basis.a = rotation_matrix_3.be_multiplicated_by(basis.a);
-  basis.b = matrix.be_multiplicated_by(basis.b);
-  basis.c = rotation_matrix_3.be_multiplicated_by(basis.c);
-*/
-}
-
-void Camera::apply_matrix(const Matrix3 &matrix) {
-  basis = matrix * basis;
-  /*
-  basis.a = matrix.multiplicate_by(basis.a);
-  basis.b = matrix.multiplicate_by(basis.b);
-  basis.c = matrix.multiplicate_by(basis.c);
-  */
 }

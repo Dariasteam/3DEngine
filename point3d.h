@@ -140,11 +140,6 @@ struct Point3 : public AbstractMatrix {
   inline double x() const { return matrix[0][0];}
   inline double y() const { return matrix[0][1];}
   inline double z() const { return matrix[0][2];}
-/*
-  void operator= (const AbstractMatrix& mtx) {
-    matrix = mtx.matrix;
-  }
-*/
 };
 
 typedef Point3 Vector3;
@@ -156,8 +151,6 @@ struct Matrix3 : public AbstractMatrix {
                {0, 0, 0},
                {0, 0, 0}}) {}
 
-  //Matrix3 (const std::vector<std::vector<double>>& v) : AbstractMatrix (v) {}
-
   Matrix3 (const Point3& a,
            const Point3& b,
            const Point3& c) : AbstractMatrix (3, 3) {
@@ -166,12 +159,6 @@ struct Matrix3 : public AbstractMatrix {
     matrix[2] = c.matrix[0];
   }
 
-  /*
-  Vector3 operator[] (unsigned i) const {
-    return Vector3(matrix[i]);
-  }
-  */
-
   void operator= (const AbstractMatrix& mtx) {
     matrix = mtx.matrix;
   }
@@ -179,7 +166,6 @@ struct Matrix3 : public AbstractMatrix {
   inline Point3 a() const { return matrix[0]; }
   inline Point3 b() const { return matrix[1]; }
   inline Point3 c() const { return matrix[2]; }
-
 };
 
 typedef Matrix3 Basis3;
@@ -216,7 +202,6 @@ struct Face3 {
     b = face.b;
     c = face.c;
   }
-
 };
 
 struct SpatialOps {
@@ -249,13 +234,13 @@ struct SpatialOps {
       // Obtain the solutions
       unsigned size = m.size_v();
       for (unsigned j = 0; j < size; j++)
-        basis_matrix[j][i] = r.get(j, size) * r.get(j,j); // FIXME TODO why *?
+        basis_matrix[j][i] = r.get(j, size) / r.get(j,j); // FIXME TODO why *?
     }
 
     return basis_matrix;
   }
 
-  static Point3 change_basis (Matrix3 matrix, const Point3& element) {
+  static Point3 change_basis (Matrix3 matrix, const Point3& element) {        
     return (matrix * element.get_transpose()).get_transpose();
   }
 };
@@ -264,9 +249,7 @@ struct SpatialOps {
 
 struct Spatial {
   Basis3 basis;
-  Point3 position;
-
-  virtual void apply_matrix (const Matrix3& matrix) {}
+  Point3 position;  
 
   void rotate_x (double deg) {
     Matrix3 rotation_matrix ({
@@ -275,7 +258,7 @@ struct Spatial {
                               {0, std::sin(deg),  std::cos(deg)}
                              });
 
-    apply_matrix(rotation_matrix);
+    basis = rotation_matrix * basis;
   }
 
   void rotate_y (double deg) {
@@ -285,7 +268,7 @@ struct Spatial {
                               {-std::sin(deg), 0, std::cos(deg)}
                              });
 
-    apply_matrix(rotation_matrix);
+    basis = rotation_matrix * basis;
   }
 
   virtual void rotate_z (double deg) {
@@ -295,7 +278,7 @@ struct Spatial {
                               {0, 0, 1}
                              });
 
-    apply_matrix(rotation_matrix);
+    basis = rotation_matrix * basis;
   }
 };
 
@@ -328,17 +311,6 @@ struct Mesh : public Spatial {
 
   void apply_matrix (const Matrix3& matrix) {
     basis = matrix * basis;
-/*
-    basis[0] = matrix.multiplicate_by(basis[0]);
-    basis[1] = matrix.multiplicate_by(basis[1]);
-    basis[2] = matrix.multiplicate_by(basis[2]);
-*/
-/*
-    for (auto& face : faces) {
-      for (unsigned i = 0; i < 3; i++)
-        face[i] = matrix.be_multiplicated_by(face[i]);
-    }
-*/
   }
 };
 
