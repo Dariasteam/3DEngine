@@ -6,20 +6,25 @@
 
 class Camera : public Spatial {
 private:
-  Basis2 projected_basis;
   Rect bounds;
-
-public:
   Point3 fuge;
   Vector3 vector_plane;
   Point3 point_plane;
 
-  Camera();
+public:
+
+  Camera ();
+  Camera (const Camera& cam) : Spatial (cam) {
+    bounds = cam.bounds;
+    fuge = cam.fuge;
+    vector_plane = cam.vector_plane;
+    point_plane = cam.point_plane;
+  }
+
   inline Point3  get_fuge() const { return fuge; }
   inline Vector3 get_plane_vector() const { return vector_plane; }
   inline Vector3 get_plane_point() const { return point_plane; }
   inline Rect get_bounds() const { return bounds; }
-  inline Basis2 get_projected_basis () const { return projected_basis; }
 
   Camera* express_in_different_basis (const Basis3& new_basis) const;
 

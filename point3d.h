@@ -95,6 +95,14 @@ struct Face3 {
 };
 
 struct Spatial {
+
+  Spatial (const Spatial& sp) :
+    basis (sp.basis),
+    position (sp.position)
+  {}
+
+  Spatial () {}
+
   Basis3 basis {
           {1, 0, 0},
           {0, 1, 0},

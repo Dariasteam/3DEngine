@@ -108,6 +108,7 @@ World::World(Camera* cm) :
 }
 
 void World::move_right() {
+  //meshes[0]->translate_global({0, 0, 6});
   meshes[0]->rotate_z(0.01);
   meshes[0]->nested_meshes[0]->rotate_x(0.01);
   //meshes[0]->rotate_x(0.01);
@@ -125,9 +126,15 @@ void World::move_right() {
   }
 
   //camera->position += ;
-  //camera->translate_global({0.0, 0.0, 01});
-  camera->position += Vector3{0.0, 0.0, 01};
-  //camera->rotate_x(0.0010);
-  //camera->basis.b += {0, -1, 0};
+  //camera->position += Vector3{0.0, 0.0, 16};
+  camera->rotate_y(0.01);
+  /*
+  camera->basis += Matrix3{
+    {0, 0, 0},
+    {0, 0, 0},
+    {0, 0, 1},
+  };
+  */
+
 }
 

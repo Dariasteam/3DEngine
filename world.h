@@ -12,15 +12,10 @@ private:
   std::vector <Mesh*> meshes;
 public:
 
-  const Basis3 basis3 {
+  const Basis3 basis {
     {1, 0, 0},
     {0, 1, 0},
     {0, 0, 1},
-  };
-
-  const Basis2 basis2 {
-    {1, 0},
-    {0, 1}
   };
 
   World(Camera* camera);
