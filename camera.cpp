@@ -22,7 +22,7 @@ Camera::Camera() {
 
 }
 
-Camera *Camera::express_in_different_basis(Basis3 new_basis) {
+Camera *Camera::express_in_different_basis(const Basis3& new_basis) const {
   Camera* aux_camera = new Camera;
   aux_camera->basis = new_basis;
 
@@ -42,3 +42,15 @@ Camera *Camera::express_in_different_basis(Basis3 new_basis) {
 
   return aux_camera;
 }
+
+/*
+void Camera::rotate_z(double deg) {
+  Matrix2 rotation_matrix_2 {
+    {std::cos(deg), -std::sin(deg)},
+    {std::sin(deg), std::cos(deg)},
+  };
+
+  projected_basis.a = rotation_matrix_2.multiplicate_by(projected_basis.a);
+  projected_basis.b = rotation_matrix_2.multiplicate_by(projected_basis.b);
+}
+*/

@@ -33,7 +33,7 @@ World::World(Camera* cm) :
   };
 
   meshes.push_back(a_mesh);
-/*
+
   for (unsigned i = 0; i < 10; i++) {
       Mesh* aux1 = new Mesh (*a_mesh);
       Mesh* aux2 = new Mesh (*a_mesh);
@@ -44,7 +44,7 @@ World::World(Camera* cm) :
       meshes.push_back(aux1);
       meshes.push_back(aux2);
   }
-*/
+
   Mesh* b_mesh = new Mesh;
   b_mesh->faces =
     {
@@ -83,8 +83,8 @@ void World::move_right() {
   }
 
   //camera->position += ;
-  //camera->translate_global({0.0, 0.0, 0.1});
-  camera->rotate_x(0.0010);
+  camera->translate_global({0.0, 0.0, 1});
+  //camera->rotate_x(0.0010);
   //camera->basis.b += {0, -1, 0};
 }
 

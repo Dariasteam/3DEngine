@@ -7,7 +7,7 @@ RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
   {
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(main_loop()));
-    timer->start(1);
+    timer->start(17);
 }
 
 void RenderEngine::main_loop () {
