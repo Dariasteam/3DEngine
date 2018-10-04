@@ -34,7 +34,7 @@ void Rasteriser::rasterize() {
       visible &= calculate_cut_point(face.c, c);
 
       if (visible)
-        projected_faces.push_back({a, b, c});
+        projected_faces.push_back(Face3({a, b, c}));
     }
   }  
 

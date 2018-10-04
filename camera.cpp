@@ -9,11 +9,11 @@ Camera::Camera() {
 
   position = {0, 0, 0};
 
-  basis = {
+  basis = Basis3 ({
     {1, 0, 0},
     {0, 1, 0},
     {0, 0, 1}
-  };
+  });
 
   projected_basis = {
     {1, 0},
@@ -32,12 +32,13 @@ Camera *Camera::express_in_different_basis(Basis3 new_basis) {
                               generate_basis_change_matrix(basis, new_basis);
 
   // Calcular los puntos de cada cara expresados en la nueva base
-  aux_camera->vector_plane = basis_changer.multiplicate_by((vector_plane));
+  aux_camera->vector_plane = basis_changer * vector_plane.get_transpose();
+  aux_camera->vector_plane.transpose();
 
-  //aux_camera->fuge = basis_changer.be_multiplicated_by((fuge));
-  aux_camera->fuge += position;  
+  aux_camera->point_plane = basis_changer * point_plane.get_transpose();
+  aux_camera->point_plane.transpose();
 
-  aux_camera->point_plane = basis_changer.multiplicate_by((point_plane));
+  aux_camera->fuge += position;
   aux_camera->point_plane += position;
 
   return aux_camera;
@@ -67,7 +68,10 @@ void Camera::rotate_z(double deg) {
 }
 
 void Camera::apply_matrix(const Matrix3 &matrix) {
+  basis = matrix * basis;
+  /*
   basis.a = matrix.multiplicate_by(basis.a);
   basis.b = matrix.multiplicate_by(basis.b);
   basis.c = matrix.multiplicate_by(basis.c);
+  */
 }
