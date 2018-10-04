@@ -248,8 +248,12 @@ struct SpatialOps {
 
 
 struct Spatial {
-  Basis3 basis;
-  Point3 position;  
+  Basis3 basis {
+          {1, 0, 0},
+          {0, 1, 0},
+          {0, 0, 1}};
+
+  Point3 position {0, 0, 0};
 
   void rotate_x (double deg) {
     Matrix3 rotation_matrix ({

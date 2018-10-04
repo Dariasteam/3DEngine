@@ -24,7 +24,7 @@ public:
   Camera* express_in_different_basis (Basis3 new_basis);
   Point2 adjust_rotation_basis (Point2 p);
 
-  virtual void rotate_z (double deg);
+  //virtual void rotate_z (double deg);
 };
 
 #endif // CAMERA_H

@@ -22,16 +22,16 @@ void Rasteriser::rasterize() {
     // Change basis
     Mesh* aux_mesh = mesh->express_in_different_basis(world->basis3);
     for (const auto& face : aux_mesh->faces) {
-      bool visible = true;
+      bool visible = false;
 
       Point3 a;
       Point3 b;
       Point3 c;
 
       // Calculate intersection points with the plane
-      visible &= calculate_cut_point(face.a, a);
-      visible &= calculate_cut_point(face.b, b);
-      visible &= calculate_cut_point(face.c, c);
+      visible |= calculate_cut_point(face.a, a);
+      visible |= calculate_cut_point(face.b, b);
+      visible |= calculate_cut_point(face.c, c);
 
       if (visible)
         projected_faces.push_back(Face3({a, b, c}));
@@ -53,14 +53,9 @@ void Rasteriser::rasterize() {
     Point2 c2D = PlanarOps::change_basis(M3, {c.x(), c.y()});
 
     // Comprobar si debe ser pintado
-    bool should_be_rendered = false;
-
-    if (is_point_between_camera_bounds(a2D) ||
-        is_point_between_camera_bounds(b2D) ||
-        is_point_between_camera_bounds(c2D)) {
-
-      should_be_rendered = true;
-    }
+    bool should_be_rendered = is_point_between_camera_bounds(a2D) |
+                              is_point_between_camera_bounds(b2D) |
+                              is_point_between_camera_bounds(c2D);
 
     // If should be rendered push a triangle
     if (should_be_rendered)
@@ -106,12 +101,7 @@ bool Rasteriser::calculate_cut_point(Point3 vertex, Point3& point) {
   double T1 = D - (A*a + B*c + C*e);
   double T2 = (A*b + B*d + C*f);
 
-  double parameter = T1 / T2;
-
-  if (f < 0 && C > 0)
-    return false;
-  else if (f > 0 && C < 0)
-    return false;
+  double parameter = T1 / T2;  
 
   // Intersection in global coordiantes
   point = { a + b * parameter,
@@ -119,5 +109,10 @@ bool Rasteriser::calculate_cut_point(Point3 vertex, Point3& point) {
             e + f * parameter,  // actually we dont need Z because 2D projection
           };
 
-  return true;
+  if (f < 0 && C > 0) {
+    point = {-point.x(), -point.y(), point.z()};
+    return false;
+  } else {
+    return true;
+  }
 }
