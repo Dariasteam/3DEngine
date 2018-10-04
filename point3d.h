@@ -153,6 +153,7 @@ struct Spatial {
 
 struct Mesh : public Spatial {
   std::vector<Face3> faces;
+  std::vector<Mesh*> nested_meshes;
 
   Mesh () {}
 
@@ -164,25 +165,11 @@ struct Mesh : public Spatial {
     position = m.position;
   }
 
-  Mesh* express_in_different_basis (const Basis3& new_basis) const {
-    Mesh* aux_mesh = new Mesh (faces.size());
-    aux_mesh->basis = new_basis;
-
-    // Calcular matriz de cambio de base
-    Matrix3 basis_changer = MatrixOps::
-                                generate_basis_change_matrix(basis, new_basis);
-
-    // Calcular los puntos de cada cara expresados en la nueva base
-    Face3 aux_face;
-    for (unsigned i = 0; i < faces.size(); i++) {
-      for (unsigned j = 0; j < 3; j++) {
-        aux_mesh->faces[i][j] = MatrixOps::change_basis(basis_changer, faces[i][j]);
-        aux_mesh->faces[i][j] += position;
-      }      
-    }
-
-    return aux_mesh;
+  void add_nested_mesh (Mesh* mesh) {
+    nested_meshes.push_back(mesh);
   }
+
+  Mesh* express_in_different_basis (const Basis3& new_basis) const;
 
   void apply_matrix (const Matrix3& matrix) {
     basis = matrix * basis;

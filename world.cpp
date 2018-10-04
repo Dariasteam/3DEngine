@@ -34,6 +34,10 @@ World::World(Camera* cm) :
 
   meshes.push_back(a_mesh);
 
+  Mesh* aux1 = new Mesh (*a_mesh);
+  aux1->translate_local({0, 0, 100});
+  a_mesh->add_nested_mesh(aux1);
+
   for (unsigned i = 0; i < 10; i++) {
       Mesh* aux1 = new Mesh (*a_mesh);
       Mesh* aux2 = new Mesh (*a_mesh);
@@ -69,13 +73,14 @@ World::World(Camera* cm) :
 
 void World::move_right() {
   meshes[0]->rotate_y(0.01);
-  meshes[0]->rotate_x(0.01);
+  //meshes[0]->rotate_x(0.01);
   //meshes[0]->position += Point3 {0.0, -0.01, -0.1};
 
-
-  for (unsigned i = 1; i < meshes.size() - 1; i++) {
+/*
+  for (unsigned i = 2; i < meshes.size() - 1; i++) {
     meshes[i]->rotate_y(0.01);
   }
+  */
   for (auto& mesh : meshes) {
     //mesh->position += Point3 {0.0, -0.01, -0.1};
     //mesh->rotate_z(0.001);
@@ -83,7 +88,7 @@ void World::move_right() {
   }
 
   //camera->position += ;
-  camera->translate_global({0.0, 0.0, 1});
+  //camera->translate_global({0.0, 0.0, 1});
   //camera->rotate_x(0.0010);
   //camera->basis.b += {0, -1, 0};
 }

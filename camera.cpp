@@ -26,7 +26,6 @@ Camera *Camera::express_in_different_basis(const Basis3& new_basis) const {
   Camera* aux_camera = new Camera;
   aux_camera->basis = new_basis;
 
-
   // Calcular matriz de cambio de base
   Matrix3 basis_changer = MatrixOps::
                               generate_basis_change_matrix(basis, new_basis);
