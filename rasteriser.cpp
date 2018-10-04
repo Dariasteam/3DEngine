@@ -15,6 +15,8 @@ void Rasteriser::rasterize() {
   camera_fuge         = aux_camera->get_fuge();
   camera_plane_point  = aux_camera->get_plane_point();
 
+  delete aux_camera;
+
   std::vector <Triangle2> projected_elements;
   std::vector <Face3> projected_faces;
 
@@ -55,6 +57,7 @@ void Rasteriser::rasterize() {
           projected_elements.push_back({a2D, b2D, c2D});
       }
     }
+    delete aux_mesh;
   }  
 
   canvas->update_frame(projected_elements, camera_bounds);

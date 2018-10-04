@@ -19,7 +19,6 @@ Camera::Camera() {
     {1, 0},
     {0, 1}
   };
-
 }
 
 Camera *Camera::express_in_different_basis(const Basis3& new_basis) const {

@@ -23,6 +23,7 @@ Mesh *Mesh::express_in_different_basis(const Basis3 &new_basis) const {
       for (unsigned j = 0; j < nested_size; j++) {
         aux_mesh->faces[base_size + j] = aux_nested_mesh->faces[j];
       }
+      delete aux_nested_mesh;
 
     }
 
