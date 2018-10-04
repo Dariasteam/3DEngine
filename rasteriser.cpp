@@ -61,7 +61,7 @@ void Rasteriser::rasterize() {
 
           double z = (v1.z() + v2.z() + v3.z()) / 3;
 
-          projected_elements.push_back({a2D, b2D, c2D, z});
+          projected_elements.push_back({a2D, b2D, c2D, z, aux_mesh->color});
         }
       }
     }

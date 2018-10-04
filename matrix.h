@@ -57,4 +57,10 @@ struct MatrixOps {
   static Matrix change_basis (Matrix matrix, const Matrix& element);
 };
 
+struct Color {
+  unsigned r;
+  unsigned g;
+  unsigned b;
+};
+
 #endif // MATRIX_H

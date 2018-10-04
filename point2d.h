@@ -74,6 +74,7 @@ struct Triangle2 {
   Point2 c;
 
   double z_value;   // distance to camera
+  Color color = {0, 0, 0};
 };
 
 

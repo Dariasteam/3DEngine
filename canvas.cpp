@@ -14,7 +14,13 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QPolygonF poly ({a, b, c});
 
     QBrush brush;
-    brush.setColor(Qt::red);
+
+    brush.setColor(QColor (
+                     triangle.color.r,
+                     triangle.color.g,
+                     triangle.color.b
+                   ));
+
     brush.setStyle(Qt::SolidPattern);
     p.setBrush(brush);
     p.drawConvexPolygon(poly);

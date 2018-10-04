@@ -154,6 +154,7 @@ struct Spatial {
 struct Mesh : public Spatial {
   std::vector<Face3> faces;
   std::vector<Mesh*> nested_meshes;
+  Color color = {0, 0, 0};
 
   Mesh () {}
 
@@ -163,6 +164,7 @@ struct Mesh : public Spatial {
     faces = m.faces;
     basis = m.basis;
     position = m.position;
+    color = m.color;
   }
 
   void add_nested_mesh (Mesh* mesh) {
