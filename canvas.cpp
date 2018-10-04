@@ -29,8 +29,8 @@ void Canvas::update_frame(const std::vector<Triangle2>& elements, Rect b) {
 // Translates the coordinates to the canvas size and
 // the non centered coordinate system
 QPoint Canvas::adjust_coordinates(const Point2 p) {
-  return {(p.x * h_factor + x_offset),
-          (p.y * v_factor + y_offset)
+  return {(p.x() * h_factor + x_offset),
+          (p.y() * v_factor + y_offset)
          };
 }
 

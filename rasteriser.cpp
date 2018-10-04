@@ -38,19 +38,19 @@ void Rasteriser::rasterize() {
     }
   }  
 
-  Matrix3 M2 = SpatialOps::generate_basis_change_matrix (world->basis3, camera->basis);
-  Matrix2 M3 = PlanarOps::generate_basis_change_matrix (camera->get_projected_basis(), world->basis2);
+  Matrix3 M2 = MatrixOps::generate_basis_change_matrix (world->basis3, camera->basis);
+  Matrix2 M3 = MatrixOps::generate_basis_change_matrix (camera->get_projected_basis(), world->basis2);
 
   // Adjust to camera basis  
   for (auto& face : projected_faces) {
-    Point3 a = SpatialOps::change_basis(M2, face.a);
-    Point3 b = SpatialOps::change_basis(M2, face.b);
-    Point3 c = SpatialOps::change_basis(M2, face.c);
+    Point3 a = MatrixOps::change_basis(M2, face.a);
+    Point3 b = MatrixOps::change_basis(M2, face.b);
+    Point3 c = MatrixOps::change_basis(M2, face.c);
 
     // Cambiar la base de los puntos del plano a la base de la pantalla
-    Point2 a2D = PlanarOps::change_basis(M3, {a.x(), a.y()});
-    Point2 b2D = PlanarOps::change_basis(M3, {b.x(), b.y()});
-    Point2 c2D = PlanarOps::change_basis(M3, {c.x(), c.y()});
+    Point2 a2D = {a.x(), a.y()};
+    Point2 b2D = {b.x(), b.y()};
+    Point2 c2D = {c.x(), c.y()};
 
     // Comprobar si debe ser pintado
     bool should_be_rendered = is_point_between_camera_bounds(a2D) |
@@ -65,11 +65,11 @@ void Rasteriser::rasterize() {
   canvas->update_frame(projected_elements, camera_bounds);
 }
 
-bool Rasteriser::is_point_between_camera_bounds(Point2 p) {
-  return p.x > camera_bounds.x       &&
-         p.x < camera_bounds.width   &&
-         p.y > camera_bounds.y       &&
-         p.y < camera_bounds.height;
+bool Rasteriser::is_point_between_camera_bounds(const Point2& p) {
+  return p.x() > camera_bounds.x       &&
+         p.x() < camera_bounds.width   &&
+         p.y() > camera_bounds.y       &&
+         p.y() < camera_bounds.height;
 }
 
 // Calculate the intersection point between teh camera plane and the vertex

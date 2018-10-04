@@ -4,28 +4,48 @@
 #include <cmath>
 #include <matrix.h>
 
-struct Point2 {
-  double x;
-  double y;
+#include "point3d.h"
 
-  double& operator[] (unsigned i) {
-    switch (i) {
-      case 0:
-        return x;
-      default:
-        return y;
-    }
+struct Point2 : public Matrix {
+
+  Point2 () : Point2 (0, 0) {}
+  Point2 (const Point2& p) : Point2 (p.x(), p.y()) {}
+  Point2 (const std::vector<double>& v) : Point2 (v[0], v[1]) {}
+  Point2 (const Matrix& mtx) : Matrix (mtx) {}
+  Point2 (double x, double y) : Matrix (1, 2) {
+    matrix[0][0] = x;
+    matrix[0][1] = y;
   }
 
-  double operator[] (unsigned i) const {
-    switch (i) {
-      case 0:
-        return x;
-      default:
-        return y;
-    }
-  }
+  double& operator[] (unsigned i) { return matrix[0][i]; }
+  double  operator[] (unsigned i) const { return matrix[0][i]; }
+
+  inline double x() const { return matrix[0][0];}
+  inline double y() const { return matrix[0][1];}
 };
+
+struct Matrix2 : public Matrix {
+
+  Matrix2 (const Matrix& mtx) : Matrix (mtx) {}
+
+  Matrix2 () : Matrix (
+              {{0, 0},
+               {0, 0}}) {}
+
+  Matrix2 (const Point2& a,
+           const Point2& b) : Matrix (2, 2) {
+    matrix[0] = a.matrix[0];
+    matrix[1] = b.matrix[0];
+  }
+
+  void operator= (const Matrix& mtx) {
+    matrix = mtx.matrix;
+  }
+  inline Point2 a() const { return matrix[0]; }
+  inline Point2 b() const { return matrix[1]; }
+};
+
+typedef Matrix2 Basis2;
 
 typedef Point2 Vector2;
 
@@ -52,117 +72,6 @@ struct Triangle2 {
   Point2 a;
   Point2 b;
   Point2 c;
-};
-
-struct Basis2 {
-  Vector2 a;
-  Vector2 b;
-
-  Vector2& operator[] (unsigned i) {
-    switch (i) {
-      case 0:
-        return a;
-      default:
-        return b;
-    }
-  }
-
-  Vector2 operator[] (unsigned i) const {
-    switch (i) {
-      case 0:
-        return a;
-      default:
-        return b;
-    }
-  }
-};
-
-struct Matrix2 {
-  Vector2 row_a;
-  Vector2 row_b;
-
-  Vector2& operator[] (unsigned i) {
-    switch (i) {
-      case 0:
-        return row_a;
-      default:
-        return row_b;
-    }
-  }
-
-  Vector2 operator[] (unsigned i) const {
-    switch (i) {
-      case 0:
-        return row_a;
-      default:
-        return row_b;
-    }
-  }
-
-  Point2 multiplicate_by (Point2 p) const {
-    /*
-    Point2 aux {0, 0};
-
-    for (unsigned i = 0; i < 2; i++) {
-      for (unsigned j = 0; j < 2; j++) {
-        aux[i] += p[j] * this->operator[](j)[i];
-      }
-    }
-    return aux;
-    */
-
-    return{
-        p.x * row_a.x + p.y * row_a.y,
-        p.x * row_b.x + p.y * row_b.y
-      };
-  }
-
-};
-
-struct PlanarOps {
-
-  // CHanges from Basis A to B
-  static Matrix2 generate_basis_change_matrix (Basis2 A, Basis2 B) {
-
-    Matrix r(1,1);      // result
-    Matrix m(2, 3);     // equation matrix
-
-    for (unsigned i = 0; i < 2; i++) {
-      for (unsigned j = 0; j < 2; j++) {
-        m.set(i, j, B[i][j]);
-      }
-    }
-
-    Matrix2 basis_matrix;
-    Gauss g;
-
-    std::vector <double> solutions (2);
-
-    for (unsigned i = 0; i < 2; i++) {
-      // Copy the first vector of current basis in last column
-      for (unsigned j = 0; j < 2; j++)
-        m.set(j, 2, A[i][j]);
-
-      // Make gauss
-      g (m, r);
-
-      // Obtain the solutions
-      unsigned size = m.size_v();
-      for (unsigned j = 0; j < size; j++)
-        basis_matrix[j][i] = r.get(j, size) * r.get(j,j);
-    }
-
-    return basis_matrix;
-  }
-  static Point2 change_basis (Basis2 A, Basis2 B, Point2 element) {
-    Matrix2 basis_changer = generate_basis_change_matrix(A, B);
-    return basis_changer.multiplicate_by(element);
-  }
-
-  static Point2 change_basis (Matrix2 matrix, Point2 element) {    
-    return matrix.multiplicate_by(element);
-  }
-
 };
 
 
