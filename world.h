@@ -9,6 +9,7 @@
 struct DirectionalLight {
   Vector3 direction;
   Color color;
+  unsigned intensity;
 };
 
 class World {
@@ -18,8 +19,10 @@ private:
 
   DirectionalLight sunlight {
     Vector3 {1, 1, 1},
-    Color {0, 255, 0}
+    Color {255, 255, 255},
+    100
   };
+
 
 public:
 

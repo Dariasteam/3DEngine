@@ -68,11 +68,31 @@ void Rasteriser::rasterize() {
 
           if (angle_torwards_camera >= 90 && angle_torwards_camera <= 270) {
             // The face should be rendered, check lightness
-            double angle_to_light = Vector3::angle_between(face_normal,
-                                                           world->get_light().direction);
 
-            Color color = aux_mesh->color;
-            color.g = (double(180 - angle_to_light) / 180) * world->get_light().color.g;
+            DirectionalLight light = world->get_light();
+
+            double angle_to_light = Vector3::angle_between(face_normal,
+                                                           light.direction);
+
+            Color color;
+
+            double light_intensity = world->get_light().intensity;
+
+            color.r = (double(180 - angle_to_light) / 180) * light.color.r;
+            color.g = (double(180 - angle_to_light) / 180) * light.color.g;
+            color.b = (double(180 - angle_to_light) / 180) * light.color.b;
+
+            color.r = (double)(color.r) * (light_intensity / 255);
+            color.g = (double)(color.g) * (light_intensity / 255);
+            color.b = (double)(color.b) * (light_intensity / 255);
+
+            color.r = (double)(color.r) * (aux_mesh->color.r / 64);
+            color.g = (double)(color.g) * (aux_mesh->color.g / 64);
+            color.b = (double)(color.b) * (aux_mesh->color.b / 64);
+
+            color.r = std::min (color.r, unsigned(255));
+            color.g = std::min (color.g, unsigned(255));
+            color.b = std::min (color.b, unsigned(255));
 
             projected_elements.push_back({a2D, b2D, c2D, z, color});
 

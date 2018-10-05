@@ -19,10 +19,16 @@ void Canvas::paintEvent(QPaintEvent *event) {
                      triangle.color.r,
                      triangle.color.g,
                      triangle.color.b
-                   ));
+                   ));    
 
-    brush.setStyle(Qt::SolidPattern);
-    p.setBrush(brush);
+    brush.setStyle(Qt::SolidPattern);    
+    p.setBrush(brush);    
+
+    QPen pen;
+    pen.setBrush(brush);
+    pen.setStyle(Qt::NoPen);
+    p.setPen(pen);
+
     //p.drawConvexPolygon(poly);
     p.drawPolygon(poly);
   }  
