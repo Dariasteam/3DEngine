@@ -66,7 +66,7 @@ void Rasteriser::rasterize() {
       }
     }
     delete aux_mesh;
-  }  
+  }
 
   canvas->update_frame(projected_elements, camera_bounds);
 }
@@ -83,54 +83,49 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
                                            Point3& point) {
 
   // Vector director de la recta
-  Vector3 vector = Vector3::create_vector(vertex, camera_fuge);
+  Vector3 v = Vector3::create_vector(vertex, camera_fuge);
 
-  // Calcular el punto de corte recta - plano  
+  // Calcular el punto de corte recta - plano
 
   double A = camera_plane_vector.x();
   double B = camera_plane_vector.y();
   double C = camera_plane_vector.z();
 
-  double D = (camera_plane_point.x() * A +
-              camera_plane_point.y() * B +
-              camera_plane_point.z() * C);
+  double D = -(camera_plane_point.x() * A +
+               camera_plane_point.y() * B +
+               camera_plane_point.z() * C);
 
   double a = vertex.x();
   double c = vertex.y();
   double e = vertex.z();
 
-  double b = vector.x();
-  double d = vector.y();
-  double f = vector.z();
+  double b = v.x();
+  double d = v.y();
+  double f = v.z();
 
-  double T1 = D -(A*a + B*c + C*e);
+  double T1 = - D - (A*a + B*c + C*e);
   double T2 = (A*b + B*d + C*f);
 
   double parameter = T1 / T2;
 
-  std::cout << D << " " << camera_plane_point.z() - camera_fuge.z() << std::endl;
+
 
   // Intersection in global coordiantes
-  point = {(a + b * parameter),
+  point = {-(a + b * parameter),
            -(c + d * parameter),
-           -(e + f * parameter),  // actually we dont need Z, its used as 2D projection
+            e + f * parameter,  // actually we dont need Z because 2D projection
           };
 
   if (f < 0 && C > 0) {
-    // Clacular la intersección con el plano de la cámara
-    D = -(camera_plane_point.x() * A +
-          camera_plane_point.y() * B +
-          camera_plane_point.z() * C);
+      T1 = D - (A*a + B*c + C*e);
+      T2 = (A*b + B*d + C*f);
 
-    T1 = D -(A*a + B*c + C*e);
-    T2 = (A*b + B*d + C*f);
+      parameter = T1 / T2;
 
-    parameter = T1 / T2;
-
-    point = {-(a + b * parameter),
-             -(c + d * parameter),
-              (e + f * parameter),  // actually we dont need Z, its used as 2D projection
-            };
+      point = {-(a + b * parameter),
+               -(c + d * parameter),
+                e + f * parameter,  // actually we dont need Z because 2D projection
+              };
     return false;
   } else {
     return true;
