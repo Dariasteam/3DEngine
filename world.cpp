@@ -126,8 +126,8 @@ void World::move_right() {
   }
 
   //camera->position += ;
-  camera->position += Vector3{0.0, 0.0, 16};
-  //camera->rotate_z(0.01);
+  //camera->position += Vector3{0.0, 0.0, 16};
+  camera->rotate_y(0.01);
   /*
   camera->basis += Matrix3{
     {0, 0, 0},

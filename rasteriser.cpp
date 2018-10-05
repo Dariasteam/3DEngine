@@ -59,7 +59,7 @@ void Rasteriser::rasterize() {
           Vector3 v2 = Vector3::create_vector(face.b, camera_fuge);
           Vector3 v3 = Vector3::create_vector(face.c, camera_fuge);
 
-          double z = std::max(std::max (v1.z(), v2.z()), v3.z());
+          double z = std::max(std::max(v1.z(), v2.z()), v3.z());
 
           projected_elements.push_back({a2D, b2D, c2D, z, aux_mesh->color});
         }
@@ -113,10 +113,10 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   // Intersection in global coordiantes
   point = {-(a + b * parameter),
            -(c + d * parameter),
-             0
+            e + f * parameter,
           };
 
-  if (f < 0 && C > 0) {
+  if (f < 0 && C > 0 || f > 0 && C < 0) {
       T1 = D - (A*a + B*c + C*e);
       T2 = (A*b + B*d + C*f);
 
@@ -124,7 +124,7 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
 
       point = {-(a + b * parameter),
                -(c + d * parameter),
-                0
+                e + f * parameter,
               };
     return false;
   } else {
