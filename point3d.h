@@ -87,6 +87,24 @@ struct Face3 {
     }
   }
 
+  Vector3 get_normal () const {
+    Vector3 u = Vector3::create_vector(a, b);
+    Vector3 v = Vector3::create_vector(a, c);
+
+    double X = (v.y() * u.z() - v.z() * u.y());
+    double Y = (v.z() * u.x() - v.x() * u.z());
+    double Z = (v.x() * u.y() - v.y() * u.x());
+
+    double D = a.z() * v.y() * u.x() +
+               a.x() * v.z() * u.y() +
+               a.y() * v.x() * u.z() -
+               a.x() * v.y() * u.z() -
+               a.y() * v.z() * u.x() -
+               a.z() * v.x() * u.y();
+
+    return Vector3 (X, Y, Z);
+  }
+
   void operator= (const Face3& face) {
     a = face.a;
     b = face.b;

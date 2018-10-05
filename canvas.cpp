@@ -23,8 +23,8 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
     brush.setStyle(Qt::SolidPattern);
     p.setBrush(brush);
-    p.drawConvexPolygon(poly);
-    //p.drawPolygon(poly);
+    //p.drawConvexPolygon(poly);
+    p.drawPolygon(poly);
   }  
 }
 
