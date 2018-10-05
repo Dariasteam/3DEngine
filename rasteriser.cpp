@@ -64,10 +64,19 @@ void Rasteriser::rasterize() {
 
           // Check if the face is loking torwards to the camera
           Vector3 face_normal = face.get_normal();
+          double angle_torwards_camera = Vector3::angle_between(face_normal, v1);
 
-          if (Vector3::angle_between(face_normal, v1) >= 90)
-            projected_elements.push_back({a2D, b2D, c2D, z, aux_mesh->color});
+          if (angle_torwards_camera >= 90 && angle_torwards_camera <= 270) {
+            // The face should be rendered, check lightness
+            double angle_to_light = Vector3::angle_between(face_normal,
+                                                           world->get_light().direction);
 
+            Color color = aux_mesh->color;
+            color.g = (double(180 - angle_to_light) / 180) * world->get_light().color.g;
+
+            projected_elements.push_back({a2D, b2D, c2D, z, color});
+
+          }
 
         }
       }

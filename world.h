@@ -6,10 +6,21 @@
 
 #include <vector>
 
+struct DirectionalLight {
+  Vector3 direction;
+  Color color;
+};
+
 class World {
 private:
   Camera* camera;
   std::vector <Mesh*> meshes;
+
+  DirectionalLight sunlight {
+    Vector3 {1, 1, 1},
+    Color {0, 255, 0}
+  };
+
 public:
 
   const Basis3 basis {
@@ -20,6 +31,7 @@ public:
 
   World(Camera* camera);
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
+  inline const DirectionalLight get_light () { return sunlight; }
   void move_right ();
 };
 
