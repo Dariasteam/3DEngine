@@ -63,10 +63,11 @@ void Rasteriser::rasterize() {
 
 
           // Check if the face is loking torwards to the camera
-
           Vector3 face_normal = face.get_normal();
-          if (face_normal.z() < 0)
+
+          if (Vector3::angle_between(face_normal, v1) >= 90)
             projected_elements.push_back({a2D, b2D, c2D, z, aux_mesh->color});
+
 
         }
       }

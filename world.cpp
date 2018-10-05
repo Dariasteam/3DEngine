@@ -69,8 +69,8 @@ World::World(Camera* cm) :
   Mesh* aux2 = new Mesh (*a_mesh);
   aux2->translate_local({20, 0, 0});
 
-  //a_mesh->add_nested_mesh(aux1);
-  //aux1->add_nested_mesh(aux2);
+  a_mesh->add_nested_mesh(aux1);
+  aux1->add_nested_mesh(aux2);
 
   for (unsigned i = 0; i < 50; i++) {
       Mesh* aux1 = new Mesh (*a_mesh);
@@ -82,8 +82,8 @@ World::World(Camera* cm) :
       aux1->color = {255, 0, 255};
       aux2->color = {255, 0, 255};
 
-      //meshes.push_back(aux1);
-      //meshes.push_back(aux2);
+      meshes.push_back(aux1);
+      meshes.push_back(aux2);
   }
 
   Mesh* b_mesh = new Mesh;
@@ -91,8 +91,8 @@ World::World(Camera* cm) :
     {
       {
         {-50, -50,  0},
-        {-50, -50,10100},
         {+50, -50,  0},
+        {-50, -50,10100},
       },
       {
         {+50, -50,  0},
@@ -101,23 +101,23 @@ World::World(Camera* cm) :
       },
     };
 
-  a_mesh->position = {0,-30, 100};
+  a_mesh->position = {0,-30, 400};
   b_mesh->position = {0, 0, 100};
 
-  //meshes.push_back(b_mesh);
+  meshes.push_back(b_mesh);
   b_mesh->color = {255, 10, 25};
 
 }
 
 void World::move_right() {
-  //meshes[0]->translate_global({0, 0, 15});
+  meshes[0]->translate_global({0, 0, 15});
   meshes[0]->rotate_y(0.01);
-  //meshes[0]->nested_meshes[0]->rotate_x(0.01);
-  //meshes[0]->rotate_x(0.01);
+  meshes[0]->nested_meshes[0]->rotate_x(0.01);
+  meshes[0]->rotate_x(0.01);
   //meshes[0]->position += Point3 {0.0, -0.01, -0.1};
 
 
-  for (unsigned i = 2; i < meshes.size() - 1; i++) {
+  for (unsigned i = 1; i < meshes.size() - 1; i++) {
     meshes[i]->rotate_y(0.01);
   }
 
@@ -129,7 +129,7 @@ void World::move_right() {
 
   //camera->position += ;
   //camera->position += Vector3{0.0, 0.0, 16};
-  //camera->translate_global(Vector3{0.0, 0.0, 15.1});
+  camera->translate_global(Vector3{0.0, 0.0, 15.1});
   //camera->rotate_x(-0.01);
   /*
   camera->basis += Matrix3{

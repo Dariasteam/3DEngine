@@ -54,7 +54,7 @@ struct MatrixOps {
 
   // Changes from Basis A to B
   static Matrix generate_basis_change_matrix (const Matrix& A, const Matrix& B);
-  static Matrix change_basis (Matrix matrix, const Matrix& element);
+  static Matrix change_basis (Matrix matrix, const Matrix& element);  
 };
 
 struct Color {

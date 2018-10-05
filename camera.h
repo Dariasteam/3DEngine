@@ -23,7 +23,7 @@ public:
 
   inline Point3  get_fuge() const { return fuge; }
   inline Vector3 get_plane_vector() const { return vector_plane; }
-  inline Vector3 get_plane_point() const { return point_plane; }
+  inline Point3  get_plane_point() const { return point_plane; }
   inline Rect get_bounds() const { return bounds; }
 
   Camera* express_in_different_basis (const Basis3& new_basis) const;

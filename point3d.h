@@ -6,6 +6,8 @@
 #include <iostream>
 #include <cmath>
 
+#define PI 3.14159265
+
 struct Point3 : public Matrix {
 
   Point3 ()                             : Point3 (0, 0, 0) {}
@@ -23,15 +25,49 @@ struct Point3 : public Matrix {
 
   inline double x() const { return matrix[0][0];}
   inline double y() const { return matrix[0][1];}
-  inline double z() const { return matrix[0][2];}
-  static inline Point3 create_vector (const Point3& a, const Point3& b) {
+  inline double z() const { return matrix[0][2];}  
+};
+
+static double rad2deg (double rad) {
+  return rad* 180.0 / PI;
+}
+
+static double deg2rad (double deg) {
+  return deg * PI / 180;
+}
+
+struct Vector3 : public Point3 {
+  Vector3 (const Matrix& mtx) : Point3 (mtx) {}
+  Vector3 () : Point3 (0, 0, 0) {}
+  Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
+
+  static inline Vector3 create_vector (const Point3& a, const Point3& b) {
     return {a.x() - b.x(),
             a.y() - b.y(),
             a.z() - b.z()};
   }
-};
 
-typedef Point3 Vector3;
+  static double vector_module (const Vector3& v) {
+    return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
+  }
+
+  Vector3 operator /(double d) const {
+    return {x() / d,
+            y() / d,
+            z() / d};
+  }
+
+  double operator *(const Vector3& u) const {
+    return x() * u.x() +
+           y() * u.y() +
+           z() * u.z();
+  }
+
+  static double angle_between (const Vector3& v, const Vector3& u) {
+    return rad2deg(std::acos(u * v / (vector_module(u) * vector_module(v))));
+  }
+
+};
 
 struct Matrix3 : public Matrix {
 
@@ -113,7 +149,6 @@ struct Face3 {
 };
 
 struct Spatial {
-
   Spatial (const Spatial& sp) :
     basis (sp.basis),
     position (sp.position)
