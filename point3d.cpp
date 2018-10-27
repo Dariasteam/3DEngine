@@ -1,6 +1,5 @@
 #include "point3d.h"
 
-
 Mesh *Mesh::express_in_different_basis(const Basis3 &new_basis) const {
 
   Mesh* aux_mesh = new Mesh (*this);
@@ -10,7 +9,6 @@ Mesh *Mesh::express_in_different_basis(const Basis3 &new_basis) const {
   // Calcular matriz de cambio de base
   Matrix3 basis_changer = MatrixOps::
       generate_basis_change_matrix(basis, new_basis);
-
 
   for (unsigned i = 0; i < nested_meshes.size(); i++) {
       Mesh* aux_nested_mesh = nested_meshes[i]->express_in_different_basis(new_basis);

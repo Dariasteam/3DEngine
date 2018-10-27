@@ -20,7 +20,7 @@ private:
   DirectionalLight sunlight {
     Vector3 {1, 1, 1},
     Color {255, 255, 255},
-    100
+    200
   };
 
 

@@ -118,7 +118,7 @@ void World::move_right() {
 
 
   for (unsigned i = 1; i < meshes.size() - 1; i++) {
-    meshes[i]->rotate_y(0.01);
+    meshes[i]->rotate_y(0.1);
   }
 
   for (auto& mesh : meshes) {
