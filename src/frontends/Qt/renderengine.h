@@ -4,10 +4,10 @@
 #include <thread>
 #include <QTimer>
 
-#include "point3d.h"
-#include "rasteriser.h"
-#include "world.h"
-#include "camera.h"
+#include "../../engine/point3d.h"
+#include "../../engine/rasteriser.h"
+#include "../../engine/world.h"
+#include "../../engine/camera.h"
 
 class RenderEngine : public QObject{
   Q_OBJECT

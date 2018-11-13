@@ -1,10 +1,10 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "rasteriser.h"
-#include "camera.h"
+#include "../../engine/rasteriser.h"
+#include "../../engine/camera.h"
+#include "../../engine/world.h"
 #include "renderengine.h"
-#include "world.h"
 
 int main(int argc, char *argv[])
 {

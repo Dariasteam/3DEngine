@@ -2,8 +2,8 @@
 #define POINT2D_H
 
 #include <cmath>
-#include <matrix.h>
 
+#include "matrix.h"
 #include "point3d.h"
 
 struct Point2 : public Matrix {

@@ -26,27 +26,27 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    canvas.cpp \
-    point3d.cpp \
-    renderengine.cpp \
-    world.cpp \
-    camera.cpp \
-    rasteriser.cpp \
-    point2d.cpp \
-    triangle.cpp \
-    matrix.cpp
+	canvas.cpp \
+	renderengine.cpp \
+	../../engine/point3d.cpp \	
+	../../engine/world.cpp \
+	../../engine/camera.cpp \
+	../../engine/rasteriser.cpp \
+	../../engine/point2d.cpp \
+	../../engine/triangle.cpp \
+	../../engine/matrix.cpp
 
 HEADERS += \
         mainwindow.h \
-    canvas.h \
-    point3d.h \
-    renderengine.h \
-    world.h \
-    camera.h \
-    rasteriser.h \
-    point2d.h \
-    triangle.h \
-    matrix.h
+    	canvas.h \
+	renderengine.h \
+	../../engine/point3d.h \
+	../../engine/world.h \
+	../../engine/camera.h \
+	../../engine/rasteriser.h \
+	../../engine/point2d.h \
+	../../engine/triangle.h \
+	../../engine/matrix.h
 
 FORMS += \
         mainwindow.ui
