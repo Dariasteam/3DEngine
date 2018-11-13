@@ -1,7 +1,7 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include "../../engine/point2d.h"
+#include "../../../engine/point2d.h"
 
 #include <QWidget>
 #include <QPainter>

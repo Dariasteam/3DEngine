@@ -1,9 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "../../engine/rasteriser.h"
-#include "../../engine/camera.h"
-#include "../../engine/world.h"
+#include "../../../engine/rasteriser.h"
+#include "../../../engine/camera.h"
+#include "../../../engine/world.h"
 #include "renderengine.h"
 
 int main(int argc, char *argv[])
