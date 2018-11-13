@@ -4,7 +4,7 @@
 #include "../../../engine/rasteriser.h"
 #include "../../../engine/camera.h"
 #include "../../../engine/world.h"
-#include "renderengine.h"
+#include "src/renderengine.h"
 
 int main(int argc, char *argv[])
 {

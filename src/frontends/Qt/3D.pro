@@ -26,7 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-        src/canvas.cpp \
+        canvas.cpp \
         src/renderengine.cpp \
 	../../engine/point3d.cpp \	
 	../../engine/world.cpp \
@@ -38,7 +38,7 @@ SOURCES += \
 
 HEADERS += \
         src/mainwindow.h \
-        src/canvas.h \
+        canvas.h \
         src/renderengine.h \
 	../../engine/point3d.h \
 	../../engine/world.h \

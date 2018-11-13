@@ -50,10 +50,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp \
-		mainwindow.cpp \
+SOURCES       = src/main.cpp \
+		src/mainwindow.cpp \
 		canvas.cpp \
-		renderengine.cpp \
+		src/renderengine.cpp \
 		../../engine/point3d.cpp \
 		../../engine/world.cpp \
 		../../engine/camera.cpp \
@@ -394,19 +394,19 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		3D.pro mainwindow.h \
+		3D.pro src/mainwindow.h \
 		canvas.h \
-		renderengine.h \
+		src/renderengine.h \
 		../../engine/point3d.h \
 		../../engine/world.h \
 		../../engine/camera.h \
 		../../engine/rasteriser.h \
 		../../engine/point2d.h \
 		../../engine/triangle.h \
-		../../engine/matrix.h main.cpp \
-		mainwindow.cpp \
+		../../engine/matrix.h src/main.cpp \
+		src/mainwindow.cpp \
 		canvas.cpp \
-		renderengine.cpp \
+		src/renderengine.cpp \
 		../../engine/point3d.cpp \
 		../../engine/world.cpp \
 		../../engine/camera.cpp \
@@ -1083,8 +1083,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h canvas.h renderengine.h ../../engine/point3d.h ../../engine/world.h ../../engine/camera.h ../../engine/rasteriser.h ../../engine/point2d.h ../../engine/triangle.h ../../engine/matrix.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp canvas.cpp renderengine.cpp ../../engine/point3d.cpp ../../engine/world.cpp ../../engine/camera.cpp ../../engine/rasteriser.cpp ../../engine/point2d.cpp ../../engine/triangle.cpp ../../engine/matrix.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/mainwindow.h canvas.h src/renderengine.h ../../engine/point3d.h ../../engine/world.h ../../engine/camera.h ../../engine/rasteriser.h ../../engine/point2d.h ../../engine/triangle.h ../../engine/matrix.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/main.cpp src/mainwindow.cpp canvas.cpp src/renderengine.cpp ../../engine/point3d.cpp ../../engine/world.cpp ../../engine/camera.cpp ../../engine/rasteriser.cpp ../../engine/point2d.cpp ../../engine/triangle.cpp ../../engine/matrix.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -1124,10 +1124,10 @@ moc_mainwindow.cpp: canvas.h \
 		../../engine/point2d.h \
 		../../engine/matrix.h \
 		../../engine/point3d.h \
-		mainwindow.h \
+		src/mainwindow.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/darias/Desarrollo/3D/src/frontends/Qt/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/darias/Desarrollo/3D/src/frontends/Qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/usr/bin/moc $(DEFINES) --include /home/darias/Desarrollo/3D/src/frontends/Qt/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/darias/Desarrollo/3D/src/frontends/Qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include src/mainwindow.h -o moc_mainwindow.cpp
 
 moc_canvas.cpp: ../../engine/point2d.h \
 		../../engine/matrix.h \
@@ -1137,10 +1137,17 @@ moc_canvas.cpp: ../../engine/point2d.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include /home/darias/Desarrollo/3D/src/frontends/Qt/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/darias/Desarrollo/3D/src/frontends/Qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include canvas.h -o moc_canvas.cpp
 
-moc_renderengine.cpp: renderengine.h \
+moc_renderengine.cpp: ../../engine/point3d.h \
+		../../engine/matrix.h \
+		../../engine/rasteriser.h \
+		../../engine/camera.h \
+		../../engine/point2d.h \
+		../../engine/world.h \
+		canvas.h \
+		src/renderengine.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/darias/Desarrollo/3D/src/frontends/Qt/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/darias/Desarrollo/3D/src/frontends/Qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include renderengine.h -o moc_renderengine.cpp
+	/usr/bin/moc $(DEFINES) --include /home/darias/Desarrollo/3D/src/frontends/Qt/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/darias/Desarrollo/3D/src/frontends/Qt -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include src/renderengine.h -o moc_renderengine.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1163,7 +1170,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-main.o: main.cpp mainwindow.h \
+main.o: src/main.cpp src/mainwindow.h \
 		canvas.h \
 		../../engine/point2d.h \
 		../../engine/matrix.h \
@@ -1171,16 +1178,16 @@ main.o: main.cpp mainwindow.h \
 		../../engine/rasteriser.h \
 		../../engine/camera.h \
 		../../engine/world.h \
-		renderengine.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+		src/renderengine.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
-mainwindow.o: mainwindow.cpp mainwindow.h \
+mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		canvas.h \
 		../../engine/point2d.h \
 		../../engine/matrix.h \
 		../../engine/point3d.h \
 		ui_mainwindow.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 canvas.o: canvas.cpp canvas.h \
 		../../engine/point2d.h \
@@ -1188,8 +1195,15 @@ canvas.o: canvas.cpp canvas.h \
 		../../engine/point3d.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o canvas.o canvas.cpp
 
-renderengine.o: renderengine.cpp renderengine.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o renderengine.o renderengine.cpp
+renderengine.o: src/renderengine.cpp src/renderengine.h \
+		../../engine/point3d.h \
+		../../engine/matrix.h \
+		../../engine/rasteriser.h \
+		../../engine/camera.h \
+		../../engine/point2d.h \
+		../../engine/world.h \
+		canvas.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o renderengine.o src/renderengine.cpp
 
 point3d.o: ../../engine/point3d.cpp ../../engine/point3d.h \
 		../../engine/matrix.h
