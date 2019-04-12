@@ -1,9 +1,9 @@
 #include "camera.h"
 
 Camera::Camera() {
-  fuge = {0, 0, 0};
-  vector_plane = {0, 0, 1};
-  point_plane = {0, 0, 200};
+  local_parameters.fuge = {0, 0, 0};
+  local_parameters.vector_plane = {0, 0, 1};
+  local_parameters.point_plane = {0, 0, 200};
 
   bounds = {-150, -150, 150, 150};
 
@@ -16,22 +16,22 @@ Camera::Camera() {
   });
 }
 
-Camera *Camera::express_in_different_basis(const Basis3& new_basis) const {
-  Camera* aux_camera = new Camera (*this);
-  aux_camera->basis = new_basis;
-
+void Camera::express_in_different_basis(const Basis3& new_basis) {
   // Calcular matriz de cambio de base
   Matrix3 basis_changer = MatrixOps::
                               generate_basis_change_matrix(basis, new_basis);
 
   // Calcular los puntos de cada cara expresados en la nueva base
-  aux_camera->vector_plane = MatrixOps::change_basis(basis_changer,
-                                                     vector_plane);
-  aux_camera->point_plane = MatrixOps::change_basis(basis_changer,
-                                                     point_plane);
+  Point3Ops::change_basis(basis_changer, local_parameters.vector_plane,
+                                         global_parameters.vector_plane);
+  Point3Ops::change_basis(basis_changer, local_parameters.point_plane,
+                                         global_parameters.point_plane);
+  Point3Ops::change_basis(basis_changer, local_parameters.fuge,
+                                         global_parameters.fuge);
 
-  aux_camera->fuge += MatrixOps::change_basis(basis_changer, position);
-  aux_camera->point_plane += MatrixOps::change_basis(basis_changer, position);
+  Point3 translation;
+  Point3Ops::change_basis(basis_changer, position, translation);
 
-  return aux_camera;
+  global_parameters.fuge        += translation;
+  global_parameters.point_plane += translation;
 }

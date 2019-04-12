@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "world.h"
 #include "canvas.h"
+#include "list"
 
 class Rasteriser {
 private:
@@ -19,6 +20,9 @@ private:
   Rect camera_bounds;
   Point3 camera_plane_point;
 
+  std::list <Mesh*> meshes_list;
+
+  void generate_mesh_list (const std::vector<Mesh*>& list);
 public:
   Rasteriser(Canvas* canvas, Camera* camera, World* world);
   void rasterize();

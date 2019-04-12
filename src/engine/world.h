@@ -15,7 +15,7 @@ struct DirectionalLight {
 class World {
 private:
   Camera* camera;
-  std::vector <Mesh*> meshes;
+  std::vector <Mesh*> meshes;  
 
   DirectionalLight sunlight {
     Vector3 {1, 1, 1},
@@ -36,6 +36,11 @@ public:
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
   inline const DirectionalLight get_light () { return sunlight; }
   void move_right ();
+
+  ~World () {
+    for (auto& mesh : meshes)
+      delete mesh;
+  }
 };
 
 #endif // WORLD_H

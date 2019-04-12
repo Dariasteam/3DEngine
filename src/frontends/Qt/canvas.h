@@ -21,13 +21,13 @@ private:
   double h_factor;
 
 
-  std::vector<Triangle2> triangles;
+  std::vector<Triangle2>* triangles;
 
-  inline QPointF adjust_coordinates (Point2 p);
+  inline QPointF adjust_coordinates (const Point2& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);  
-  void update_frame (const std::vector<Triangle2>& elements, Rect bounds);
+  void update_frame (std::vector<Triangle2>* elements, Rect bounds);
   void resizeEvent(QResizeEvent *event);
 signals:
 

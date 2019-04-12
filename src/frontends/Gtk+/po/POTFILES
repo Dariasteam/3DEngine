@@ -1,0 +1,4 @@
+data/org.gnome.Engine3D.desktop.in
+data/org.gnome.Engine3D.appdata.xml.in
+data/org.gnome.Engine3D.gschema.xml
+src/engine3d-window.ui

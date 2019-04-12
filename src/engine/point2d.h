@@ -41,8 +41,6 @@ struct Matrix2 : public Matrix {
   void operator= (const Matrix& mtx) {
     matrix = mtx.matrix;
   }
-  inline Point2 a() const { return matrix[0]; }
-  inline Point2 b() const { return matrix[1]; }
 };
 
 typedef Matrix2 Basis2;

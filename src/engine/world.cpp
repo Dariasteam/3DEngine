@@ -5,7 +5,7 @@ World::World(Camera* cm) :
   {
 
   Mesh* a_mesh = new Mesh;
-  a_mesh->faces =
+  a_mesh->local_coordinates_faces =
     { // face list
       // UPER FACES
 
@@ -33,7 +33,7 @@ World::World(Camera* cm) :
         { 0,15, 0},    // vertex c
       }),
 
-      // DOWN FACES
+      // BOTTOM FACES
       Face3({ // one face
         {-5,  0, -5},   // vertex a
         { 0,-15, 0},    // vertex c
@@ -57,8 +57,7 @@ World::World(Camera* cm) :
         { 5,  0,-5},   // vertex b
         { 0,-15, 0},    // vertex c
       }),
-
-  };
+  };  
 
   meshes.push_back(a_mesh);
   a_mesh->color = {0, 200, 200};
@@ -72,7 +71,9 @@ World::World(Camera* cm) :
   a_mesh->add_nested_mesh(aux1);
   aux1->add_nested_mesh(aux2);
 
-  for (unsigned i = 0; i < 50; i++) {
+  a_mesh->generate_nested_normals();
+
+  for (unsigned i = 0; i < 500; i++) {
       Mesh* aux1 = new Mesh (*a_mesh);
       Mesh* aux2 = new Mesh (*a_mesh);
 
@@ -87,57 +88,39 @@ World::World(Camera* cm) :
   }
 
   Mesh* b_mesh = new Mesh;
-  b_mesh->faces =
+  b_mesh->local_coordinates_faces =
     {
       {
         {-50, -50,  0},
         {+50, -50,  0},
-        {-50, -50,10100},
+        {-50, -50,10000},
       },
       {
         {+50, -50,  0},
-        {+50, -50,10100},
-        {-50, -50,10100},
+        {+50, -50,10000},
+        {-50, -50,10000},
       },
     };
 
+  b_mesh->color = {255, 10, 25};
+  b_mesh->generate_normals();
+  meshes.push_back(b_mesh);
+
   a_mesh->position = {0,-30, 400};
   b_mesh->position = {0, 0, 100};
-
-  meshes.push_back(b_mesh);
-  b_mesh->color = {255, 10, 25};
-
 }
 
 void World::move_right() {
-  meshes[0]->translate_global({0, 0, 15});
+  meshes[0]->translate_local({0, 0, 15});
   meshes[0]->rotate_y(0.01);
   meshes[0]->nested_meshes[0]->rotate_x(0.01);
   meshes[0]->rotate_x(0.01);
-  //meshes[0]->position += Point3 {0.0, -0.01, -0.1};
-
+  meshes[0]->nested_meshes[0]->nested_meshes[0]->rotate_y(0.03);
 
   for (unsigned i = 1; i < meshes.size() - 1; i++) {
     meshes[i]->rotate_y(0.1);
   }
 
-  for (auto& mesh : meshes) {
-    //mesh->position += Point3 {0.0, -0.01, -0.1};
-    //mesh->rotate_z(0.001);
-    //mesh->rotate_y(0.001);
-  }
-
-  //camera->position += ;
-  //camera->position += Vector3{0.0, 0.0, 16};
-  camera->translate_global(Vector3{0.0, 0.0, 15.3});
-  //camera->rotate_x(-0.01);
-  /*
-  camera->basis += Matrix3{
-    {0, 0, 0},
-    {0, 0, 0},
-    {0, 0, 1},
-  };
-  */
-
+  camera->translate_local({0.0, 0.0, 15.3});
 }
 

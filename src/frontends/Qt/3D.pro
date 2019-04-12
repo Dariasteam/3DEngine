@@ -24,10 +24,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-	canvas.cpp \
-	renderengine.cpp \
+        src/main.cpp \
+        src/mainwindow.cpp \
+        canvas.cpp \
+        src/renderengine.cpp \
 	../../engine/point3d.cpp \	
 	../../engine/world.cpp \
 	../../engine/camera.cpp \
@@ -37,9 +37,9 @@ SOURCES += \
 	../../engine/matrix.cpp
 
 HEADERS += \
-        mainwindow.h \
-    	canvas.h \
-	renderengine.h \
+        src/mainwindow.h \
+        canvas.h \
+        src/renderengine.h \
 	../../engine/point3d.h \
 	../../engine/world.h \
 	../../engine/camera.h \

@@ -4,32 +4,41 @@
 #include "point3d.h"
 #include "point2d.h"
 
+
 class Camera : public Spatial {
+
+  struct Parameters {
+    Point3 fuge;
+    Vector3 vector_plane;
+    Point3 point_plane;
+  };
+
 private:
   Rect bounds;
-  Point3 fuge;
-  Vector3 vector_plane;
-  Point3 point_plane;
 
+  Parameters local_parameters;
+  Parameters global_parameters;
 public:
 
   Camera ();
   Camera (const Camera& cam) : Spatial (cam) {
-    bounds = cam.bounds;
-    fuge = cam.fuge;
-    vector_plane = cam.vector_plane;
-    point_plane = cam.point_plane;
+
+    local_parameters = {
+      cam.local_parameters.fuge,
+      cam.local_parameters.vector_plane,
+      cam.local_parameters.point_plane
+    };
+
+    bounds = cam.bounds;    
   }
 
-  inline Point3  get_fuge() const { return fuge; }
-  inline Vector3 get_plane_vector() const { return vector_plane; }
-  inline Point3  get_plane_point() const { return point_plane; }
+  inline Point3  get_fuge() const { return global_parameters.fuge; }
+  inline Vector3 get_plane_vector() const { return global_parameters.vector_plane; }
+  inline Point3  get_plane_point() const { return global_parameters.point_plane; }
   inline Rect get_bounds() const { return bounds; }
 
-  Camera* express_in_different_basis (const Basis3& new_basis) const;
+  void express_in_different_basis (const Basis3& new_basis);
 
-  //Point2 adjust_rotation_basis (Point2 p);
-  //virtual void rotate_z (double deg);
 };
 
 #endif // CAMERA_H

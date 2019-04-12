@@ -1,36 +1,58 @@
 #include "point3d.h"
 
-Mesh *Mesh::express_in_different_basis(const Basis3 &new_basis) const {
+std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
+  Matrix3 basis_changer;
+  std::list<Mesh*> mesh_list {this};
+  bool is_same_base = (basis == new_basis);
+  global_coordinates_faces = local_coordinates_faces;
 
-  Mesh* aux_mesh = new Mesh (*this);
+  if (!is_same_base)
+    basis_changer = MatrixOps::generate_basis_change_matrix(basis, new_basis);
 
-  aux_mesh->basis = new_basis;
+  for (auto& nested_mesh : nested_meshes)
+    mesh_list.splice(mesh_list.end(), nested_mesh->express_in_parents_basis(new_basis));
 
-  // Calcular matriz de cambio de base
-  Matrix3 basis_changer = MatrixOps::
-      generate_basis_change_matrix(basis, new_basis);
-
-  for (unsigned i = 0; i < nested_meshes.size(); i++) {
-      Mesh* aux_nested_mesh = nested_meshes[i]->express_in_different_basis(new_basis);
-
-      unsigned base_size = aux_mesh->faces.size();
-      unsigned nested_size = aux_nested_mesh->faces.size();
-
-      aux_mesh->faces.resize(base_size + nested_size);
-
-      for (unsigned j = 0; j < nested_size; j++) {
-        aux_mesh->faces[base_size + j] = aux_nested_mesh->faces[j];
-      }
-      delete aux_nested_mesh;
-    }
-
-  for (unsigned i = 0; i < aux_mesh->faces.size(); i++) {
-      Face3 aux;
+  for (auto& mesh : mesh_list) {
+    for (auto& face : mesh->global_coordinates_faces) {
       for (unsigned j = 0; j < 3; j++) {
-          aux_mesh->faces[i][j] = MatrixOps::change_basis(basis_changer, aux_mesh->faces[i][j]);
-          aux_mesh->faces[i][j] += position;
-        }
+        if (!is_same_base)
+          Point3Ops::change_basis(basis_changer, face[j], face[j]);
+        face[j] += position;
+      }
+      if (!is_same_base)
+        Point3Ops::change_basis(basis_changer, face.normal, face.normal);
     }
+  }
+  return mesh_list;
+}
 
-  return aux_mesh;
+void Face3::generate_normal() {
+  const Vector3& u = Vector3::create_vector(a, b);
+  const Vector3& v = Vector3::create_vector(a, c);
+
+  double X = (v.y() * u.z() - v.z() * u.y());
+  double Y = (v.z() * u.x() - v.x() * u.z());
+  double Z = (v.x() * u.y() - v.y() * u.x());
+
+  double D = a.z() * v.y() * u.x() +
+      a.x() * v.z() * u.y() +
+      a.y() * v.x() * u.z() -
+      a.x() * v.y() * u.z() -
+      a.y() * v.z() * u.x() -
+      a.z() * v.x() * u.y();
+
+  normal = {X, Y, Z};
+}
+
+
+void Point3Ops::change_basis(const Basis3 &basis,
+                             const Point3 &element,
+                                   Point3 &result) {
+  double a = (basis[0][0] * element[0] + basis[0][1] * element[1] + basis[0][2] * element[2]);
+  double b = (basis[1][0] * element[0] + basis[1][1] * element[1] + basis[1][2] * element[2]);
+  double c = (basis[2][0] * element[0] + basis[2][1] * element[1] + basis[2][2] * element[2]);
+
+  result[0] = a;
+  result[1] = b;
+  result[2] = c;
 }

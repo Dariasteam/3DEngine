@@ -1,6 +1,10 @@
 #include "matrix.h"
 
 
+Matrix::~Matrix() {
+
+}
+
 Matrix Matrix::operator+(const Matrix &mtx) const {
   unsigned n_rows = size_rows();
   unsigned n_cols = size_cols();
@@ -42,7 +46,17 @@ void Matrix::operator=(const Matrix &mtx) {
     matrix[i].resize(n_cols);
     for (unsigned j = 0; j < n_cols; j++)
       matrix[i][j] = mtx.get (i, j);
-  }
+    }
+}
+
+bool Matrix::operator!=(const Matrix &mtx) const {
+  return ! (*this == mtx);
+}
+
+bool Matrix::operator==(const Matrix &mtx) const {
+  //if (size_rows() != mtx.size_rows()) return false;
+  //if(size_cols() != mtx.size_cols()) return false;
+  return (matrix == mtx.matrix);
 }
 
 Matrix Matrix::get_transpose() const {
@@ -199,32 +213,33 @@ Matrix MatrixOps::generate_basis_change_matrix(const Matrix &A, const Matrix &B)
   std::vector <double> solutions (a_n_rows);
 
   if (!(a_n_rows == a_n_cols && b_n_rows == b_n_cols && a_n_rows == b_n_rows)) {
-      std::cerr << "ERROR basis change is not defined" << std::endl;
-      return m;
-    }
+    std::cerr << "ERROR basis change is not defined" << std::endl;
+    return m;
+  }
 
   // Copy values to new matrix
   for (unsigned i = 0; i < a_n_rows; i++) {
-      for (unsigned j = 0; j < a_n_rows; j++) {
-          m.set(i, j, B[i][j]);
-        }
+    for (unsigned j = 0; j < a_n_rows; j++) {
+      m.set(i, j, B[i][j]);
     }
+  }
 
   for (unsigned i = 0; i < a_n_rows; i++) {
-      // Copy the first vector of current basis in last column
-      for (unsigned j = 0; j < a_n_rows; j++)
-        m.set(j, a_n_rows, A[i][j]);
+    // Copy the first vector of current basis in last column
+    for (unsigned j = 0; j < a_n_rows; j++)
+      m.set(j, a_n_rows, A[i][j]);
 
-      // Make gauss
-      g (m, r);
+    // Make gauss
+    g (m, r);
 
-      // Obtain the solutions
-      for (unsigned j = 0; j < a_n_rows; j++)
-        basis_matrix[j][i] = r.get(j, a_n_rows) / r.get(j,j); // FIXME TODO why *?
-    }
+    // Obtain the solutions
+    for (unsigned j = 0; j < a_n_rows; j++)
+      basis_matrix[j][i] = r.get(j, a_n_rows) / r.get(j,j);
+  }
   return basis_matrix;
 }
 
-Matrix MatrixOps::change_basis(Matrix matrix, const Matrix &element) {
+Matrix MatrixOps::change_basis(const Matrix& matrix, const Matrix &element) {
   return (matrix * element.get_transpose()).get_transpose();
 }
+

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=engine3d
+Exec=engine3d
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true
