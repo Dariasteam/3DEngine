@@ -17,10 +17,10 @@ void Rasteriser::set_rasterization_data() {
   // Transform camera to new basis
   camera->express_in_different_basis(world->basis);
 
-  camera_plane_vector = camera->get_plane_vector();
+  camera_plane_vector = camera->get_plane_vector();  
   camera_bounds       = camera->get_bounds();
   camera_fuge         = camera->get_fuge();
-  camera_plane_point  = camera->get_plane_point();
+  camera_plane_point  = camera->get_plane_point();  
 
   // Change basis
   const auto& meshes = world->get_elements();
@@ -46,6 +46,36 @@ void Rasteriser::set_rasterization_data() {
   projected_elements = new std::list<Triangle2>;
 }
 
+Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) const {
+  const DirectionalLight& light = world->get_light();
+
+  double angle_to_light = Vector3::angle_between(face.normal,
+                                                 light.direction);
+  if (angle_to_light > 180) angle_to_light -= 180;
+
+  Color color;
+  double light_intensity = world->get_light().intensity;
+
+  color.r = (double(180 - angle_to_light) / 180) * light.color.r;
+  color.g = (double(180 - angle_to_light) / 180) * light.color.g;
+  color.b = (double(180 - angle_to_light) / 180) * light.color.b;
+
+  color.r = (double)(color.r) * (light_intensity / 255);
+  color.g = (double)(color.g) * (light_intensity / 255);
+  color.b = (double)(color.b) * (light_intensity / 255);
+
+  color.r = (double)(color.r) * (m_color.r / 64);
+  color.g = (double)(color.g) * (m_color.g / 64);
+  color.b = (double)(color.b) * (m_color.b / 64);
+
+  color.r = std::min (color.r, unsigned(255));
+  color.g = std::min (color.g, unsigned(255));
+  color.b = std::min (color.b, unsigned(255));
+  return color;
+}
+
+#include <iostream>
+
 void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
                                            const Matrix3& M2,
                                            std::list<Triangle2>& triangles,
@@ -54,72 +84,46 @@ void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
                                            Point3& c) const {
 
   for (const auto& face : mesh->global_coordinates_faces) {
-    bool visible = false;
+    // 1. Check if the face is loking torwards to the camera
+    //double angle_torwards_camera = Vector3::angle_between(face.normal, camera_plane_vector);
+    //if ((angle_torwards_camera < 90 || angle_torwards_camera > 270)) break;
 
-    // Calculate intersection points with the plane
-    visible |= calculate_cut_point(face.a, a);
-    visible |= calculate_cut_point(face.b, b);
-    visible |= calculate_cut_point(face.c, c);
+    // 2. Calculate z value (distance to camera)
+    const Vector3& v1 = Vector3::create_vector(face.a, camera_fuge);
+    const Vector3& v2 = Vector3::create_vector(face.b, camera_fuge);
+    const Vector3& v3 = Vector3::create_vector(face.c, camera_fuge);
 
-    if (visible) {
-      // Use the camera basis
-      Point3Ops::change_basis(M2, a, a);
-      Point3Ops::change_basis(M2, b, b);
-      Point3Ops::change_basis(M2, c, c);
+    double z_min = std::min({v1.z(), v2.z(), v3.z()});
+    double z_max = std::max({v1.z(), v2.z(), v3.z()});
+    if (z_min > 5000) break;
 
-      const Point2& a2D = {a.x(), a.y()};
-      const Point2& b2D = {b.x(), b.y()};
-      const Point2& c2D = {c.x(), c.y()};
+    // 3. Calculate intersection points with the plane
+    bool visible  = calculate_cut_point(face.a, a)
+                  | calculate_cut_point(face.b, b)
+                  | calculate_cut_point(face.c, c);
+    if (!visible) break;
 
-      // Check if should be rendered
-      bool should_be_rendered = is_point_between_camera_bounds(a2D) |
-                                is_point_between_camera_bounds(b2D) |
-                                is_point_between_camera_bounds(c2D);
+    // 4. Transform to camera basis
+    Point3Ops::change_basis(M2, a, a);
+    Point3Ops::change_basis(M2, b, b);
+    Point3Ops::change_basis(M2, c, c);
 
-      // If should be rendered push a triangle
-      if (should_be_rendered) {
-        // Calculate z value (distance to camera)
-        const Vector3& v1 = Vector3::create_vector(face.a, camera_fuge);
-        const Vector3& v2 = Vector3::create_vector(face.b, camera_fuge);
-        const Vector3& v3 = Vector3::create_vector(face.c, camera_fuge);
+    // 5. Generate projected 2D points
+    Point2 a2D {a.x(), a.y()};
+    Point2 b2D {b.x(), b.y()};
+    Point2 c2D {c.x(), c.y()};
 
-        double z = std::max(std::max(v1.z(), v2.z()), v3.z());
+    // 6. Check point in camera bounds
+    bool point_in_camera = is_point_between_camera_bounds(a2D)
+                         | is_point_between_camera_bounds(b2D)
+                         | is_point_between_camera_bounds(c2D);
+    if (!point_in_camera) break;
 
-        // Check if the face is loking torwards to the camera
-        double angle_torwards_camera = Vector3::angle_between(face.normal, v1);
+    // 7. Calculate light contribution
+    const Color& color = calculate_lights(mesh->color, face);
 
-        if (angle_torwards_camera >= 90 && angle_torwards_camera <= 270) {
-          // The face should be rendered, check lightness
-
-          const DirectionalLight& light = world->get_light();
-
-          double angle_to_light = Vector3::angle_between(face.normal,
-                                                         light.direction);
-
-          Color color;
-
-          double light_intensity = world->get_light().intensity;
-
-          color.r = (double(180 - angle_to_light) / 180) * light.color.r;
-          color.g = (double(180 - angle_to_light) / 180) * light.color.g;
-          color.b = (double(180 - angle_to_light) / 180) * light.color.b;
-
-          color.r = (double)(color.r) * (light_intensity / 255);
-          color.g = (double)(color.g) * (light_intensity / 255);
-          color.b = (double)(color.b) * (light_intensity / 255);
-
-          color.r = (double)(color.r) * (mesh->color.r / 64);
-          color.g = (double)(color.g) * (mesh->color.g / 64);
-          color.b = (double)(color.b) * (mesh->color.b / 64);
-
-          color.r = std::min (color.r, unsigned(255));
-          color.g = std::min (color.g, unsigned(255));
-          color.b = std::min (color.b, unsigned(255));
-
-          triangles.push_back({a2D, b2D, c2D, z, color});
-        }
-      }
-    }
+    // 8. Add triangle to the list
+    triangles.push_back({a2D, b2D, c2D, z_max, color});
   }
 }
 
@@ -167,10 +171,10 @@ bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
 bool Rasteriser::calculate_cut_point(const Point3& vertex,
                                            Point3& point) const {
 
-  // Vector director de la recta
+  // Dir vector of the line
   const Vector3& v = Vector3::create_vector(vertex, camera_fuge);
 
-  // Calcular el punto de corte recta - plano
+  // Calc cut point line - plane
 
   const double& A = camera_plane_vector.x();
   const double& B = camera_plane_vector.y();
@@ -203,7 +207,6 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
       point[0] = -(a + b * parameter);
       point[1] = -(c + d * parameter);
       point[2] =   e + f * parameter;
-
     return false;
   }
 

@@ -11,8 +11,7 @@
 
 struct Point3 : public Matrix {
 
-  Point3 ()                             : Point3 (0, 0, 0) {}
-  Point3 (const Point3& p)              : Point3 (p.x(), p.y(), p.z()) {}
+  Point3 ()                             : Point3 (0, 0, 0) {}  
   Point3 (const std::vector<double>& v) : Point3 (v[0], v[1], v[2]) {}
   Point3 (const Matrix& mtx)            : Matrix (mtx) {}
   Point3 (double x, double y, double z) : Matrix (1, 3) {
@@ -34,11 +33,11 @@ struct Point3 : public Matrix {
 };
 
 static double rad2deg (double rad) {
-  return rad* 180.0 / PI;
+  return rad * 180.0 / PI;
 }
 
 static double deg2rad (double deg) {
-  return deg * PI / 180;
+  return deg * PI / 180.0;
 }
 
 struct Vector3 : public Point3 {
@@ -57,7 +56,18 @@ struct Vector3 : public Point3 {
   }
 
   static double angle_between (const Vector3& v, const Vector3& u) {
-    return rad2deg(std::acos(u * v / (vector_module(u) * vector_module(v))));
+    double dot_product = u * v;
+    double result = rad2deg(std::acos(dot_product / (vector_module(u) * vector_module(v))));
+    if (dot_product < 0)
+      result += 180;
+    return result;
+  }
+
+  void normalize () {
+    double module = Vector3::vector_module(*this);
+    operator[](0) = x() / module;
+    operator[](1) = y() / module;
+    operator[](2) = z() / module;
   }
 
   Vector3 operator/ (double d) const {

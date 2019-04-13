@@ -73,12 +73,12 @@ World::World(Camera* cm) :
 
   a_mesh->generate_nested_normals();
 
-  for (unsigned i = 0; i < 1000; i++) {
+  for (unsigned i = 0; i < 5000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
-    aux1->position = {-100, -70, 200 + i * 250};
-    aux2->position = { 100, -70, 200 + i * 250};
+    aux1->position = {-100, -70, static_cast<double>(i * 200)};
+    aux2->position = { 100, -70, static_cast<double>(i * 200)};
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};
@@ -115,12 +115,12 @@ void World::move_right() {
   meshes[0]->rotate_y(0.01);
   meshes[0]->nested_meshes[0]->rotate_x(0.01);
   meshes[0]->rotate_x(0.01);
-  meshes[0]->nested_meshes[0]->nested_meshes[0]->rotate_y(0.03);
-
+  meshes[0]->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 
   for (unsigned i = 1; i < meshes.size() - 1; i++)
     meshes[i]->rotate_y(0.1);  
 
   camera->translate_local({0.0, 0.0, 15.3});
+  //camera->rotate_z(0.01);
 }
 

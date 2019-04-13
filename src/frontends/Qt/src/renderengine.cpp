@@ -12,8 +12,8 @@ RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
 }
 
 void RenderEngine::main_loop () {
-  frame_counter++;
   rasteriser->rasterize();  
+  frame_counter++;
   world->move_right();
 
   std::chrono::time_point<std::chrono::system_clock> start;
@@ -22,7 +22,7 @@ void RenderEngine::main_loop () {
   float elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
                                (start - last_time).count();
   if (elapsed_seconds > 1000) {
-    std::cout << "FPS: " << frame_counter << std::endl;
+    std::cout << "FPS: " << double(frame_counter) / (double(elapsed_seconds) / 1000) << std::endl;
     frame_counter = 0;
     last_time = std::chrono::system_clock::now();
   }

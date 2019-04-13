@@ -9,7 +9,7 @@
 #include <future>
 #include <mutex>
 
-#define N_THREADS 4
+#define N_THREADS 8
 
 class Rasteriser {
 private:
@@ -30,6 +30,7 @@ private:
 
   std::vector <Mesh*> meshes_vector;
 
+  Color calculate_lights (const Color& m_color, const Face3& face) const;
   void set_rasterization_data ();
   void calculate_mesh_projection (const Mesh* const mesh,
                                   const Matrix3& M2,
