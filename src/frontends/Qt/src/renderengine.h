@@ -1,7 +1,9 @@
 #ifndef RENDERENGINE_H
 #define RENDERENGINE_H
 
-#include <thread>
+#include <chrono>
+#include <ctime>
+
 #include <QTimer>
 
 #include "../../../engine/point3d.h"
@@ -15,6 +17,8 @@ private:
   Rasteriser* rasteriser;
   Camera* camera;
   World* world;
+  std::chrono::time_point<std::chrono::system_clock> last_time;
+  unsigned frame_counter = 0;
 public:
   RenderEngine(Rasteriser* r, Camera* cm, World* w);
 public slots:

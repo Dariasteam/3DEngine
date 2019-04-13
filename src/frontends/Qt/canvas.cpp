@@ -2,7 +2,7 @@
 
 Canvas::Canvas(QWidget *parent) :
   QWidget(parent),
-  triangles (new std::vector<Triangle2>())
+  triangles (new std::list<Triangle2>())
 {
 }
 
@@ -35,10 +35,10 @@ void Canvas::paintEvent(QPaintEvent *event) {
   }
 }
 
-void Canvas::update_frame(std::vector<Triangle2>* elements, Rect b) {
-  std::sort (elements->begin(), elements->end(),
-             [](const Triangle2& a, const Triangle2& b) {
-    return a.z_value > b.z_value;
+void Canvas::update_frame(std::list<Triangle2>* elements, Rect b) {
+
+  elements->sort([](const Triangle2& a, const Triangle2& b) {
+      return a.z_value > b.z_value;
   });
 
   delete triangles;

@@ -8,7 +8,7 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   for (const auto& mesh : meshes) {
-    meshes_vec.push_back(mesh);
+    meshes_vector.push_back(mesh);
     generate_mesh_list(mesh->get_nested_meshes());
   }
 }
@@ -23,20 +23,35 @@ void Rasteriser::set_rasterization_data() {
   camera_plane_point  = camera->get_plane_point();
 
   // Change basis
-  for (const auto& mesh : world->get_elements())
-    mesh->express_in_parents_basis(world->basis);
+  const auto& meshes = world->get_elements();
+  unsigned size = meshes.size();  
+  unsigned segments = std::floor(float(size) / N_THREADS);
+
+  auto lambda = [&](unsigned init, unsigned end) {
+    for (unsigned j = init; j < end; j++)
+      meshes[j]->express_in_parents_basis(world->basis);
+  };
+
+  std::vector<std::future<void>> promises (N_THREADS);
+  for (unsigned i = 0; i < N_THREADS - 1; i++)
+    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
+  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, size);
+
+  for (auto& promise : promises)
+    promise.get();
 
   // Generate iterable list of meshes
-  meshes_vec.clear();
+  meshes_vector.clear();
   generate_mesh_list(world->get_elements());
-  projected_elements = new std::vector<Triangle2>;
+  projected_elements = new std::list<Triangle2>;
 }
 
 void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
-                                           const Matrix3& M2){
-  Point3 a;
-  Point3 b;
-  Point3 c;
+                                           const Matrix3& M2,
+                                           std::list<Triangle2>& triangles,
+                                           Point3& a,
+                                           Point3& b,
+                                           Point3& c) const {
 
   for (const auto& face : mesh->global_coordinates_faces) {
     bool visible = false;
@@ -101,9 +116,7 @@ void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
           color.g = std::min (color.g, unsigned(255));
           color.b = std::min (color.b, unsigned(255));
 
-          while(!mtx.try_lock());
-          projected_elements->push_back({a2D, b2D, c2D, z, color});
-          mtx.unlock();
+          triangles.push_back({a2D, b2D, c2D, z, color});
         }
       }
     }
@@ -115,20 +128,27 @@ void Rasteriser::rasterize() {
 
   const Matrix3& M2 = MatrixOps::generate_basis_change_matrix (world->basis, camera->basis);
 
-  unsigned segments = std::floor(float(meshes_vec.size()) / N_THREADS);
+  unsigned segments = std::floor(float(meshes_vector.size()) / N_THREADS);
+
+  auto lambda = [&](unsigned init, unsigned end) -> void{
+    Point3 a;
+    Point3 b;
+    Point3 c;
+
+    std::list<Triangle2> triangles;
+
+    for (unsigned j = init; j < end; j++)
+      calculate_mesh_projection(meshes_vector[j], M2, triangles, a, b, c);
+
+    while(!mtx.try_lock());
+    projected_elements->splice (projected_elements->end(), triangles);
+    mtx.unlock();
+  };
 
   std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i <N_THREADS  - 1; i++) {
-    promises[i] = std::async([=, this](){
-      for (unsigned j = i * segments; j < (i + 1) * segments; j++)
-        calculate_mesh_projection(meshes_vec[j], M2);
-    });
-  }
-
-  promises[N_THREADS - 1] = std::async([&](){
-    for (unsigned j = (N_THREADS - 1) * segments; j < meshes_vec.size(); j++)
-      calculate_mesh_projection(meshes_vec[j], M2);
-  });
+  for (unsigned i = 0; i <N_THREADS  - 1; i++)
+    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
+  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, meshes_vector.size());
 
   for (auto& promise : promises)
     promise.get();
@@ -140,7 +160,7 @@ bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
   return p.x() > camera_bounds.x       &&
          p.x() < camera_bounds.width   &&
          p.y() > camera_bounds.y       &&
-      p.y() < camera_bounds.height;
+         p.y() < camera_bounds.height;
 }
 
 // Calculate the intersection point between teh camera plane and the vertex
