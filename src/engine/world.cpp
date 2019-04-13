@@ -73,7 +73,7 @@ World::World(Camera* cm) :
 
   a_mesh->generate_nested_normals();
 
-  for (unsigned i = 0; i < 500; i++) {
+  for (unsigned i = 0; i < 50; i++) {
       Mesh* aux1 = new Mesh (*a_mesh);
       Mesh* aux2 = new Mesh (*a_mesh);
 
