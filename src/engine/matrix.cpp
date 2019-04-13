@@ -38,7 +38,7 @@ void Matrix::operator+=(const Matrix &mtx) {
 
 void Matrix::operator=(const Matrix &mtx) {
   unsigned n_rows = mtx.size_rows();
-  unsigned n_cols = mtx.size_cols();
+  unsigned n_cols = mtx.size_cols();   
 
   matrix.clear();
   matrix.resize(n_rows);

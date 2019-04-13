@@ -14,14 +14,21 @@ struct Point3 : public Matrix {
   Point3 ()                             : Point3 (0, 0, 0) {}  
   Point3 (const std::vector<double>& v) : Point3 (v[0], v[1], v[2]) {}
   Point3 (const Matrix& mtx)            : Matrix (mtx) {}
+  Point3 (const Point3& p)              : Matrix (p) {}
   Point3 (double x, double y, double z) : Matrix (1, 3) {
     matrix[0][0] = x;
     matrix[0][1] = y;
     matrix[0][2] = z;
-  }
+  }  
 
   double& operator[] (unsigned i) { return matrix[0][i]; }
   double  operator[] (unsigned i) const { return matrix[0][i]; }
+
+  void operator= (const Point3& p) {
+    set_x(p.x());
+    set_y(p.y());
+    set_z(p.z());
+  }
 
   inline double x() const { return matrix[0][0];}
   inline double y() const { return matrix[0][1];}
@@ -65,9 +72,9 @@ struct Vector3 : public Point3 {
 
   void normalize () {
     double module = Vector3::vector_module(*this);
-    operator[](0) = x() / module;
-    operator[](1) = y() / module;
-    operator[](2) = z() / module;
+    set_x(x() / module);
+    set_y(y() / module);
+    set_z(z() / module);
   }
 
   Vector3 operator/ (double d) const {
@@ -241,7 +248,7 @@ struct Mesh : public Spatial {
     Spatial(m.basis, m.position),
     local_coordinates_faces (m.local_coordinates_faces),
     global_coordinates_faces (m.global_coordinates_faces),
-    color (m.color)
+    color (m.color)    
   {}
 
   void add_nested_mesh (Mesh* mesh) {
@@ -255,12 +262,17 @@ struct Mesh : public Spatial {
   void generate_normals () {
     for (auto& face : local_coordinates_faces)
       face.generate_normal();
+  }  
+
+  void generate_data () {
+    global_coordinates_faces.resize(local_coordinates_faces.size());
+    generate_normals();
   }
 
-  void generate_nested_normals () {
-    for (auto& nest : nested_meshes)
-      nest->generate_nested_normals();
-    generate_normals();
+  void copy_faces_local2global () {
+    unsigned size = local_coordinates_faces.size();
+    for (unsigned i = 0; i < size; i++)
+      global_coordinates_faces[i] = local_coordinates_faces[i];
   }
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis);
