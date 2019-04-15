@@ -1,9 +1,7 @@
 #include "matrix.h"
 
 
-Matrix::~Matrix() {
-
-}
+Matrix::~Matrix() {}
 
 Matrix Matrix::operator+(const Matrix &mtx) const {
   unsigned n_rows = size_rows();

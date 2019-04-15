@@ -1,6 +1,6 @@
 #include "point3d.h"
 
-std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {      
+std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
   std::list<Mesh*> mesh_list {this};
   bool is_same_base = (basis == new_basis);
   copy_faces_local2global();
@@ -23,7 +23,7 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
 
   } else {
     for (const auto& mesh : mesh_list)
-      for (auto& face : mesh->global_coordinates_faces)
+      for (auto& face : mesh->global_coordinates_faces)        
         for (unsigned j = 0; j < 3; j++)
           face[j] +=  position;
   }
@@ -38,14 +38,14 @@ void Face3::generate_normal() {
   double X = (v.y() * u.z() - v.z() * u.y());
   double Y = (v.z() * u.x() - v.x() * u.z());
   double Z = (v.x() * u.y() - v.y() * u.x());
-
+/*
   double D = a.z() * v.y() * u.x() +
-      a.x() * v.z() * u.y() +
-      a.y() * v.x() * u.z() -
-      a.x() * v.y() * u.z() -
-      a.y() * v.z() * u.x() -
-      a.z() * v.x() * u.y();
-
+             a.x() * v.z() * u.y() +
+             a.y() * v.x() * u.z() -
+             a.x() * v.y() * u.z() -
+             a.y() * v.z() * u.x() -
+             a.z() * v.x() * u.y();
+*/
   normal = {X, Y, Z};
 }
 

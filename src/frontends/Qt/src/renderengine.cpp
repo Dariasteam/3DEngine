@@ -14,7 +14,7 @@ RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
 void RenderEngine::main_loop () {
   rasteriser->rasterize();  
   frame_counter++;
-  world->move_right();
+  world->calculate_next_frame();
 
   std::chrono::time_point<std::chrono::system_clock> start;
   start = std::chrono::system_clock::now();

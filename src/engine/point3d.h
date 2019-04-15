@@ -30,6 +30,12 @@ struct Point3 : public Matrix {
     set_z(p.z());
   }
 
+  void operator+= (const Point3& p) {
+    set_x(p.x() + x());
+    set_y(p.y() + y());
+    set_z(p.z() + z());
+  }
+
   inline double x() const { return matrix[0][0];}
   inline double y() const { return matrix[0][1];}
   inline double z() const { return matrix[0][2];}  
@@ -155,6 +161,13 @@ struct Face3 {
     c = face.c;
     normal = face.normal;
   }
+
+  void operator+= (const Face3& face) {
+    a += face.a;
+    b += face.b;
+    c += face.c;
+  }
+
 };
 
 struct Spatial {
@@ -234,10 +247,7 @@ struct Mesh : public Spatial {
   Color color = {0, 0, 0};
 
   Mesh () {}
-  ~Mesh () {
-    for (auto& mesh : nested_meshes)
-      delete mesh;
-  }
+  ~Mesh () {}
 
   Mesh (unsigned i) :
     local_coordinates_faces(i),
@@ -269,10 +279,10 @@ struct Mesh : public Spatial {
     generate_normals();
   }
 
-  void copy_faces_local2global () {
-    unsigned size = local_coordinates_faces.size();
-    for (unsigned i = 0; i < size; i++)
-      global_coordinates_faces[i] = local_coordinates_faces[i];
+  inline void copy_faces_local2global () {
+    unsigned long size = local_coordinates_faces.size();
+    for (unsigned long i = 0; i < size; i++)
+      global_coordinates_faces[i] = local_coordinates_faces[i];    
   }
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis);
