@@ -84,12 +84,12 @@ World::World(Camera* cm) :
   add_mesh(aux2);
 */
 
-  for (unsigned i = 0; i < 30000; i++) {
+  for (unsigned i = 0; i < 20000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
-    aux1->position = {-100, -70, static_cast<double>(i * 200)};
-    aux2->position = { 100, -70, static_cast<double>(i * 200)};
+    aux1->position = {-100, -70, static_cast<double>(i * 140)};
+    aux2->position = { 100, -70, static_cast<double>(i * 140)};
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};
@@ -133,16 +133,7 @@ void World::delete_mesh(Mesh* mesh) {
   meshes.erase(std::remove(meshes.begin(), meshes.end(), mesh), meshes.end());
 }
 
-void World::calculate_next_frame() {
-
-  auto* front = meshes.front();
-
-  front->translate_local({0, 0, 15});
-  front->rotate_y(0.01);
-  front->nested_meshes[0]->rotate_x(0.01);
-  front->rotate_x(0.01);
-  front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);  
-
+void World::rotate_meshes() const {
   auto lambda = [&](unsigned start, unsigned end){
     auto it_1 = meshes.begin();
     auto it_2 = meshes.begin();
@@ -163,9 +154,23 @@ void World::calculate_next_frame() {
 
   for (auto& promise : promises)
     promise.get();
+}
+
+
+
+void World::calculate_next_frame() const {
+
+  auto* front = meshes.front();
+
+  front->translate_local({0, 0, 15});
+  front->rotate_y(0.01);
+  front->nested_meshes[0]->rotate_x(0.01);
+  front->rotate_x(0.01);
+  front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);  
+
+  //rotate_meshes();
 
   camera->translate_local({0.0, 0.0, 15.3});
-
-  //camera->rotate_z(0.01);
+//  camera->rotate_y(0.01);
 }
 

@@ -5,10 +5,14 @@
 #include <iostream>
 
 struct Matrix {
+
+  unsigned n_rows;
+  unsigned n_cols;
+
   std::vector<std::vector<double>> matrix;
 
-  inline unsigned size_rows () const { return matrix.size(); }
-  inline unsigned size_cols () const { return matrix[0].size(); }
+  inline unsigned size_rows () const { return n_rows; }
+  inline unsigned size_cols () const { return n_cols; }
 
   inline double get (unsigned i, unsigned j) const { return matrix[i][j]; }
   inline void set (unsigned i, unsigned j, double v) { matrix[i][j] = v;  }
@@ -16,18 +20,37 @@ struct Matrix {
   inline const std::vector<double>& operator[] (unsigned i) const { return matrix[i]; }
   inline       std::vector<double>& operator[] (unsigned i) { return matrix[i]; }
 
-  Matrix (unsigned rows, unsigned cols) {
-    matrix.resize(rows);
+  Matrix () :
+    n_rows (0),
+    n_cols (0)
+  {}
+
+  Matrix (unsigned rows, unsigned cols) :
+      n_rows (rows),
+      n_cols (cols),
+      matrix (rows)
+  {
     for (auto& row : matrix)
       row.resize(cols, 0);
+  }  
+
+  Matrix (const Matrix& mtx):
+    n_rows (mtx.n_rows),
+    n_cols (mtx.n_cols),
+    matrix (mtx.matrix)
+  {}
+
+  Matrix (const std::vector<std::vector<double>>& vec) :
+    matrix (vec)
+  {
+    n_rows = vec.size();
+    n_cols = vec[0].size();
   }
 
   ~Matrix ();
 
-  Matrix (const Matrix& mtx) { matrix = mtx.matrix; }
-  Matrix (const std::vector<std::vector<double>>& vec) { matrix = vec; }  
-
   Matrix operator+ (const Matrix& mtx) const;
+  Matrix strassen (const Matrix& mtx) const;
   Matrix operator*(const Matrix& mtx) const;
   void operator+= (const Matrix& mtx);
   void operator= (const Matrix& mtx);
@@ -36,6 +59,7 @@ struct Matrix {
 
   Matrix get_transpose () const;
   inline void transpose () { matrix = get_transpose().matrix; }
+  inline void resize (unsigned rows, unsigned cols);
 };
 
 class Gauss {
@@ -57,7 +81,9 @@ public:
 struct MatrixOps {
 
   // Changes from Basis A to B
-  static Matrix generate_basis_change_matrix (const Matrix& A, const Matrix& B);
+  static void generate_basis_change_matrix (const Matrix& A,
+                                            const Matrix& B,
+                                             Matrix& result);
   static Matrix change_basis (const Matrix& matrix, const Matrix& element);
 };
 

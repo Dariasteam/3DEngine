@@ -43,7 +43,10 @@ public:
   inline void add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
 
-  void calculate_next_frame ();
+  inline void rotate_meshes () const;
+
+  void calculate_next_frame () const;
+
   ~World () {
     meshes.clear();
   }

@@ -203,7 +203,8 @@ struct Spatial {
       {0, 0, 1},
     };
 
-    Matrix3 m = MatrixOps::generate_basis_change_matrix(basis, b);
+    Matrix3 m;
+    MatrixOps::generate_basis_change_matrix(basis, b, m);
     MatrixOps::change_basis(m, position);
     position += v;
   }

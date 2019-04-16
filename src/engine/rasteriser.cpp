@@ -25,7 +25,7 @@ void Rasteriser::set_rasterization_data() {
   // Change basis
   const auto& meshes = world->get_elements();
   unsigned size = meshes.size();  
-  unsigned segments = std::floor(float(size) / N_THREADS);
+  unsigned segments = (size / N_THREADS);
 
   auto lambda = [&](unsigned init, unsigned end) {
     for (unsigned j = init; j < end; j++)
@@ -78,7 +78,7 @@ Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) con
 
 void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
                                            const Matrix3& M2,
-                                           std::list<Triangle2>& triangles,
+                                           std::list<Triangle2*>& triangles,
                                            Point3& a,
                                            Point3& b,
                                            Point3& c) const {
@@ -95,7 +95,7 @@ void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
 
     double z_min = std::min({v1.z(), v2.z(), v3.z()});
     double z_max = std::max({v1.z(), v2.z(), v3.z()});
-    if (z_min > 5000) break;
+    if (z_min > 10000) break;
 
     // 3. Calculate intersection points with the plane
     bool visible  = calculate_cut_point(face.a, a)
@@ -130,16 +130,17 @@ void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
 void Rasteriser::rasterize() {
   set_rasterization_data();
 
-  const Matrix3& M2 = MatrixOps::generate_basis_change_matrix (world->basis, camera->basis);
+  Matrix3 M2;
+  MatrixOps::generate_basis_change_matrix (world->basis, camera->basis, M2);
 
-  unsigned segments = std::floor(float(meshes_vector.size()) / N_THREADS);
+  unsigned segments = (meshes_vector.size() / N_THREADS);
 
   auto lambda = [&](unsigned init, unsigned end) -> void{
     Point3 a;
     Point3 b;
     Point3 c;
 
-    std::list<Triangle2> triangles;
+    std::list<Triangle2*> triangles;
 
     for (unsigned j = init; j < end; j++)
       calculate_mesh_projection(meshes_vector[j], M2, triangles, a, b, c);
@@ -192,28 +193,23 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   const double& d = v.y();
   const double& f = v.z();
 
-  double T1 = - D - (A*a + B*c + C*e);
-  double T2 = (A*b + B*d + C*f);
+  double T1 {- D - (A*a + B*c + C*e)};
+  double T2 {A*b + B*d + C*f};
 
-  double parameter = T1 / T2;
+  bool return_value = true;
 
   // Some vertex are behind camera
   if ((f < 0 && C > 0) || (f > 0 && C < 0)) {
-      T1 = D - (A*a + B*c + C*e);
-      T2 = (A*b + B*d + C*f);
-
-      parameter = T1 / T2;
-
-      point[0] = -(a + b * parameter);
-      point[1] = -(c + d * parameter);
-      point[2] =   e + f * parameter;
-    return false;
+      T1 = -T1;
+      return_value = false;
   }
 
-  // Intersection in global coordiantes
-  point[0] = -(a + b * parameter);
-  point[1] = -(c + d * parameter);
-  point[2] =   e + f * parameter;
+  double parameter = T1 / T2;
 
-  return true;
+  // Intersection in global coordiantes
+  point.set_x(-(a + b * parameter));
+  point.set_y(-(c + d * parameter));
+  point.set_z(  e + f * parameter);
+
+  return return_value;
 }

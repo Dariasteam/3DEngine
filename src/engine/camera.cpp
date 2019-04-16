@@ -18,8 +18,9 @@ Camera::Camera() {
 
 void Camera::express_in_different_basis(const Basis3& new_basis) {
   // Calcular matriz de cambio de base
-  Matrix3 basis_changer = MatrixOps::generate_basis_change_matrix(basis,
-                                                                  new_basis);
+
+  Matrix3 basis_changer;
+  MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer);
 
   // Calcular los puntos de cada cara expresados en la nueva base
   Point3Ops::change_basis(basis_changer, local_parameters.vector_plane,

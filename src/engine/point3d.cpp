@@ -9,7 +9,8 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
     mesh_list.splice(mesh_list.end(), nested_mesh->express_in_parents_basis(new_basis));
 
   if (!is_same_base) {
-    const Matrix3& basis_changer = MatrixOps::generate_basis_change_matrix(basis, new_basis);
+    Matrix3 basis_changer;
+    MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer);
 
     for (const auto& mesh : mesh_list) {
       for (auto& face : mesh->global_coordinates_faces) {

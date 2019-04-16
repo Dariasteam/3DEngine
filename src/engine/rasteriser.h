@@ -26,7 +26,7 @@ private:
   Vector3 camera_plane_vector;
   Rect camera_bounds;
   Point3 camera_plane_point;
-  std::list <Triangle2>* projected_elements;
+  std::list <Triangle2*> projected_elements;
 
   std::vector <Mesh*> meshes_vector;
 
@@ -34,7 +34,7 @@ private:
   void set_rasterization_data ();
   void calculate_mesh_projection (const Mesh* const mesh,
                                   const Matrix3& M2,
-                                  std::list<Triangle2>& triangles,
+                                  std::list<Triangle2*>& triangles,
                                   Point3& a,
                                   Point3& b,
                                   Point3& c) const;
