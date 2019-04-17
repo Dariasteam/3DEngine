@@ -3,8 +3,15 @@
 Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   canvas (cv),
   camera (cm),
-  world (wd)
-{}
+  world (wd),
+  projected_elements (N_THREADS)
+{
+  canvas->set_triangles_buffer(&elements_to_render);
+
+  for (auto& element : projected_elements)
+    element.resize(3000);
+
+}
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   for (const auto& mesh : meshes) {
@@ -20,7 +27,7 @@ void Rasteriser::set_rasterization_data() {
   camera_plane_vector = camera->get_plane_vector();  
   camera_bounds       = camera->get_bounds();
   camera_fuge         = camera->get_fuge();
-  camera_plane_point  = camera->get_plane_point();  
+  camera_plane_point  = camera->get_plane_point();    
 
   // Change basis
   const auto& meshes = world->get_elements();
@@ -42,8 +49,8 @@ void Rasteriser::set_rasterization_data() {
 
   // Generate iterable list of meshes
   meshes_vector.clear();
-  generate_mesh_list(world->get_elements());
-  projected_elements = new std::list<Triangle2>;
+  elements_to_render.clear();
+  generate_mesh_list(world->get_elements());  
 }
 
 Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) const {
@@ -74,14 +81,12 @@ Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) con
   return color;
 }
 
-#include <iostream>
-
-void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
-                                           const Matrix3& M2,
-                                           std::list<Triangle2*>& triangles,
-                                           Point3& a,
-                                           Point3& b,
-                                           Point3& c) const {
+unsigned Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
+                                               const Matrix3& M2,
+                                               std::vector<Triangle2>& triangles,
+                                               unsigned index,
+                                               Auxiliar& aux) {
+  unsigned list_size = triangles.size();
 
   for (const auto& face : mesh->global_coordinates_faces) {
     // 1. Check if the face is loking torwards to the camera
@@ -89,45 +94,61 @@ void Rasteriser::calculate_mesh_projection(const Mesh* const mesh,
     //if ((angle_torwards_camera < 90 || angle_torwards_camera > 270)) break;
 
     // 2. Calculate z value (distance to camera)
-    const Vector3& v1 = Vector3::create_vector(face.a, camera_fuge);
-    const Vector3& v2 = Vector3::create_vector(face.b, camera_fuge);
-    const Vector3& v3 = Vector3::create_vector(face.c, camera_fuge);
+    Vector3::create_vector(face.a, camera_fuge, aux.v1);
+    Vector3::create_vector(face.b, camera_fuge, aux.v2);
+    Vector3::create_vector(face.c, camera_fuge, aux.v3);
 
-    double z_min = std::min({v1.z(), v2.z(), v3.z()});
-    double z_max = std::max({v1.z(), v2.z(), v3.z()});
+    double z_min = std::min({aux.v1.z(), aux.v2.z(), aux.v3.z()});
+    double z_max = std::max({aux.v1.z(), aux.v2.z(), aux.v3.z()});
     if (z_min > 10000) break;
 
     // 3. Calculate intersection points with the plane
-    bool visible  = calculate_cut_point(face.a, a)
-                  | calculate_cut_point(face.b, b)
-                  | calculate_cut_point(face.c, c);
+    bool visible  = calculate_cut_point(face.a, aux.a)
+                  | calculate_cut_point(face.b, aux.b)
+                  | calculate_cut_point(face.c, aux.c);
     if (!visible) break;
 
     // 4. Transform to camera basis
-    Point3Ops::change_basis(M2, a, a);
-    Point3Ops::change_basis(M2, b, b);
-    Point3Ops::change_basis(M2, c, c);
+    Point3Ops::change_basis(M2, aux.a, aux.a);
+    Point3Ops::change_basis(M2, aux.b, aux.b);
+    Point3Ops::change_basis(M2, aux.c, aux.c);
 
+    //if (index < list_size) {
+      triangles[index].a.set_values(aux.a.x(), aux.a.y());
+      triangles[index].b.set_values(aux.b.x(), aux.b.y());
+      triangles[index].c.set_values(aux.c.x(), aux.c.y());
+      triangles[index].z_value = z_max;
+      /*
+    } else {
+      triangles.push_back({{a.x(), a.y()},
+                           {b.x(), b.y()},
+                           {c.x(), c.y()},
+                           z_max, {0,0,0}});
+    }
+    */
+/*
     // 5. Generate projected 2D points
     Point2 a2D {a.x(), a.y()};
     Point2 b2D {b.x(), b.y()};
     Point2 c2D {c.x(), c.y()};
-
+*/
     // 6. Check point in camera bounds
-    bool point_in_camera = is_point_between_camera_bounds(a2D)
-                         | is_point_between_camera_bounds(b2D)
-                         | is_point_between_camera_bounds(c2D);
-    if (!point_in_camera) break;
+    bool point_in_camera = is_point_between_camera_bounds(triangles[index].a)
+                         | is_point_between_camera_bounds(triangles[index].b)
+                         | is_point_between_camera_bounds(triangles[index].c);
+    if (!point_in_camera) {break;}
 
     // 7. Calculate light contribution
-    const Color& color = calculate_lights(mesh->color, face);
+    const Color& color = calculate_lights(mesh->color, face);    
 
-    // 8. Add triangle to the list
-    triangles.push_back({a2D, b2D, c2D, z_max, color});
+    // 8. Add triangle to the list          
+    triangles[index].color = color;
+    index++;
   }
+  return index;
 }
 
-void Rasteriser::rasterize() {
+void Rasteriser::rasterise() {
   set_rasterization_data();
 
   Matrix3 M2;
@@ -135,30 +156,42 @@ void Rasteriser::rasterize() {
 
   unsigned segments = (meshes_vector.size() / N_THREADS);
 
-  auto lambda = [&](unsigned init, unsigned end) -> void{
+  auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
     Point3 a;
     Point3 b;
-    Point3 c;
+    Point3 c;    
 
-    std::list<Triangle2*> triangles;
+    unsigned counter = 0;
+
+    Auxiliar aux;
 
     for (unsigned j = init; j < end; j++)
-      calculate_mesh_projection(meshes_vector[j], M2, triangles, a, b, c);
+      counter = calculate_mesh_projection(meshes_vector[j], M2,
+                                          projected_elements[vec_index],
+                                          counter, aux);
 
-    while(!mtx.try_lock());
-    projected_elements->splice (projected_elements->end(), triangles);
+    while(!mtx.try_lock());    
+    for (unsigned i = 0; i < counter; i++)
+      elements_to_render.push_back(&projected_elements[vec_index][i]);
     mtx.unlock();
   };
 
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i <N_THREADS  - 1; i++)
-    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
-  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, meshes_vector.size());
-
+    promises[i] = std::async(lambda, i * segments, (i + 1) * segments, i);
+  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments,
+                                               meshes_vector.size(),
+                                               N_THREADS - 1);
   for (auto& promise : promises)
     promise.get();
 
-  canvas->update_frame(projected_elements, camera_bounds);
+  // Order by distance to camera
+  std::sort(elements_to_render.begin(), elements_to_render.end(),
+    [](const Triangle2* a, const Triangle2* b) {
+      return a->z_value > b->z_value;
+  });
+
+  canvas->update_frame(camera_bounds);
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {

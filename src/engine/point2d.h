@@ -22,6 +22,13 @@ struct Point2 : public Matrix {
 
   inline double x() const { return matrix[0][0];}
   inline double y() const { return matrix[0][1];}
+
+  inline void set_x (double v) { matrix[0][0] = v; }
+  inline void set_y (double v) { matrix[0][1] = v; }
+  inline void set_values (double vx, double vy) {
+    matrix[0][0] = vx;
+    matrix[0][1] = vy;
+  }
 };
 
 struct Matrix2 : public Matrix {

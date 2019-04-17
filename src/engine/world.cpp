@@ -69,7 +69,7 @@ World::World(Camera* cm) :
 
   add_mesh(a_mesh);
   a_mesh->color = {0, 200, 200};
-  a_mesh->generate_data();
+  a_mesh->generate_data();  
 
   Mesh* aux1 = new Mesh (*a_mesh);
   aux1->translate_local({20, 0, 0});
@@ -79,17 +79,13 @@ World::World(Camera* cm) :
 
   a_mesh->add_nested_mesh(aux1);
   aux1->add_nested_mesh(aux2);
-/*
-  add_mesh(aux1);
-  add_mesh(aux2);
-*/
 
-  for (unsigned i = 0; i < 20000; i++) {
+  for (unsigned i = 0; i < 30000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
     aux1->position = {-100, -70, static_cast<double>(i * 140)};
-    aux2->position = { 100, -70, static_cast<double>(i * 140)};
+    aux2->position = { 100, -70, static_cast<double>(i * 140)};    
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};
@@ -120,7 +116,7 @@ World::World(Camera* cm) :
   b_mesh->generate_data();
 
   a_mesh->position = {0,-30, 400};
-  b_mesh->position = {0, 0, 100};
+  b_mesh->position = {0, 0, 100};  
 }
 
 void World::add_mesh(Mesh* mesh) {
@@ -155,8 +151,6 @@ void World::rotate_meshes() const {
   for (auto& promise : promises)
     promise.get();
 }
-
-
 
 void World::calculate_next_frame() const {
 

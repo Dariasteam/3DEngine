@@ -20,15 +20,15 @@ private:
   double v_factor;
   double h_factor;
 
-
-  std::list<Triangle2>* triangles;
+  const std::vector<Triangle2*>* triangles;
 
   inline QPointF adjust_coordinates (const Point2& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);  
-  void update_frame (std::list<Triangle2>* elements, Rect bounds);
+  void update_frame (Rect bounds);
   void resizeEvent(QResizeEvent *event);
+  void set_triangles_buffer (const std::vector<Triangle2*>* buff);
 signals:
 
 public slots:

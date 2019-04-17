@@ -12,7 +12,7 @@ RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
 }
 
 void RenderEngine::main_loop () {
-  rasteriser->rasterize();  
+  rasteriser->rasterise();
   frame_counter++;
   world->calculate_next_frame();
 

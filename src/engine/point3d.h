@@ -24,13 +24,13 @@ struct Point3 : public Matrix {
   double& operator[] (unsigned i) { return matrix[0][i]; }
   double  operator[] (unsigned i) const { return matrix[0][i]; }
 
-  void operator= (const Point3& p) {
+  inline void operator= (const Point3& p) {
     set_x(p.x());
     set_y(p.y());
     set_z(p.z());
   }
 
-  void operator+= (const Point3& p) {
+  inline void operator+= (const Point3& p) {
     set_x(p.x() + x());
     set_y(p.y() + y());
     set_z(p.z() + z());
@@ -63,6 +63,12 @@ struct Vector3 : public Point3 {
             a.y() - b.y(),
             a.z() - b.z()};
   }
+
+  static inline void create_vector (const Point3& a, const Point3& b, Vector3& vec) {
+    vec.set_x(a.x() - b.x());
+    vec.set_y(a.y() - b.y());
+    vec.set_z(a.z() - b.z());
+  };
 
   static double vector_module (const Vector3& v) {
     return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
@@ -276,14 +282,12 @@ struct Mesh : public Spatial {
   }  
 
   void generate_data () {
-    global_coordinates_faces.resize(local_coordinates_faces.size());
     generate_normals();
+    global_coordinates_faces = local_coordinates_faces;
   }
 
-  inline void copy_faces_local2global () {
-    unsigned long size = local_coordinates_faces.size();
-    for (unsigned long i = 0; i < size; i++)
-      global_coordinates_faces[i] = local_coordinates_faces[i];    
+  void copy_faces_local2global () {
+    global_coordinates_faces = local_coordinates_faces;
   }
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis);

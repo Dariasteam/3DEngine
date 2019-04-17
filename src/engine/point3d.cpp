@@ -3,10 +3,10 @@
 std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
   std::list<Mesh*> mesh_list {this};
   bool is_same_base = (basis == new_basis);
-  copy_faces_local2global();
+  //copy_faces_local2global();
 
   for (auto& nested_mesh : nested_meshes)
-    mesh_list.splice(mesh_list.end(), nested_mesh->express_in_parents_basis(new_basis));
+    mesh_list.splice(mesh_list.end(), nested_mesh->express_in_parents_basis(new_basis));  
 
   if (!is_same_base) {
     Matrix3 basis_changer;
@@ -24,9 +24,9 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
 
   } else {
     for (const auto& mesh : mesh_list)
-      for (auto& face : mesh->global_coordinates_faces)        
+      for (auto& face : mesh->global_coordinates_faces)
         for (unsigned j = 0; j < 3; j++)
-          face[j] +=  position;
+          face[j] += position;
   }
 
   return mesh_list;
@@ -58,7 +58,7 @@ void Point3Ops::change_basis(const Basis3 &basis,
   double b = (basis[1][0] * element[0] + basis[1][1] * element[1] + basis[1][2] * element[2]);
   double c = (basis[2][0] * element[0] + basis[2][1] * element[1] + basis[2][2] * element[2]);
 
-  result[0] = a;
-  result[1] = b;
-  result[2] = c;
+  result.set_x(a);
+  result.set_y(b);
+  result.set_z(c);
 }

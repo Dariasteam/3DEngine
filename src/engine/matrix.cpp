@@ -54,7 +54,13 @@ bool Matrix::operator!=(const Matrix &mtx) const {
 bool Matrix::operator==(const Matrix &mtx) const {
   if (size_rows() != mtx.size_rows() ||
       size_cols() != mtx.size_cols()) return false;
-  return (matrix == mtx.matrix);
+
+  for (unsigned i = 0; i < n_rows; i++)
+    for (unsigned j = 0; j < n_cols; j++)
+      if (matrix[i][j] != mtx.matrix[i][j])
+        return false;
+
+  return true;
 }
 
 Matrix Matrix::get_transpose() const {

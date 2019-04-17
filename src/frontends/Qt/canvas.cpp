@@ -1,27 +1,25 @@
 #include "canvas.h"
 
 Canvas::Canvas(QWidget *parent) :
-  QWidget(parent),
-  triangles (new std::list<Triangle2>())
-{
+  QWidget(parent) {
 }
 
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
-  for (const auto& triangle: *triangles) {
+  for (const auto triangle: *triangles) {
 
-    const QPointF& a = adjust_coordinates(triangle.a);
-    const QPointF& b = adjust_coordinates(triangle.b);
-    const QPointF& c = adjust_coordinates(triangle.c);
+    const QPointF& a = adjust_coordinates(triangle->a);
+    const QPointF& b = adjust_coordinates(triangle->b);
+    const QPointF& c = adjust_coordinates(triangle->c);
 
     QPolygonF poly ({a, b, c});
     QBrush brush;
 
     brush.setColor(QColor (
-                     triangle.color.r,
-                     triangle.color.g,
-                     triangle.color.b
+                     triangle->color.r,
+                     triangle->color.g,
+                     triangle->color.b
                    ));    
 
     brush.setStyle(Qt::SolidPattern);
@@ -35,15 +33,17 @@ void Canvas::paintEvent(QPaintEvent *event) {
   }
 }
 
-void Canvas::update_frame(std::list<Triangle2>* elements, Rect b) {
-
-  elements->sort([](const Triangle2& a, const Triangle2& b) {
+void Canvas::update_frame(Rect b) {
+/*
+  std::sort(triangles, [](const Triangle2& a, const Triangle2& b) {
       return a.z_value > b.z_value;
   });
-
-  delete triangles;
-  triangles = elements;
-
+  */
+  /*
+  triangles->sort([](const Triangle2& a, const Triangle2& b) {
+      return a.z_value > b.z_value;
+  });  
+*/
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
 
@@ -61,4 +61,8 @@ QPointF Canvas::adjust_coordinates(const Point2& p) {
 void Canvas::resizeEvent(QResizeEvent *event) {
   x_offset = event->size().width()  / 2;
   y_offset = event->size().height() / 2;
+}
+
+void Canvas::set_triangles_buffer(const std::vector<Triangle2*>* buff) {
+  triangles = buff;
 }
