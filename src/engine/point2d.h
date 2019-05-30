@@ -6,28 +6,25 @@
 #include "matrix.h"
 #include "point3d.h"
 
-struct Point2 : public Matrix {
+struct Point2 {
+  double X;
+  double Y;
 
   Point2 () : Point2 (0, 0) {}
-  Point2 (const Point2& p) : Point2 (p.x(), p.y()) {}
-  Point2 (const std::vector<double>& v) : Point2 (v[0], v[1]) {}
-  Point2 (const Matrix& mtx) : Matrix (mtx) {}
-  Point2 (double x, double y) : Matrix (1, 2) {
-    matrix[0][0] = x;
-    matrix[0][1] = y;
-  }
+  Point2 (const Point2& p) : X(p.x()), Y(p.y()) {}
+  Point2 (double x, double y) :
+    X(x),
+    Y(y)
+  {}
 
-  double& operator[] (unsigned i) { return matrix[0][i]; }
-  double  operator[] (unsigned i) const { return matrix[0][i]; }
+  inline double x() const { return X;}
+  inline double y() const { return Y;}
 
-  inline double x() const { return matrix[0][0];}
-  inline double y() const { return matrix[0][1];}
-
-  inline void set_x (double v) { matrix[0][0] = v; }
-  inline void set_y (double v) { matrix[0][1] = v; }
+  inline void set_x (double v) { X = v; }
+  inline void set_y (double v) { Y = v; }
   inline void set_values (double vx, double vy) {
-    matrix[0][0] = vx;
-    matrix[0][1] = vy;
+    X = vx;
+    Y = vy;
   }
 };
 
@@ -41,8 +38,11 @@ struct Matrix2 : public Matrix {
 
   Matrix2 (const Point2& a,
            const Point2& b) : Matrix (2, 2) {
-    matrix[0] = a.matrix[0];
-    matrix[1] = b.matrix[0];
+    matrix[0][0] = a.x();
+    matrix[0][1] = a.y();
+
+    matrix[1][0] = b.x();
+    matrix[1][1] = b.y();
   }
 
   void operator= (const Matrix& mtx) {

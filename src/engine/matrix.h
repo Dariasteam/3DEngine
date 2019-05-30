@@ -88,9 +88,9 @@ struct MatrixOps {
 };
 
 struct Color {
-  unsigned r;
-  unsigned g;
-  unsigned b;
+  double r;
+  double g;
+  double b;
 };
 
 #endif // MATRIX_H

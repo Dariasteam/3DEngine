@@ -3,7 +3,7 @@
 Camera::Camera() {
   local_parameters.fuge = {0, 0, 0};
   local_parameters.vector_plane = {0, 0, 1};
-  local_parameters.point_plane = {0, 0, 200};
+  local_parameters.point_plane = {0, 0,-200};
 
   bounds = {-150, -150, 150, 150};
 

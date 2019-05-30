@@ -29,7 +29,7 @@ private:
   Camera* camera;
   Canvas* canvas;
 
-  bool calculate_cut_point (const Point3&, Point3&) const;
+  bool calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
 
   Point3  camera_fuge;
@@ -43,11 +43,12 @@ private:
 
   Color calculate_lights (const Color& m_color, const Face3& face) const;
   void set_rasterization_data ();
-  inline unsigned calculate_mesh_projection (const Mesh* const mesh,
-                                             const Matrix3& M2,
-                                             std::vector<Triangle2>& triangles,
-                                             unsigned index,
-                                             Auxiliar& aux);
+  inline bool calculate_mesh_projection (const Face3& face,
+                                         const Matrix3& M2,
+                                         std::vector<Triangle2>& triangles,
+                                         unsigned index,
+                                         Auxiliar& aux,
+                                         const Color& color);
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 public:
   Rasteriser(Canvas* canvas, Camera* camera, World* world);

@@ -20,7 +20,7 @@ void Canvas::paintEvent(QPaintEvent *event) {
                      triangle->color.r,
                      triangle->color.g,
                      triangle->color.b
-                   ));    
+                   ));
 
     brush.setStyle(Qt::SolidPattern);
     p.setBrush(brush);
@@ -34,16 +34,7 @@ void Canvas::paintEvent(QPaintEvent *event) {
 }
 
 void Canvas::update_frame(Rect b) {
-/*
-  std::sort(triangles, [](const Triangle2& a, const Triangle2& b) {
-      return a.z_value > b.z_value;
-  });
-  */
-  /*
-  triangles->sort([](const Triangle2& a, const Triangle2& b) {
-      return a.z_value > b.z_value;
-  });  
-*/
+
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
 

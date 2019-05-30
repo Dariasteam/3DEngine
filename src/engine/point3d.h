@@ -9,20 +9,22 @@
 
 #define PI 3.14159265
 
-struct Point3 : public Matrix {
+struct Point3 {
+  double X;
+  double Y;
+  double Z;
 
-  Point3 ()                             : Point3 (0, 0, 0) {}  
-  Point3 (const std::vector<double>& v) : Point3 (v[0], v[1], v[2]) {}
-  Point3 (const Matrix& mtx)            : Matrix (mtx) {}
-  Point3 (const Point3& p)              : Matrix (p) {}
-  Point3 (double x, double y, double z) : Matrix (1, 3) {
-    matrix[0][0] = x;
-    matrix[0][1] = y;
-    matrix[0][2] = z;
-  }  
-
-  double& operator[] (unsigned i) { return matrix[0][i]; }
-  double  operator[] (unsigned i) const { return matrix[0][i]; }
+  Point3 () {}
+  Point3 (const Point3& p) :
+    X (p.x()),
+    Y (p.y()),
+    Z (p.z())
+  {}
+  Point3 (double x, double y, double z) :
+    X(x),
+    Y(y),
+    Z(z)
+  {}
 
   inline void operator= (const Point3& p) {
     set_x(p.x());
@@ -36,13 +38,13 @@ struct Point3 : public Matrix {
     set_z(p.z() + z());
   }
 
-  inline double x() const { return matrix[0][0];}
-  inline double y() const { return matrix[0][1];}
-  inline double z() const { return matrix[0][2];}  
+  inline double x() const { return X;}
+  inline double y() const { return Y;}
+  inline double z() const { return Z;}
 
-  inline void set_x (double v) { matrix[0][0] = v;}
-  inline void set_y (double v) { matrix[0][1] = v;}
-  inline void set_z (double v) { matrix[0][2] = v;}
+  inline void set_x (double v) { X = v;}
+  inline void set_y (double v) { Y = v;}
+  inline void set_z (double v) { Z = v;}
 };
 
 static double rad2deg (double rad) {
@@ -53,8 +55,7 @@ static double deg2rad (double deg) {
   return deg * PI / 180.0;
 }
 
-struct Vector3 : public Point3 {
-  Vector3 (const Matrix& mtx) : Point3 (mtx) {}
+struct Vector3 : public Point3 {  
   Vector3 () : Point3 (0, 0, 0) {}
   Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
 
@@ -70,19 +71,38 @@ struct Vector3 : public Point3 {
     vec.set_z(a.z() - b.z());
   };
 
+  static Vector3 cross_product (const Vector3& v, const Vector3& u) {
+    return Vector3 {
+      v.y() * u.z() - u.y() * v.z(),
+      v.z() * u.x() - u.z() * v.x(),
+      v.x() * u.y() - u.x() * v.y()
+    };
+  }
+
   static double vector_module (const Vector3& v) {
     return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
   }
 
   static double angle_between (const Vector3& v, const Vector3& u) {
+
+    Vector3 aux_v = v;
+    Vector3 aux_u = u;
+
+    aux_u.normalize();
+    aux_v.normalize();
+
+    double angle = rad2deg(std::acos(aux_v * aux_u));
+    Vector3 axis = Vector3::cross_product(v, u);
+    axis.normalize();
+
+/*
     double dot_product = u * v;
     double result = rad2deg(std::acos(dot_product / (vector_module(u) * vector_module(v))));
-    if (dot_product < 0)
-      result += 180;
-    return result;
+    */
+    return angle;
   }
 
-  void normalize () {
+  inline void normalize () {
     double module = Vector3::vector_module(*this);
     set_x(x() / module);
     set_y(y() / module);
@@ -95,15 +115,14 @@ struct Vector3 : public Point3 {
             z() / d};
   }
 
-  double operator* (const Vector3& u) const {
+  inline double operator* (const Vector3& u) const {
     return x() * u.x() +
            y() * u.y() +
            z() * u.z();
-  }  
+  }
 };
 
 struct Matrix3 : public Matrix {
-
   Matrix3 (const Matrix &mtx) : Matrix (mtx) {}
   Matrix3 () : Matrix (
               {{0, 0, 0},
@@ -113,13 +132,17 @@ struct Matrix3 : public Matrix {
   Matrix3 (const Point3& a,
            const Point3& b,
            const Point3& c) : Matrix (3, 3) {
-    matrix[0] = a.matrix[0];
-    matrix[1] = b.matrix[0];
-    matrix[2] = c.matrix[0];
-  }
+    matrix[0][0] = a.x();
+    matrix[0][1] = a.y();
+    matrix[0][2] = a.z();
 
-  void operator= (const Matrix& mtx) {
-    matrix = mtx.matrix;
+    matrix[1][0] = b.x();
+    matrix[1][1] = b.y();
+    matrix[1][2] = b.z();
+
+    matrix[2][0] = c.x();
+    matrix[2][1] = c.y();
+    matrix[2][2] = c.z();
   }
 };
 
@@ -161,13 +184,6 @@ struct Face3 {
 
   void generate_normal ();  
 
-  void operator= (const Face3& face) {
-    a = face.a;
-    b = face.b;
-    c = face.c;
-    normal = face.normal;
-  }
-
   void operator+= (const Face3& face) {
     a += face.a;
     b += face.b;
@@ -177,6 +193,9 @@ struct Face3 {
 };
 
 struct Spatial {
+  bool position_changed = false;
+  bool base_changed = false;
+
   Spatial (const Spatial& sp) :
     basis (sp.basis),
     position (sp.position)
@@ -198,6 +217,7 @@ struct Spatial {
 
   void translate_local (const Vector3& v) {
     position += v;
+    position_changed = true;
   }
 
   void translate_global (const Vector3& v) {
@@ -211,8 +231,10 @@ struct Spatial {
 
     Matrix3 m;
     MatrixOps::generate_basis_change_matrix(basis, b, m);
-    MatrixOps::change_basis(m, position);
+    Point3Ops::change_basis(m, position, position);
     position += v;
+
+    position_changed = true;
   }
 
   void rotate_x (double deg) {
@@ -223,6 +245,7 @@ struct Spatial {
                             };
 
     basis = rotation_matrix * basis;
+    base_changed = true;
   }
 
   void rotate_y (double deg) {
@@ -233,6 +256,7 @@ struct Spatial {
                             };
 
     basis = rotation_matrix * basis;
+    base_changed = true;
   }
 
   void rotate_z (double deg) {
@@ -243,10 +267,11 @@ struct Spatial {
                             };
 
     basis = rotation_matrix * basis;
+    base_changed = true;
   }
 };
 
-struct Mesh : public Spatial {
+struct Mesh : public Spatial {  
   std::vector<Face3> local_coordinates_faces;
   std::vector<Face3> global_coordinates_faces;
 
