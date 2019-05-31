@@ -17,9 +17,9 @@ void Canvas::paintEvent(QPaintEvent *event) {
     QBrush brush;
 
     brush.setColor(QColor (
-                     triangle->color.r,
-                     triangle->color.g,
-                     triangle->color.b
+                     triangle->color.x(),
+                     triangle->color.y(),
+                     triangle->color.z()
                    ));
 
     brush.setStyle(Qt::SolidPattern);

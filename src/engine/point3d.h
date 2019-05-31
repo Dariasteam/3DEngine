@@ -38,6 +38,12 @@ struct Point3 {
     set_z(p.z() + z());
   }
 
+  inline void operator*= (const double v) {
+    set_x(x() * v);
+    set_y(y() * v);
+    set_z(z() * v);
+  }
+
   inline double x() const { return X;}
   inline double y() const { return Y;}
   inline double z() const { return Z;}
@@ -54,6 +60,8 @@ static double rad2deg (double rad) {
 static double deg2rad (double deg) {
   return deg * PI / 180.0;
 }
+
+typedef Point3 Color;
 
 struct Vector3 : public Point3 {  
   Vector3 () : Point3 (0, 0, 0) {}
@@ -96,10 +104,7 @@ struct Vector3 : public Point3 {
     axis.normalize();
     */
 
-    double dot_product = u * v;
-    double angle = rad2deg(std::acos(dot_product / (vector_module(u) * vector_module(v))));
-
-    return angle;
+    return rad2deg(std::acos((u * v) / (vector_module(u) * vector_module(v))));
   }
 
   inline void normalize () {
@@ -276,7 +281,8 @@ struct Mesh : public Spatial {
   std::vector<Face3> global_coordinates_faces;
 
   std::vector<Mesh*> nested_meshes;
-  Color color = {0, 0, 0};
+  Color color{0, 0, 0};
+  Point3 p{1,1,1};
 
   Mesh () {}
   ~Mesh () {}

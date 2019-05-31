@@ -83,7 +83,7 @@ World::World(Camera* cm) :
   aux1->add_nested_mesh(aux2);
 
 
-  for (unsigned i = 0; i < 125000; i++) {
+  for (unsigned i = 0; i < 12500; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
@@ -165,9 +165,9 @@ void World::calculate_next_frame() const {
   front->rotate_x(0.01);
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 
-//  rotate_meshes();
+  rotate_meshes();
 
   camera->translate_local({0.0, 0.0, 15.3});
-  //camera->rotate_z(0.01);
+//  camera->rotate_z(0.01);
 }
 

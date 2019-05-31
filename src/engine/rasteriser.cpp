@@ -59,24 +59,15 @@ Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) con
 
   double angle_to_light = Vector3::angle_between(face.normal,
                                                  light.direction);
-  Color color;
+  Color color = light.color;
   double light_intensity = world->get_light().intensity;
 
-  color.r = ((180.0 - angle_to_light) / 180) * light.color.r;
-  color.g = ((180.0 - angle_to_light) / 180) * light.color.g;
-  color.b = ((180.0 - angle_to_light) / 180) * light.color.b;
+  color *= angle_to_light  / 180;
+  color *= light_intensity / 255;
 
-  color.r *= light_intensity / 255;
-  color.g *= light_intensity / 255;
-  color.b *= light_intensity / 255;
-
-  color.r *= m_color.r / 64;
-  color.g *= m_color.g / 64;
-  color.b *= m_color.b / 64;
-
-  color.r = std::min (color.r, 255.0);
-  color.g = std::min (color.g, 255.0);
-  color.b = std::min (color.b, 255.0);
+  color.set_x(std::min (color.x() * m_color.x() / 100, 255.0));
+  color.set_y(std::min (color.y() * m_color.y() / 100, 255.0));
+  color.set_z(std::min (color.z() * m_color.z() / 100, 255.0));
   return color;
 }
 
