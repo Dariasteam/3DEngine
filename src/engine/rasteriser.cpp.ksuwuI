@@ -90,9 +90,15 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   // 1. Create vectors from camera to vertex
   Vector3::create_vector(face.a, camera_fuge, aux.v1);
   Vector3::create_vector(face.b, camera_fuge, aux.v2);
-  Vector3::create_vector(face.c, camera_fuge, aux.v3);  
+  Vector3::create_vector(face.c, camera_fuge, aux.v3);
 
-  // 2. Calculate distance to camera
+  // 2. Check normal of the face is towards camera
+  bool angle_normal = Vector3::angle_between(face.normal, aux.v1) > 90.0
+                    | Vector3::angle_between(face.normal, aux.v1) > 90.0
+                    | Vector3::angle_between(face.normal, aux.v1) > 90.0;
+  if (!angle_normal) return false;
+
+  // 3. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(aux.v1);
   double mod_v2 = Vector3::vector_module(aux.v2);
   double mod_v3 = Vector3::vector_module(aux.v3);
@@ -101,13 +107,13 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   double z_max = std::max({mod_v1, mod_v2, mod_v3});
   if (z_min > 10000) return false;
 
-  // 3. Calculate intersection points with the plane
+  // 4. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, aux.v1, aux.a)
                 | calculate_cut_point(face.b, aux.v2, aux.b)
                 | calculate_cut_point(face.c, aux.v3, aux.c);
   if (!visible) return false;
 
-  // 4. Transform to camera basis
+  // 5. Transform to camera basis
   Point3Ops::change_basis(M2, aux.a, aux.a);
   Point3Ops::change_basis(M2, aux.b, aux.b);
   Point3Ops::change_basis(M2, aux.c, aux.c);
@@ -117,17 +123,11 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   triangles[index].c.set_values(aux.c.x(), aux.c.y());
   triangles[index].z_value = z_max;
 
-  // 5. Check point in camera bounds
+  // 6. Check point in camera bounds
   bool point_in_camera = is_point_between_camera_bounds(triangles[index].a)
                        | is_point_between_camera_bounds(triangles[index].b)
                        | is_point_between_camera_bounds(triangles[index].c);
   if (!point_in_camera) return false;
-
-  // 6. Check normal of the face is towards camera
-  bool angle_normal = Vector3::angle_between(face.normal, aux.v1) > 90.0
-                    | Vector3::angle_between(face.normal, aux.v2) > 90.0
-                    | Vector3::angle_between(face.normal, aux.v3) > 90.0;
-  if (!angle_normal) return false;
 
   // 7. Calculate light contribution
   const Color& aux_color = calculate_lights(color, face);
@@ -206,9 +206,10 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   const double& B = camera_plane_vector.y();
   const double& C = camera_plane_vector.z();
 
-  const double& D = -(camera_plane_point.x() * A +
-                      camera_plane_point.y() * B +
-                      camera_plane_point.z() * C);
+  // NOTE: Changed from D = -(...)
+  const double& D = (camera_plane_point.x() * A +
+                     camera_plane_point.y() * B +
+                     camera_plane_point.z() * C);
 
   const double& a = vertex.x();
   const double& c = vertex.y();
@@ -219,8 +220,8 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   const double& f = dir_v.z();
 
   // NOTE: Changed from -D to avoid render upside down
-  double T1 {D + A*a + B*c + C*e};
-  double T2 {- A*b - B*d - C*f};
+  double T1 {-D - (A*a + B*c + C*e)};
+  double T2 {A*b + B*d + C*f};
 
   bool return_value = true;
 
@@ -233,9 +234,9 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   double parameter = T1 / T2;
 
   // Intersection in global coordiantes
-  point.set_x(a + b * parameter);
-  point.set_y(-(c + d * parameter));
-  point.set_z(e + f * parameter);
+  point.set_x( (a + b * parameter));
+  point.set_y( (c + d * parameter));
+  point.set_z(  e + f * parameter);
 
   return return_value;
 }

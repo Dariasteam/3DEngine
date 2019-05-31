@@ -84,7 +84,7 @@ struct Vector3 : public Point3 {
   }
 
   static double angle_between (const Vector3& v, const Vector3& u) {
-
+    /*
     Vector3 aux_v = v;
     Vector3 aux_u = u;
 
@@ -94,11 +94,11 @@ struct Vector3 : public Point3 {
     double angle = rad2deg(std::acos(aux_v * aux_u));
     Vector3 axis = Vector3::cross_product(v, u);
     axis.normalize();
-
-/*
-    double dot_product = u * v;
-    double result = rad2deg(std::acos(dot_product / (vector_module(u) * vector_module(v))));
     */
+
+    double dot_product = u * v;
+    double angle = rad2deg(std::acos(dot_product / (vector_module(u) * vector_module(v))));
+
     return angle;
   }
 

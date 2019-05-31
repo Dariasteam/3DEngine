@@ -9,8 +9,6 @@
 #include <future>
 #include <mutex>
 
-#define N_THREADS 8
-
 struct Auxiliar {
   Point3 a;
   Point3 b;
@@ -41,7 +39,7 @@ private:
 
   std::vector <Mesh*> meshes_vector;
 
-  Color calculate_lights (const Color& m_color, const Face3& face) const;
+  inline Color calculate_lights (const Color& m_color, const Face3& face) const;
   void set_rasterization_data ();
   inline bool calculate_mesh_projection (const Face3& face,
                                          const Matrix3& M2,

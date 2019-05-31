@@ -67,13 +67,12 @@ World::World(Camera* cm) :
         {-5, 0, 5},    // vertex b
         {0, 0,  0}     // fake_normal
       }),
-
   };
 
   add_mesh(a_mesh);
   a_mesh->color = {0, 200, 200};
   a_mesh->generate_data();  
-/*
+
   Mesh* aux1 = new Mesh (*a_mesh);
   aux1->translate_global({20, 0, 0});
 
@@ -82,14 +81,14 @@ World::World(Camera* cm) :
 
   a_mesh->add_nested_mesh(aux1);
   aux1->add_nested_mesh(aux2);
-  */
-/*
-  for (unsigned i = 0; i < 125; i++) {
+
+
+  for (unsigned i = 0; i < 125000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
-    aux1->translate_global ({-100, -70, static_cast<double>(i * 100)});
-    aux2->translate_global ({ 100, -70, static_cast<double>(i * 100)});
+    aux1->translate_global ({-100,-70, static_cast<double>(i * 100)});
+    aux2->translate_global ({ 100,-70, static_cast<double>(i * 100)});
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};
@@ -97,8 +96,7 @@ World::World(Camera* cm) :
     add_mesh(aux1);
     add_mesh(aux2);
   }
-*/
-  /*
+
   Mesh* b_mesh = new Mesh;
   b_mesh->local_coordinates_faces =
     {
@@ -119,9 +117,9 @@ World::World(Camera* cm) :
   add_mesh(b_mesh);
   b_mesh->color = {255, 10, 25};
   b_mesh->generate_data();
-*/
+
+  b_mesh->position = {0, 0, 100};
   a_mesh->position = {0, 10, 50};
-  //b_mesh->position = {0, 0, 100};
 }
 
 void World::add_mesh(Mesh* mesh) {
@@ -161,16 +159,15 @@ void World::calculate_next_frame() const {
 
   auto* front = meshes.front();
 
-  //front->translate_local({0, 0, 15.2});
+  front->translate_local({0, 0, 15.2});
   front->rotate_y(0.005);
-  //front->nested_meshes[0]->rotate_x(0.01);
-  //front->rotate_x(0.01);
-  //front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
+  front->nested_meshes[0]->rotate_x(0.01);
+  front->rotate_x(0.01);
+  front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 
-  //rotate_meshes();
+//  rotate_meshes();
 
-
-  //camera->translate_local({0.0, 0.0, 15.3});
+  camera->translate_local({0.0, 0.0, 15.3});
   //camera->rotate_z(0.01);
 }
 
