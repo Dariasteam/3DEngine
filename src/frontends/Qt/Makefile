@@ -52,7 +52,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = src/main.cpp \
+SOURCES       = ../../engine/objparser.cpp \
+		src/main.cpp \
 		src/mainwindow.cpp \
 		canvas.cpp \
 		src/renderengine.cpp \
@@ -65,7 +66,8 @@ SOURCES       = src/main.cpp \
 		../../engine/matrix.cpp moc_mainwindow.cpp \
 		moc_canvas.cpp \
 		moc_renderengine.cpp
-OBJECTS       = main.o \
+OBJECTS       = objparser.o \
+		main.o \
 		mainwindow.o \
 		canvas.o \
 		renderengine.o \
@@ -267,7 +269,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		3D.pro src/mainwindow.h \
+		3D.pro ../../engine/objparser.h \
+		src/mainwindow.h \
 		canvas.h \
 		src/renderengine.h \
 		../../engine/point3d.h \
@@ -276,7 +279,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../../engine/rasteriser.h \
 		../../engine/point2d.h \
 		../../engine/triangle.h \
-		../../engine/matrix.h src/main.cpp \
+		../../engine/matrix.h ../../engine/objparser.cpp \
+		src/main.cpp \
 		src/mainwindow.cpp \
 		canvas.cpp \
 		src/renderengine.cpp \
@@ -698,8 +702,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/mainwindow.h canvas.h src/renderengine.h ../../engine/point3d.h ../../engine/world.h ../../engine/camera.h ../../engine/rasteriser.h ../../engine/point2d.h ../../engine/triangle.h ../../engine/matrix.h $(DISTDIR)/
-	$(COPY_FILE) --parents src/main.cpp src/mainwindow.cpp canvas.cpp src/renderengine.cpp ../../engine/point3d.cpp ../../engine/world.cpp ../../engine/camera.cpp ../../engine/rasteriser.cpp ../../engine/point2d.cpp ../../engine/triangle.cpp ../../engine/matrix.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../engine/objparser.h src/mainwindow.h canvas.h src/renderengine.h ../../engine/point3d.h ../../engine/world.h ../../engine/camera.h ../../engine/rasteriser.h ../../engine/point2d.h ../../engine/triangle.h ../../engine/matrix.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../engine/objparser.cpp src/main.cpp src/mainwindow.cpp canvas.cpp src/renderengine.cpp ../../engine/point3d.cpp ../../engine/world.cpp ../../engine/camera.cpp ../../engine/rasteriser.cpp ../../engine/point2d.cpp ../../engine/triangle.cpp ../../engine/matrix.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -784,6 +788,11 @@ compiler_lex_clean:
 compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
+
+objparser.o: ../../engine/objparser.cpp ../../engine/objparser.h \
+		../../engine/point3d.h \
+		../../engine/matrix.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o objparser.o ../../engine/objparser.cpp
 
 main.o: src/main.cpp src/mainwindow.h \
 		canvas.h \

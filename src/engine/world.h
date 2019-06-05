@@ -5,6 +5,7 @@
 
 #include "point3d.h"
 #include "camera.h"
+#include "objparser.h"
 
 #include <vector>
 #include <algorithm>
@@ -40,10 +41,10 @@ public:
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
   inline const DirectionalLight get_light () { return sunlight; }
 
-  inline void add_mesh (Mesh* mesh);
+  inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
 
-  inline void rotate_meshes () const;
+  inline void rotate_meshes () const;  
 
   void calculate_next_frame () const;
 

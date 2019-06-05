@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+  ../../engine/objparser.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 	../../engine/matrix.cpp
 
 HEADERS += \
+  ../../engine/objparser.h \
         src/mainwindow.h \
         canvas.h \
         src/renderengine.h \

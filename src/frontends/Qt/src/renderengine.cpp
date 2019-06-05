@@ -26,6 +26,5 @@ void RenderEngine::main_loop () {
     frame_counter = 0;
     last_time = std::chrono::system_clock::now();
   }
-
 }
 

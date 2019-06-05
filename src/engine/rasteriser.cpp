@@ -21,8 +21,7 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
 }
 
 void Rasteriser::set_rasterization_data() {
-  // Transform camera to new basis
-  camera->express_in_different_basis(world->basis);
+  // Transform camera to new basis  
 
   camera_plane_vector = camera->get_plane_vector();  
   camera_bounds       = camera->get_bounds();
@@ -36,7 +35,7 @@ void Rasteriser::set_rasterization_data() {
 
   auto lambda = [&](unsigned init, unsigned end) {
     for (unsigned j = init; j < end; j++)
-      meshes[j]->express_in_parents_basis(world->basis);
+      meshes[j]->express_in_parents_basis(camera->basis);
   };
 
   std::vector<std::future<void>> promises (N_THREADS);
@@ -76,7 +75,11 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
                                            std::vector<Triangle2>& triangles,
                                            unsigned index,
                                            Auxiliar& aux,
-                                           const Color& color) {
+                                           const Color& color) {  
+
+  // Check face is not behind camera. Since we are using camera basis
+  // 0 is the position of the plane FIXME: This break things
+  //if (face.a.z() < 0.0 && face.b.z() < 0.0 && face.c.z() < 0.0) return false;
 
   // 1. Create vectors from camera to vertex
   Vector3::create_vector(face.a, camera_fuge, aux.v1);
@@ -188,6 +191,18 @@ bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
 }
 
 // Calculate the intersection point between the camera plane and the vertex
+/* Plane expresed as Ax + By + Cz + D = 0
+ * Rect expresed as
+ *  x = a + bß
+ *  y = c + dß
+ *  z = e + fß
+ *
+ * T1 = D + A*a + B*c + C*e
+ * T2 = - A*b - B*d - C*f
+ *
+ * ß = T1 / T2
+ *
+ * */
 bool Rasteriser::calculate_cut_point(const Point3& vertex,
                                      const Vector3& dir_v,
                                            Point3& point) const {

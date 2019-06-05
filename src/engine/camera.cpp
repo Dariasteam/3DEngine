@@ -5,6 +5,10 @@ Camera::Camera() {
   local_parameters.vector_plane = {0, 0, 1};
   local_parameters.point_plane = {0, 0, 0};
 
+  global_parameters.fuge = local_parameters.fuge;
+  global_parameters.vector_plane = local_parameters.vector_plane;
+  global_parameters.point_plane = local_parameters.point_plane;
+
   bounds = {-150, -150, 150, 150};
 
   position = {0, 0, 0};
@@ -16,7 +20,7 @@ Camera::Camera() {
   });
 }
 
-void Camera::express_in_different_basis(const Basis3& new_basis) {
+void Camera::express_in_different_basis(const Basis3& new_basis) {    
   // Calcular matriz de cambio de base
 
   Matrix3 basis_changer;

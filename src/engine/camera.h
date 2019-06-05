@@ -37,6 +37,12 @@ public:
   inline Point3  get_plane_point() const { return global_parameters.point_plane; }
   inline Rect get_bounds() const { return bounds; }
 
+  void translate (const Vector3& vec) {
+    global_parameters.fuge += vec;
+    //global_parameters.vector_plane += vec;
+    global_parameters.point_plane += vec;
+  }
+
   void express_in_different_basis (const Basis3& new_basis);
 
 };

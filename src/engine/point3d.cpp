@@ -51,7 +51,7 @@ void Face3::generate_normal() {
              a.z() * v.x() * u.y();
 */
 
-  normal = {X, Y, Z};
+  normal = {-X, -Y, -Z};
   normal.normalize();
 }
 
