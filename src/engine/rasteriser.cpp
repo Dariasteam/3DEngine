@@ -118,10 +118,12 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   if (!point_in_camera) return false;
 
   // 6. Check normal of the face is towards camera
-  bool angle_normal = Vector3::angle_between(face.normal, aux.v1) > 90.0
-                    | Vector3::angle_between(face.normal, aux.v2) > 90.0
-                    | Vector3::angle_between(face.normal, aux.v3) > 90.0;
-  if (!angle_normal) return false;
+  if (!double_faces) {
+    bool angle_normal = Vector3::angle_between(face.normal, aux.v1) > 90.0
+                      | Vector3::angle_between(face.normal, aux.v2) > 90.0
+                      | Vector3::angle_between(face.normal, aux.v3) > 90.0;
+    if (!angle_normal) return false;
+  }
 
   // 7. Calculate light contribution
   const Color& aux_color = calculate_lights(color, face);

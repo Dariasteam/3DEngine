@@ -26,6 +26,7 @@ private:
   World* world;
   Camera* camera;
   Canvas* canvas;
+  bool double_faces = false;
 
   bool calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
