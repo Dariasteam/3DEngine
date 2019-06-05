@@ -122,10 +122,12 @@ World::World(Camera* cm) :
   a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("file.obj");
+  Mesh* parsed_mesh = parser ("car.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {100, 100, 100};
-  parsed_mesh->position = {0, 0, -93};
+  parsed_mesh->rotate_y(180);
+  parsed_mesh->position = {0, 0, -95};
+
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -174,13 +176,15 @@ void World::calculate_next_frame() const {
   front->rotate_x(0.01);
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 */
-  meshes.back()->rotate_y(-0.01);
-  meshes.back()->rotate_x(0.001);
-  meshes.back()->rotate_z(0.005);
-  meshes.back()->translate_local({0.0, 0.0, 13.05});
+  /*
+  meshes.back()->rotate_y(-0.025);
+  meshes.back()->rotate_x(-0.001);
+  meshes.back()->rotate_z(-0.001);
+  */
+  //meshes.back()->translate_local({0.0, 0.0, 13.05});
   //rotate_meshes();
 
-  camera->translate({0.0, 0.0, 13.05});
+  //camera->translate({0.0, 0.0, 13.05});
   //camera->rotate_y(0.01);
 }
 

@@ -1,20 +1,36 @@
 #include "objparser.h"
 
-ObjParser::ObjParser()
-{
+bool ObjParser::parse_vertex(const std::string &line) {
+  double v_x, v_y, v_z;
+
+  try {
+//    line >> v_x;
+//    line >> v_y;
+//    line >> v_z;
+    vertex_list.push_back(Point3{v_x, v_y, v_z});
+  } catch (...) {
+
+//    delete aux_mesh;
+    return false;
+  }
+}
+
+bool ObjParser::parse_face(const std::string &line, Mesh *aux_mesh) {
+
+}
+
+ObjParser::ObjParser() {
 
 }
 
 Mesh *ObjParser::operator ()(std::string file_name) {
   std::ifstream file;
   file.open(file_name);
+
   if (!file.is_open()) {
     std::cerr << "[ERROR] file " << file_name << " does not exists\n";
     return nullptr;
   }
-
-  std::vector <Point3> vertex_list;
-  std::vector <Face3> face_list;
 
   char c;
   unsigned n_line = 1;
@@ -22,8 +38,44 @@ Mesh *ObjParser::operator ()(std::string file_name) {
   long i1, i2, i3;
 
   Mesh* aux_mesh = new Mesh ();
-
   bool end = false;
+/*
+  while (!file.eof()) {
+    file >> c;
+    switch (c) {
+      case 'v':
+        {
+          file >> v_x;
+          file >> v_y;
+          file >> v_z;
+
+          vertex_list.push_back(Point3{v_x, v_y, v_z});
+        }
+      break;
+      case 'f':
+        {
+          file >> i1;
+          file >> i2;
+          file >> i3;
+
+          // Fix posible negative indexes
+          i1 = (i1 < 0 ? vertex_list.size() - i1 : i1 - 1);
+          i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
+          i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
+
+          aux_mesh->local_coordinates_faces.push_back(Face3 {
+                                vertex_list[i1],
+                                vertex_list[i2],
+                                vertex_list[i3],
+                              });
+        }
+      break;
+
+      default:
+      break;
+    }
+  }
+*/
 
   while (!end) {
     try {

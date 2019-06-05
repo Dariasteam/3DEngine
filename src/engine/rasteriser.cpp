@@ -117,11 +117,12 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
                        | is_point_between_camera_bounds(triangles[index].c);
   if (!point_in_camera) return false;
 
-  // 6. Check normal of the face is towards camera
+  // 6. Check normal of the face is towards camera, do not check angle
+  // but only if it would be bigger than 90º instead
   if (!double_faces) {
-    bool angle_normal = Vector3::angle_between(face.normal, aux.v1) > 90.0
-                      | Vector3::angle_between(face.normal, aux.v2) > 90.0
-                      | Vector3::angle_between(face.normal, aux.v3) > 90.0;
+    bool angle_normal = (face.normal * aux.v1) < 0
+                      | (face.normal * aux.v2) < 0
+                      | (face.normal * aux.v3) < 0;
     if (!angle_normal) return false;
   }
 
@@ -142,34 +143,46 @@ void Rasteriser::rasterise() {
   unsigned segments = (meshes_vector.size() / N_THREADS);
 
   auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
-    Point3 a;
-    Point3 b;
-    Point3 c;    
-
+    Point3 a, b, c;
     unsigned counter = 0;
 
     Auxiliar aux;
 
+    unsigned i_from = counter;
+    unsigned i_to = counter;
+
     for (unsigned j = init; j < end; j++) {
       Mesh* aux_mesh = meshes_vector[j];
       for (const auto& face : aux_mesh->global_coordinates_faces) {
-        counter += calculate_mesh_projection(face, M2,
+        i_to += calculate_mesh_projection(face, M2,
                                              projected_elements[vec_index],
-                                             counter, aux,
+                                             i_to, aux,
                                              aux_mesh->color
                                             );
+
+
+
+        if (((i_to - i_from) > 10 || i_to == (end - 1)) && mtx.try_lock()) {
+          for (unsigned i = i_from; i < i_to; i++)
+            elements_to_render.push_back(&projected_elements[vec_index][i]);
+          mtx.unlock();
+          i_from = i_to;
+        }
+
       }
     }
-
-    while(!mtx.try_lock());    
-    for (unsigned i = 0; i < counter; i++)
-      elements_to_render.push_back(&projected_elements[vec_index][i]);
+/*
+    mtx.lock();
+    for (unsigned i = 0; i < i_to; i++)
+      elements_to_render.push_back(&projected_eleme[i]);
     mtx.unlock();
+*/
   };
 
   std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i <N_THREADS  - 1; i++)
+  for (unsigned i = 0; i <N_THREADS  - 1; i++) {
     promises[i] = std::async(lambda, i * segments, (i + 1) * segments, i);
+  }
   promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments,
                                                meshes_vector.size(),
                                                N_THREADS - 1);
