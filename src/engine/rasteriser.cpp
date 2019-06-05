@@ -21,14 +21,7 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
 }
 
 void Rasteriser::set_rasterization_data() {
-  // Transform camera to new basis  
-
-  camera_plane_vector = camera->get_plane_vector();  
-  camera_bounds       = camera->get_bounds();
-  camera_fuge         = camera->get_fuge();
-  camera_plane_point  = camera->get_plane_point();    
-
-  // Change basis
+  // Change basis to camera
   const auto& meshes = world->get_elements();
   unsigned size = meshes.size();  
   unsigned segments = (size / N_THREADS);
@@ -82,9 +75,9 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   //if (face.a.z() < 0.0 && face.b.z() < 0.0 && face.c.z() < 0.0) return false;
 
   // 1. Create vectors from camera to vertex
-  Vector3::create_vector(face.a, camera_fuge, aux.v1);
-  Vector3::create_vector(face.b, camera_fuge, aux.v2);
-  Vector3::create_vector(face.c, camera_fuge, aux.v3);  
+  Vector3::create_vector(face.a, camera->get_fuge(), aux.v1);
+  Vector3::create_vector(face.b, camera->get_fuge(), aux.v2);
+  Vector3::create_vector(face.c, camera->get_fuge(), aux.v3);
 
   // 2. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(aux.v1);
@@ -98,7 +91,7 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   // 3. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, aux.v1, aux.a)
                 | calculate_cut_point(face.b, aux.v2, aux.b)
-                | calculate_cut_point(face.c, aux.v3, aux.c);
+                | calculate_cut_point(face.c, aux.v3, aux.c);  
   if (!visible) return false;
 
   // 4. Transform to camera basis
@@ -127,10 +120,10 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   }
 
   // 7. Calculate light contribution
-  const Color& aux_color = calculate_lights(color, face);
+  const Color& aux_color = calculate_lights(color, face);  
 
   // 8. Add triangle to the list
-  triangles[index].color = aux_color;
+  triangles[index].color = aux_color;    
   return true;
 }
 
@@ -177,7 +170,7 @@ void Rasteriser::rasterise() {
       elements_to_render.push_back(&projected_eleme[i]);
     mtx.unlock();
 */
-  };
+  };  
 
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i <N_THREADS  - 1; i++) {
@@ -195,14 +188,14 @@ void Rasteriser::rasterise() {
       return a->z_value > b->z_value;
   });
 
-  canvas->update_frame(camera_bounds);
+  canvas->update_frame(camera->get_bounds());
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
-  return p.x() > camera_bounds.x       &&
-         p.x() < camera_bounds.width   &&
-         p.y() > camera_bounds.y       &&
-         p.y() < camera_bounds.height;
+  return p.x() > camera->get_bounds().x       &&
+         p.x() < camera->get_bounds().width   &&
+         p.y() > camera->get_bounds().y       &&
+         p.y() < camera->get_bounds().height;
 }
 
 // Calculate the intersection point between the camera plane and the vertex
@@ -220,16 +213,15 @@ bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
  * */
 bool Rasteriser::calculate_cut_point(const Point3& vertex,
                                      const Vector3& dir_v,
-                                           Point3& point) const {
-
+                                           Point3& point) const {  
   // Calc cut point line - plane
-  const double& A = camera_plane_vector.x();
-  const double& B = camera_plane_vector.y();
-  const double& C = camera_plane_vector.z();
+  const double A = camera->get_plane_vector().x();
+  const double B = camera->get_plane_vector().y();
+  const double C = camera->get_plane_vector().z();
 
-  const double& D = -(camera_plane_point.x() * A +
-                      camera_plane_point.y() * B +
-                      camera_plane_point.z() * C);
+  const double D = -(camera->get_plane_point().x() * A +
+                      camera->get_plane_point().y() * B +
+                      camera->get_plane_point().z() * C);
 
   const double& a = vertex.x();
   const double& c = vertex.y();
@@ -241,7 +233,7 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
 
   // NOTE: Changed from -D to avoid render upside down
   double T1 {D + A*a + B*c + C*e};
-  double T2 {- A*b - B*d - C*f};
+  double T2 {- A*b - B*d - C*f};  
 
   bool return_value = true;
 
@@ -249,12 +241,12 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   if ((f < 0 && C > 0) || (f > 0 && C < 0)) {
     T1 = -T1;
     return_value = false;
-  }
+  }  
 
   double parameter = T1 / T2;
 
   // Intersection in global coordiantes
-  point.set_x(a + b * parameter);
+  point.set_x(a + b * parameter);  
   point.set_y(-(c + d * parameter));
   point.set_z(e + f * parameter);
 

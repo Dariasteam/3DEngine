@@ -31,10 +31,6 @@ private:
   bool calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
 
-  Point3  camera_fuge;
-  Vector3 camera_plane_vector;
-  Rect camera_bounds;
-  Point3 camera_plane_point;
   std::vector<std::vector <Triangle2>> projected_elements;
   std::vector<Triangle2*> elements_to_render;
 

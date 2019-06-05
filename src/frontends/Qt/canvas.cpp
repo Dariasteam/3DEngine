@@ -8,28 +8,20 @@ void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
   for (const auto triangle: *triangles) {
-
     const QPointF& a = adjust_coordinates(triangle->a);
     const QPointF& b = adjust_coordinates(triangle->b);
     const QPointF& c = adjust_coordinates(triangle->c);
 
-    QPolygonF poly ({a, b, c});
-    QBrush brush;
+    //QPolygonF poly ({a, b, c});
 
-    brush.setColor(QColor (
-                     triangle->color.x(),
-                     triangle->color.y(),
-                     triangle->color.z()
-                   ));
-
-    brush.setStyle(Qt::SolidPattern);
-    p.setBrush(brush);
-
-    QPen pen;
-    pen.setBrush(brush);
-    pen.setStyle(Qt::NoPen);
-    p.setPen(pen);
-    p.drawPolygon(poly);
+    QPointF points[3] = {a, b, c};
+    p.setPen(Qt::NoPen);
+    p.setBrush(QColor(
+      triangle->color.x(),
+      triangle->color.y(),
+      triangle->color.z()
+    ));
+    p.drawConvexPolygon(points, 3);
   }
 }
 
