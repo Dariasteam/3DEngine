@@ -40,8 +40,6 @@ public:
   void translate (const Vector3& vec) {
     position += vec;
   }
-
-  void apply_transformation ();
 };
 
 #endif // CAMERA_H

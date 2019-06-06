@@ -20,9 +20,7 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   }
 }
 
-void Rasteriser::set_rasterization_data() {  
-  camera->apply_transformation();
-
+void Rasteriser::set_rasterization_data() {    
   // Change basis to camera
   const auto& meshes = world->get_elements();
   unsigned size = meshes.size();  
