@@ -41,7 +41,7 @@ public:
     position += vec;
   }
 
-  void apply_transform ();
+  void apply_transformation ();
 };
 
 #endif // CAMERA_H

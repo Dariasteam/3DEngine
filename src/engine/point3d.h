@@ -200,7 +200,13 @@ struct Face3 {
 
 struct Spatial {
   bool position_changed = false;
-  bool base_changed = false;
+  bool basis_changed = false;
+
+  const Basis3 canonical_base {
+    {1, 0, 0},
+    {0, 1, 0},
+    {0, 0, 1},
+  };
 
   Spatial (const Spatial& sp) :
     basis (sp.basis),
@@ -213,6 +219,8 @@ struct Spatial {
     basis (b),
     position (p)
   {}
+
+  virtual void apply_transformation () = 0;
 
   Basis3 basis {
           {1, 0, 0},
@@ -229,14 +237,9 @@ struct Spatial {
   void translate_global (const Vector3& v) {
 
     // FIXME: is this usefull for nested meshes?
-    Basis3 b {
-      {1, 0, 0},
-      {0, 1, 0},
-      {0, 0, 1},
-    };
 
     Matrix3 m;
-    MatrixOps::generate_basis_change_matrix(basis, b, m);
+    MatrixOps::generate_basis_change_matrix(basis, canonical_base, m);
     Point3Ops::change_basis(m, position, position);
     position += v;
 
@@ -251,7 +254,8 @@ struct Spatial {
                             };
 
     basis = rotation_matrix * basis;
-    base_changed = true;
+    basis_changed = true;
+    apply_transformation();
   }
 
   void rotate_y (double deg) {
@@ -262,7 +266,8 @@ struct Spatial {
                             };
 
     basis = rotation_matrix * basis;
-    base_changed = true;
+    basis_changed = true;
+    apply_transformation();
   }
 
   void rotate_z (double deg) {
@@ -272,8 +277,9 @@ struct Spatial {
                               {0, 0, 1}
                             };
 
-    basis = rotation_matrix * basis;
-    base_changed = true;
+    basis = rotation_matrix * basis;    
+    basis_changed = true;
+    apply_transformation();
   }
 };
 
@@ -321,6 +327,8 @@ struct Mesh : public Spatial {
   void copy_faces_local2global () {
     global_coordenates_faces = local_coordenates_faces;
   }
+
+  void apply_transformation() override;
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& translation);

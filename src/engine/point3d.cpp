@@ -1,5 +1,9 @@
 #include "point3d.h"
 
+void Mesh::apply_transformation() {
+
+}
+
 std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
                                                 const Point3& translation) {
   std::list<Mesh*> mesh_list {this};
@@ -8,37 +12,40 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
     mesh_list.splice(mesh_list.end(),
                      nested_mesh->express_in_parents_basis(new_basis, translation));
 
-  if (true) {
-    copy_faces_local2global();
-    Matrix3 basis_changer;
-    MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer);
 
-    for (const auto& mesh : mesh_list) {      
+  copy_faces_local2global();
+
+  if (basis_changed) {
+    Matrix3 basis_changer_1;
+    MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
+
+    Matrix3 basis_changer_2;
+    MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
+
+    for (const auto& mesh : mesh_list) {
       for (auto& face : mesh->global_coordenates_faces) {
-        for (unsigned j = 0; j < 3; j++) {            
+        for (unsigned j = 0; j < 3; j++) {
+          Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
           face[j] += position;
-          Point3Ops::change_basis(basis_changer, face[j], face[j]);
+          Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
         }
-        Point3Ops::change_basis(basis_changer, face.normal, face.normal);
       }
     }
+  } else {
+    Matrix3 basis_changer_3;
+    MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_3);
 
-  } else if (position_changed) {    
-    copy_faces_local2global();
-    for (const auto& mesh : mesh_list)
-      for (auto& face : mesh->global_coordenates_faces)
-        for (unsigned j = 0; j < 3; j++)
-          face[j] += position;              
+    for (const auto& mesh : mesh_list) {
+      for (auto& face : mesh->global_coordenates_faces) {
+        for (unsigned j = 0; j < 3; j++) {
+          face[j] += position;
+          face[j] += translation;
+          Point3Ops::change_basis(basis_changer_3, face[j], face[j]);
+        }
+        Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
+      }
+    }
   }
-
-  // Offset world to match camera position
-  for (const auto& mesh : mesh_list)
-    for (auto& face : mesh->global_coordenates_faces)
-      for (unsigned j = 0; j < 3; j++)
-        face[j] += translation;
-
-  position_changed = false;
-  base_changed     = false;
 
   return mesh_list;
 }

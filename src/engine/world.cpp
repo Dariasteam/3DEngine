@@ -177,13 +177,13 @@ void World::calculate_next_frame() const {
 */
 
 //  meshes.back()->rotate_y(-0.025);
-//  meshes.back()->rotate_x(-0.001);
+//  meshes.back()->rotate_x(-0.01);
 //  meshes.back()->rotate_z(-0.001);
 
   //meshes.back()->translate_local({0.0, 0.0, 13.05});
   //rotate_meshes();
 
-  camera->translate_local({0.0, 0.0, -0.01});
+// camera->translate_local({0.0, 0.0, -0.01});
   camera->rotate_y(-0.01);
 }
 

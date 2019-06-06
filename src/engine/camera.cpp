@@ -22,7 +22,7 @@ Camera::Camera() {
 
 #include <iostream>
 
-void Camera::apply_transform() {
+void Camera::apply_transformation() {
   // Calcular matriz de cambio de base
 
   /*

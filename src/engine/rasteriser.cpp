@@ -21,7 +21,7 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
 }
 
 void Rasteriser::set_rasterization_data() {  
-  camera->apply_transform();
+  camera->apply_transformation();
 
   // Change basis to camera
   const auto& meshes = world->get_elements();
