@@ -81,7 +81,7 @@ World::World(Camera* cm) :
 //  aux1->add_nested_mesh(aux2);
 
   //125000
-  /*
+
   for (unsigned i = 0; i < 125000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
@@ -95,7 +95,7 @@ World::World(Camera* cm) :
 //    add_mesh(aux1);
 //    add_mesh(aux2);
   }
-  */
+
 
   Mesh* b_mesh = new Mesh;
   b_mesh->local_coordenates_faces =

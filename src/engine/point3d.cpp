@@ -19,13 +19,12 @@ void Mesh::apply_rotations (const std::list<Mesh*> mesh_list) {
       }
     };
 
-    unsigned N_THREADS = 8;
     unsigned size = mesh->intermediate_coordenates_faces.size();
     unsigned segment = size / N_THREADS;
     std::vector<std::future<void>> promises (N_THREADS);
     for (unsigned i = 0; i < N_THREADS - 1; i++)
       promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
-    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 2) * segment, size);
+    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segment, size);
 
     for (auto& promise : promises)
       promise.get();
@@ -33,7 +32,7 @@ void Mesh::apply_rotations (const std::list<Mesh*> mesh_list) {
 }
 
 // Multithreaded change basis
-void Mesh::change_basis(const std::list<Mesh *> mesh_list,
+void Mesh::change_basis(const std::list<Mesh*> mesh_list,
                         const Basis3 &new_basis,
                         const Point3 &translation){
 
@@ -58,13 +57,12 @@ void Mesh::change_basis(const std::list<Mesh *> mesh_list,
       }
     };
 
-    unsigned N_THREADS = 8;
     unsigned size = mesh->intermediate_coordenates_faces.size();
     unsigned segment = size / N_THREADS;
     std::vector<std::future<void>> promises (N_THREADS);
     for (unsigned i = 0; i < N_THREADS - 1; i++)
       promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
-    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 2) * segment, size);
+    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segment, size);
 
     for (auto& promise : promises)
       promise.get();

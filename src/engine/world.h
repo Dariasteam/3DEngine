@@ -1,8 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#define N_THREADS 8
-
 #include "point3d.h"
 #include "camera.h"
 #include "objparser.h"

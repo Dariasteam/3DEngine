@@ -7,6 +7,7 @@
 #include <cmath>
 #include <list>
 
+#define N_THREADS 8
 #define PI 3.14159265
 
 struct Point3 {
