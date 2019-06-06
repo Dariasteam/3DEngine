@@ -14,7 +14,7 @@
 struct DirectionalLight {
   Vector3 direction;
   Color color;
-  unsigned intensity;
+  double intensity;
 };
 
 class World {
@@ -23,9 +23,9 @@ private:
   std::vector <Mesh*> meshes;
 
   DirectionalLight sunlight {
-    Vector3 {1,0, 0},
+    Vector3 {1, 0.5, 0},
     Color {255, 255, 255},
-    200
+    1.32
   };
 
 

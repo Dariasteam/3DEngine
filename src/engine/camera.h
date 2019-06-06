@@ -35,11 +35,7 @@ public:
   inline Point3  get_fuge() const { return global_parameters.fuge; }
   inline Vector3 get_plane_vector() const { return global_parameters.vector_plane; }
   inline Point3  get_plane_point() const { return global_parameters.point_plane; }
-  inline Rect get_bounds() const { return bounds; }
-
-  void translate (const Vector3& vec) {
-    position += vec;
-  }
+  inline Rect get_bounds() const { return bounds; }  
 };
 
 #endif // CAMERA_H

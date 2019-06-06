@@ -8,21 +8,29 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
     mesh_list.splice(mesh_list.end(),
                      nested_mesh->express_in_parents_basis(new_basis, translation));
 
-
-
   Matrix3 basis_changer_3;
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_3);
-  copy_faces_local2global();
-  Matrix3 basis_changer_1;
-  MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
 
   Matrix3 basis_changer_2;
   MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 
+  if (basis_changed) {
+    intermediate_coordenates_faces = local_coordenates_faces;
+
+    Matrix3 basis_changer_1;
+    MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
+
+    for (const auto& mesh : mesh_list)
+      for (auto& face : mesh->intermediate_coordenates_faces)
+        for (unsigned j = 0; j < 3; j++)
+          Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
+  }
+
+  global_coordenates_faces = intermediate_coordenates_faces;
+
   for (const auto& mesh : mesh_list) {
     for (auto& face : mesh->global_coordenates_faces) {
       for (unsigned j = 0; j < 3; j++) {
-        Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
         face[j] += position;
         Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
         face[j] += translation;
@@ -30,6 +38,9 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
       Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
     }
   }
+
+  basis_changed = false;
+  position_changed = false;
 
   return mesh_list;
 }

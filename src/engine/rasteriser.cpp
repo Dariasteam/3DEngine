@@ -9,8 +9,7 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   canvas->set_triangles_buffer(&elements_to_render);
 
   for (auto& element : projected_elements)
-    element.resize(300000);
-
+    element.reserve(300000);
 }
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
@@ -42,24 +41,26 @@ void Rasteriser::set_rasterization_data() {
   // Generate iterable list of meshes
   meshes_vector.clear();
   elements_to_render.clear();
-  elements_to_render.reserve(100000);
   generate_mesh_list(world->get_elements());  
 }
 
 Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) const {
   const DirectionalLight& light = world->get_light();
 
-  double angle_to_light = Vector3::angle_between(face.normal,
-                                                 light.direction);
+  // Using dot product as angle
+  double angle_to_light = 1 + (face.normal * light.direction);
+
   Color color = light.color;
-  double light_intensity = world->get_light().intensity;
+  color *= angle_to_light * world->get_light().intensity;;
 
-  color *= angle_to_light  / 180;
-  color *= light_intensity / 255;
+  color.set_x(std::min (fabs(color.x() * m_color.x() / 255), 254.0));
+  color.set_y(std::min (fabs(color.y() * m_color.y() / 255), 254.0));
+  color.set_z(std::min (fabs(color.z() * m_color.z() / 255), 254.0));
 
-  color.set_x(std::min (color.x() * m_color.x() / 100, 255.0));
-  color.set_y(std::min (color.y() * m_color.y() / 100, 255.0));
-  color.set_z(std::min (color.z() * m_color.z() / 100, 255.0));
+  // Check NAN values
+  if (color.x() != color.x()) color.set_x(255);
+  if (color.y() != color.y()) color.set_y(255);
+  if (color.z() != color.z()) color.set_z(255);
   return color;
 }
 
@@ -115,7 +116,6 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 
   // 7. Calculate light contribution
   triangles[index].color = calculate_lights(color, face);
-
   return true;
 }
 
@@ -141,21 +141,16 @@ void Rasteriser::rasterise() {
                                           projected_elements[vec_index],
                                           i_to, aux_mesh->color);
 
-/*
+
         if (((i_to - i_from) > 10 || i_to == (end - 1)) && mtx.try_lock()) {
           for (unsigned i = i_from; i < i_to; i++)
             elements_to_render.push_back(&projected_elements[vec_index][i]);
           mtx.unlock();
           i_from = i_to;
         }
-*/
+
       }
     }
-
-    mtx.lock();
-    for (unsigned i = 0; i < i_to; i++)
-      elements_to_render.push_back(&projected_elements[vec_index][i]);
-    mtx.unlock();
   };  
 
   std::vector<std::future<void>> promises (N_THREADS);
@@ -174,6 +169,7 @@ void Rasteriser::rasterise() {
       return a->z_value > b->z_value;
   });
 
+  // FIXME: Calculate occlusion here?
   canvas->update_frame(camera->get_bounds());
 }
 

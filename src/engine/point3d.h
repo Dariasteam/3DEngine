@@ -219,7 +219,7 @@ struct Spatial {
   void translate_local (const Vector3& v) {
     position += v;
     position_changed = true;
-  }
+  }  
 
   void translate_global (const Vector3& v) {
 
@@ -262,13 +262,14 @@ struct Spatial {
                               {0, 0, 1}
                             };
 
-    basis = rotation_matrix * basis;    
+    basis = rotation_matrix * basis;
     basis_changed = true;
   }
 };
 
-struct Mesh : public Spatial {  
+struct Mesh : public Spatial {
   std::vector<Face3> local_coordenates_faces;
+  std::vector<Face3> intermediate_coordenates_faces;  // for rotations
   std::vector<Face3> global_coordenates_faces;
 
   std::vector<Mesh*> nested_meshes;
@@ -305,12 +306,9 @@ struct Mesh : public Spatial {
 
   void generate_data () {
     generate_normals();
-    global_coordenates_faces = local_coordenates_faces;
-  }
-
-  void copy_faces_local2global () {
-    global_coordenates_faces = local_coordenates_faces;
-  }
+    intermediate_coordenates_faces = local_coordenates_faces;
+    //global_coordenates_faces = local_coordenates_faces;
+  }  
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& translation);

@@ -1,6 +1,6 @@
 #include "canvas.h"
 
-#define WIREFRAME false
+#define FILL
 
 Canvas::Canvas(QWidget *parent) :
   QWidget(parent) {
@@ -10,27 +10,24 @@ void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
   for (const auto triangle: *triangles) {
-    const QPointF& a = adjust_coordinates(triangle->a);
-    const QPointF& b = adjust_coordinates(triangle->b);
-    const QPointF& c = adjust_coordinates(triangle->c);
-
-    //QPolygonF poly ({a, b, c});
+    const QPointF a = adjust_coordinates(triangle->a);
+    const QPointF b = adjust_coordinates(triangle->b);
+    const QPointF c = adjust_coordinates(triangle->c);
 
     QPointF points[3] = {a, b, c};
-    if (!WIREFRAME) {
+    #ifdef FILL
       p.setPen(Qt::NoPen);
       p.setBrush(QColor(
         triangle->color.x(),
         triangle->color.y(),
         triangle->color.z()
       ));
-    }
-    p.drawPolygon(points, 3);
+    #endif
+    p.drawConvexPolygon(points, 3);
   }
 }
 
 void Canvas::update_frame(Rect b) {
-
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
 
