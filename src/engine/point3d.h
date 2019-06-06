@@ -307,11 +307,20 @@ struct Mesh : public Spatial {
   void generate_data () {
     generate_normals();
     intermediate_coordenates_faces = local_coordenates_faces;
-    //global_coordenates_faces = local_coordenates_faces;
+    global_coordenates_faces = local_coordenates_faces;
+
+    local_coordenates_faces.shrink_to_fit();
+    global_coordenates_faces.shrink_to_fit();
+    intermediate_coordenates_faces.shrink_to_fit();
   }  
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& translation);
+
+  void inline apply_rotations (const std::list<Mesh*> mesh_list);
+  void inline change_basis    (const std::list<Mesh*> mesh_list,
+                               const Basis3& new_basis,
+                               const Point3& translation);
 };
 
 #endif // POINT3D_H

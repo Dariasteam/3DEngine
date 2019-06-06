@@ -1,9 +1,9 @@
 #include "rasteriser.h"
 
 Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
-  canvas (cv),
-  camera (cm),
   world (wd),
+  camera (cm),
+  canvas (cv),
   projected_elements (N_THREADS)
 {
   canvas->set_triangles_buffer(&elements_to_render);
@@ -19,12 +19,12 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   }
 }
 
-void Rasteriser::set_rasterization_data() {    
-  // Change basis to camera
+void Rasteriser::set_rasterization_data() {
   const auto& meshes = world->get_elements();
   unsigned size = meshes.size();  
   unsigned segments = (size / N_THREADS);
 
+  // Change basis to camera
   auto lambda = [&](unsigned init, unsigned end) {
     for (unsigned j = init; j < end; j++)
       meshes[j]->express_in_parents_basis(camera->basis, camera->position);
@@ -33,7 +33,8 @@ void Rasteriser::set_rasterization_data() {
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS - 1; i++)
     promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
-  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, size);
+  promises[N_THREADS - 1] = std::async(lambda,
+                                       (N_THREADS - 1) * segments,size);
 
   for (auto& promise : promises)
     promise.get();
@@ -44,7 +45,9 @@ void Rasteriser::set_rasterization_data() {
   generate_mesh_list(world->get_elements());  
 }
 
-Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) const {
+Color Rasteriser::calculate_lights (const Color& m_color,
+                                    const Face3& face) const {
+
   const DirectionalLight& light = world->get_light();
 
   // Using dot product as angle
@@ -57,15 +60,10 @@ Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) con
   color.set_y(std::min (fabs(color.y() * m_color.y() / 255), 254.0));
   color.set_z(std::min (fabs(color.z() * m_color.z() / 255), 254.0));
 
-  // Check NAN values
-  if (color.x() != color.x()) color.set_x(255);
-  if (color.y() != color.y()) color.set_y(255);
-  if (color.z() != color.z()) color.set_z(255);
   return color;
 }
 
-bool Rasteriser::calculate_mesh_projection(const Face3& face,
-                                           const Matrix3& M2,
+bool Rasteriser::calculate_mesh_projection(const Face3& face,                                           
                                            std::vector<Triangle2>& triangles,
                                            unsigned index,                                           
                                            const Color& color) {  
@@ -120,35 +118,27 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 }
 
 void Rasteriser::rasterise() {
-  set_rasterization_data();
-
-  Matrix3 M2;
-  MatrixOps::generate_basis_change_matrix (world->basis, camera->basis, M2);
+  set_rasterization_data(); 
 
   unsigned segments = (meshes_vector.size() / N_THREADS);
 
   auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
-    Point3 a, b, c;
-    unsigned counter = 0;
-
-    unsigned i_from = counter;
-    unsigned i_to = counter;
+    Point3 a, b, c;    
+    unsigned i_from = 0, i_to = 0;
 
     for (unsigned j = init; j < end; j++) {
       Mesh* aux_mesh = meshes_vector[j];
       for (const auto& face : aux_mesh->global_coordenates_faces) {
-        i_to += calculate_mesh_projection(face, M2,
-                                          projected_elements[vec_index],
+        i_to += calculate_mesh_projection(face, projected_elements[vec_index],
                                           i_to, aux_mesh->color);
 
-
+        // Copy triangles to elements_to_render vector
         if (((i_to - i_from) > 10 || i_to == (end - 1)) && mtx.try_lock()) {
           for (unsigned i = i_from; i < i_to; i++)
             elements_to_render.push_back(&projected_elements[vec_index][i]);
           mtx.unlock();
           i_from = i_to;
         }
-
       }
     }
   };  
@@ -169,7 +159,7 @@ void Rasteriser::rasterise() {
       return a->z_value > b->z_value;
   });
 
-  // FIXME: Calculate occlusion here?
+  // FIXME: Calculate triangle occlusion here?
   canvas->update_frame(camera->get_bounds());
 }
 
@@ -219,7 +209,7 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
 
   bool return_value = true;
 
-  // Some vertex are behind camera
+  // Some vertices are behind camera
   if ((f < 0 && C > 0) || (f > 0 && C < 0)) {
     T1 = -T1;
     return_value = false;

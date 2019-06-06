@@ -1,12 +1,41 @@
 #include "point3d.h"
 
-std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
-                                                const Point3& translation) {
-  std::list<Mesh*> mesh_list {this};
+#include <future>
+#include <functional>
 
-  for (auto& nested_mesh : nested_meshes)
-    mesh_list.splice(mesh_list.end(),
-                     nested_mesh->express_in_parents_basis(new_basis, translation));
+// Multithreaded apply rotations to all vertex
+void Mesh::apply_rotations (const std::list<Mesh*> mesh_list) {
+  intermediate_coordenates_faces = local_coordenates_faces;
+
+  Matrix3 basis_changer_1;
+  MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
+
+  for (const auto& mesh : mesh_list) {
+    auto lambda = [&](unsigned from, unsigned to) {
+      for (unsigned k = from; k < to; k++) {
+        auto& face = mesh->intermediate_coordenates_faces[k];
+        for (unsigned j = 0; j < 3; j++)
+          Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
+      }
+    };
+
+    unsigned N_THREADS = 8;
+    unsigned size = mesh->intermediate_coordenates_faces.size();
+    unsigned segment = size / N_THREADS;
+    std::vector<std::future<void>> promises (N_THREADS);
+    for (unsigned i = 0; i < N_THREADS - 1; i++)
+      promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
+    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 2) * segment, size);
+
+    for (auto& promise : promises)
+      promise.get();
+  }
+}
+
+// Multithreaded change basis
+void Mesh::change_basis(const std::list<Mesh *> mesh_list,
+                        const Basis3 &new_basis,
+                        const Point3 &translation){
 
   Matrix3 basis_changer_3;
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_3);
@@ -14,30 +43,48 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
   Matrix3 basis_changer_2;
   MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 
-  if (basis_changed) {
-    intermediate_coordenates_faces = local_coordenates_faces;
-
-    Matrix3 basis_changer_1;
-    MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
-
-    for (const auto& mesh : mesh_list)
-      for (auto& face : mesh->intermediate_coordenates_faces)
-        for (unsigned j = 0; j < 3; j++)
-          Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
-  }
-
   global_coordenates_faces = intermediate_coordenates_faces;
 
   for (const auto& mesh : mesh_list) {
-    for (auto& face : mesh->global_coordenates_faces) {
-      for (unsigned j = 0; j < 3; j++) {
-        face[j] += position;
-        Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
-        face[j] += translation;
+    auto lambda = [&](unsigned from, unsigned to) {
+      for (unsigned k = from; k < to; k++) {
+        auto& face = mesh->global_coordenates_faces[k];
+        for (unsigned j = 0; j < 3; j++) {
+          face[j] += position;
+          Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
+          face[j] += translation;
+        }
+        Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
       }
-      Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
-    }
+    };
+
+    unsigned N_THREADS = 8;
+    unsigned size = mesh->intermediate_coordenates_faces.size();
+    unsigned segment = size / N_THREADS;
+    std::vector<std::future<void>> promises (N_THREADS);
+    for (unsigned i = 0; i < N_THREADS - 1; i++)
+      promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
+    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 2) * segment, size);
+
+    for (auto& promise : promises)
+      promise.get();
   }
+}
+
+std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
+                                                const Point3& translation) {
+
+  // Generates a list with this mesh and it's nested ones
+  std::list<Mesh*> mesh_list {this};
+
+  for (auto& nested_mesh : nested_meshes)
+    mesh_list.splice(mesh_list.end(),
+                     nested_mesh->express_in_parents_basis(new_basis, translation));
+
+  if (basis_changed)
+    apply_rotations(mesh_list);
+
+  change_basis(mesh_list, new_basis, translation);
 
   basis_changed = false;
   position_changed = false;

@@ -18,7 +18,7 @@ private:
   Canvas* canvas;
   bool double_faces = false;
 
-  bool calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
+  bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
 
   std::vector<std::vector <Triangle2>> projected_elements;
@@ -28,8 +28,7 @@ private:
 
   inline Color calculate_lights (const Color& m_color, const Face3& face) const;
   void set_rasterization_data ();
-  inline bool calculate_mesh_projection (const Face3& face,
-                                         const Matrix3& M2,
+  inline bool calculate_mesh_projection (const Face3& face,                                         
                                          std::vector<Triangle2>& triangles,
                                          unsigned index,
                                          const Color& color);
