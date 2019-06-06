@@ -9,16 +9,6 @@
 #include <future>
 #include <mutex>
 
-struct Auxiliar {
-  Point3 a;
-  Point3 b;
-  Point3 c;
-
-  Vector3 v1;
-  Vector3 v2;
-  Vector3 v3;
-};
-
 class Rasteriser {
 private:
   std::mutex mtx;
@@ -42,7 +32,6 @@ private:
                                          const Matrix3& M2,
                                          std::vector<Triangle2>& triangles,
                                          unsigned index,
-                                         Auxiliar& aux,
                                          const Color& color);
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 public:

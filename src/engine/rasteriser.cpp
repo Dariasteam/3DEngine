@@ -68,85 +68,55 @@ Color Rasteriser::calculate_lights (const Color& m_color, const Face3& face) con
 bool Rasteriser::calculate_mesh_projection(const Face3& face,
                                            const Matrix3& M2,
                                            std::vector<Triangle2>& triangles,
-                                           unsigned index,
-                                           Auxiliar& aux,
+                                           unsigned index,                                           
                                            const Color& color) {  
 
-  // Check face is not behind camera. Since we are using camera basis
-  // 0 is the position of the plane FIXME: This break things
-  //if (face.a.z() < 0.0 && face.b.z() < 0.0 && face.c.z() < 0.0) return false;
-
-  // 1. Create vectors from camera to vertex
-  /*
-  Vector3::create_vector(face.a, camera->get_fuge(), aux.v1);
-  Vector3::create_vector(face.b, camera->get_fuge(), aux.v2);
-  Vector3::create_vector(face.c, camera->get_fuge(), aux.v3);
-  */
-
-  aux.v1.set_x(face.a.x());
-  aux.v2.set_x(face.b.x());
-  aux.v3.set_x(face.c.x());
-
-  aux.v1.set_y(face.a.y());
-  aux.v2.set_y(face.b.y());
-  aux.v3.set_y(face.c.y());
-
-  aux.v1.set_z(face.a.z());
-  aux.v2.set_z(face.b.z());
-  aux.v3.set_z(face.c.z());
+  // 1. Check face is not behind camera. Since we are using camera basis
+  // fugue is always at 0,0,0. Also each point coordinate is also
+  // it's vector
+  if (face.a.z() < 0.0 && face.b.z() < 0.0 && face.c.z() < 0.0) return false;
 
   // 2. Calculate distance to camera
-  double mod_v1 = Vector3::vector_module(aux.v1);
-  double mod_v2 = Vector3::vector_module(aux.v2);
-  double mod_v3 = Vector3::vector_module(aux.v3);
+  double mod_v1 = Vector3::vector_module(face.a);
+  double mod_v2 = Vector3::vector_module(face.b);
+  double mod_v3 = Vector3::vector_module(face.c);
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
   double z_max = std::max({mod_v1, mod_v2, mod_v3});
   if (z_min > 10000) return false;
 
+  Point3 pa, pb, pc;
+
   // 3. Calculate intersection points with the plane
-  bool visible  = calculate_cut_point(face.a, aux.v1, aux.a)
-                | calculate_cut_point(face.b, aux.v2, aux.b)
-                | calculate_cut_point(face.c, aux.v3, aux.c);  
+  bool visible  = calculate_cut_point(face.a, face.a, pa)
+                | calculate_cut_point(face.b, face.b, pb)
+                | calculate_cut_point(face.c, face.c, pc);
   if (!visible) return false;
 
-  // 4. Transform to camera basis
-  // FIXME: This shouldn't exist, vectors should be already in camera basis
-/*
-  Point3Ops::change_basis(M2, aux.a, aux.a);
-  Point3Ops::change_basis(M2, aux.b, aux.b);
-  Point3Ops::change_basis(M2, aux.c, aux.c);
-*/
+  // 4. Set triangle in the list. If the function return false this will be
+  // overwritten
+  triangles[index].a.set_values(pa.x(), pa.y());
+  triangles[index].b.set_values(pb.x(), pb.y());
+  triangles[index].c.set_values(pc.x(), pc.y());
+  triangles[index].z_value = z_max;
 
-  // 5. Generate triangles
-  Triangle2 t {
-    {aux.a.x(), aux.a.y()},
-    {aux.b.x(), aux.b.y()},
-    {aux.c.x(), aux.c.y()},
-    z_max
-  };
-
-  // 6. Check any point in camera bounds
-  bool point_in_camera = is_point_between_camera_bounds(t.a)
-                       | is_point_between_camera_bounds(t.b)
-                       | is_point_between_camera_bounds(t.c);
+  // 5. Check any point in camera bounds
+  bool point_in_camera = is_point_between_camera_bounds(triangles[index].a)
+                       | is_point_between_camera_bounds(triangles[index].b)
+                       | is_point_between_camera_bounds(triangles[index].c);
   if (!point_in_camera) return false;
 
-  // 7. Check normal of the face is towards camera, do not check angle,
+  // 6. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º instead
   if (!double_faces) {
-    bool angle_normal = (face.normal * aux.v1) < 0
-                      | (face.normal * aux.v2) < 0
-                      | (face.normal * aux.v3) < 0;
+    bool angle_normal = (face.normal * face.a) < 0
+                      | (face.normal * face.b) < 0
+                      | (face.normal * face.c) < 0;
     if (!angle_normal) return false;
   }
 
-  // 8. Calculate light contribution
-  const Color& aux_color = calculate_lights(color, face);  
-
-  // 9. Add triangle to the list
-  triangles[index] = t;
-  triangles[index].color = aux_color;
+  // 7. Calculate light contribution
+  triangles[index].color = calculate_lights(color, face);
 
   return true;
 }
@@ -163,8 +133,6 @@ void Rasteriser::rasterise() {
     Point3 a, b, c;
     unsigned counter = 0;
 
-    Auxiliar aux;
-
     unsigned i_from = counter;
     unsigned i_to = counter;
 
@@ -173,9 +141,7 @@ void Rasteriser::rasterise() {
       for (const auto& face : aux_mesh->global_coordenates_faces) {
         i_to += calculate_mesh_projection(face, M2,
                                           projected_elements[vec_index],
-                                          i_to, aux,
-                                          aux_mesh->color
-                                         );
+                                          i_to, aux_mesh->color);
 
 /*
         if (((i_to - i_from) > 10 || i_to == (end - 1)) && mtx.try_lock()) {

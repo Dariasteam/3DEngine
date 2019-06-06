@@ -66,7 +66,8 @@ typedef Point3 Color;
 struct Vector3 : public Point3 {  
   Vector3 () : Point3 (0, 0, 0) {}
   Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
-  Vector3 (const Vector3& vec) : Point3 (vec.x(), vec.y(), vec.z()) {}
+  Vector3 (const Vector3& vec) : Point3 (vec) {}
+  Vector3 (const Point3& p) : Point3 (p) {}
 
   static inline Vector3 create_vector (const Point3& a, const Point3& b) {
     return {a.x() - b.x(),
@@ -93,18 +94,6 @@ struct Vector3 : public Point3 {
   }
 
   static double angle_between (const Vector3& v, const Vector3& u) {
-    /*
-    Vector3 aux_v = v;
-    Vector3 aux_u = u;
-
-    aux_u.normalize();
-    aux_v.normalize();
-
-    double angle = rad2deg(std::acos(aux_v * aux_u));
-    Vector3 axis = Vector3::cross_product(v, u);
-    axis.normalize();
-    */
-
     return rad2deg(std::acos((u * v) / (vector_module(u) * vector_module(v))));
   }
 
@@ -321,7 +310,7 @@ struct Mesh : public Spatial {
 
   void copy_faces_local2global () {
     global_coordenates_faces = local_coordenates_faces;
-  }  
+  }
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& translation);

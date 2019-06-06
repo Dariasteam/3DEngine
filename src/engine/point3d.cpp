@@ -26,18 +26,18 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
           Point3Ops::change_basis(basis_changer_1, face[j], face[j]);
           face[j] += position;
           Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
+          face[j] += translation;
         }
         Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
       }
     }
   } else {
-
     for (const auto& mesh : mesh_list) {
       for (auto& face : mesh->global_coordenates_faces) {
         for (unsigned j = 0; j < 3; j++) {
           face[j] += position;
-          face[j] += translation;
           Point3Ops::change_basis(basis_changer_3, face[j], face[j]);
+          face[j] += translation;
         }
         Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
       }
@@ -45,7 +45,6 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
   }
 
   basis_changed = false;
-
   return mesh_list;
 }
 
