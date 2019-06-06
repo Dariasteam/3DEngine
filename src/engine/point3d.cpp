@@ -1,9 +1,5 @@
 #include "point3d.h"
 
-void Mesh::apply_transformation() {
-
-}
-
 std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
                                                 const Point3& translation) {
   std::list<Mesh*> mesh_list {this};
@@ -15,6 +11,8 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
 
   copy_faces_local2global();
 
+  Matrix3 basis_changer_3;
+  MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_3);
   if (basis_changed) {
     Matrix3 basis_changer_1;
     MatrixOps::generate_basis_change_matrix(basis, canonical_base, basis_changer_1);
@@ -29,11 +27,10 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
           face[j] += position;
           Point3Ops::change_basis(basis_changer_2, face[j], face[j]);
         }
+        Point3Ops::change_basis(basis_changer_3, face.normal, face.normal);
       }
     }
   } else {
-    Matrix3 basis_changer_3;
-    MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_3);
 
     for (const auto& mesh : mesh_list) {
       for (auto& face : mesh->global_coordenates_faces) {
@@ -46,6 +43,8 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
       }
     }
   }
+
+  basis_changed = false;
 
   return mesh_list;
 }

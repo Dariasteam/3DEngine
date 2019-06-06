@@ -218,9 +218,7 @@ struct Spatial {
   Spatial (const Basis3& b, const Point3& p) :
     basis (b),
     position (p)
-  {}
-
-  virtual void apply_transformation () = 0;
+  {}  
 
   Basis3 basis {
           {1, 0, 0},
@@ -255,7 +253,6 @@ struct Spatial {
 
     basis = rotation_matrix * basis;
     basis_changed = true;
-    apply_transformation();
   }
 
   void rotate_y (double deg) {
@@ -267,7 +264,6 @@ struct Spatial {
 
     basis = rotation_matrix * basis;
     basis_changed = true;
-    apply_transformation();
   }
 
   void rotate_z (double deg) {
@@ -279,7 +275,6 @@ struct Spatial {
 
     basis = rotation_matrix * basis;    
     basis_changed = true;
-    apply_transformation();
   }
 };
 
@@ -326,9 +321,7 @@ struct Mesh : public Spatial {
 
   void copy_faces_local2global () {
     global_coordenates_faces = local_coordenates_faces;
-  }
-
-  void apply_transformation() override;
+  }  
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& translation);

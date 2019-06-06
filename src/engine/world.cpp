@@ -126,7 +126,7 @@ World::World(Camera* cm) :
   add_mesh(parsed_mesh);
   parsed_mesh->color = {100, 100, 100};
   parsed_mesh->translate_local({0, 0, 20});
- // parsed_mesh->rotate_y(180);
+  parsed_mesh->rotate_y(1);
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -184,6 +184,6 @@ void World::calculate_next_frame() const {
   //rotate_meshes();
 
 // camera->translate_local({0.0, 0.0, -0.01});
-  camera->rotate_y(-0.01);
+//  camera->rotate_y(-0.01);
 }
 
