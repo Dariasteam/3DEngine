@@ -5,7 +5,7 @@ World::World(Camera* cm) :
   {
 
   Mesh* a_mesh = new Mesh;
-  a_mesh->local_coordinates_faces =
+  a_mesh->local_coordenates_faces =
     { // face list
       // UPER FACES
 
@@ -34,7 +34,7 @@ World::World(Camera* cm) :
 
       Face3({          // BACK FACE
         { 5, 0, 5},    // vertex a
-        { 0, 15, 0},    // vertex c
+        { 0, 15, 0},   // vertex c
         {-5, 0, 5},    // vertex b
         {0, 0,  0}     // fake_normal
       }),
@@ -42,7 +42,7 @@ World::World(Camera* cm) :
       // BOTTOM FACES
       Face3({          // RIGHT FACE
         {-5, 0, -5},   // vertex a
-        { 0,-15,  0},   // vertex b
+        { 0,-15,  0},  // vertex b
         {-5, 0,  5},   // vertex c
         {0,  0,  0}    // fake_normal
       }),
@@ -50,28 +50,28 @@ World::World(Camera* cm) :
       Face3({          // LEFT FACE
         { 5, 0, -5},   // vertex a
         { 5, 0,  5},   // vertex b
-        { 0,-15,  0},   // vertex c
+        { 0,-15,  0},  // vertex c
         {0,  0,  0}    // fake_normal
       }),
 
       Face3({          // FRONT FACE
         {-5, 0, -5},   // vertex a
         { 5, 0, -5},   // vertex b
-        { 0,-15,  0},   // vertex c
+        { 0,-15,  0},  // vertex c
         {0,  0,  0}    // fake_normal
       }),
 
       Face3({          // BACK FACE
         { 5, 0, 5},    // vertex a
         {-5, 0, 5},    // vertex b
-        { 0,-15, 0},    // vertex c
+        { 0,-15, 0},   // vertex c
         {0, 0,  0}     // fake_normal
       }),
   };
 
 //  add_mesh(a_mesh);
   a_mesh->color = {0, 200, 200};
-  a_mesh->generate_data();  
+  a_mesh->generate_data();
 
   Mesh* aux1 = new Mesh (*a_mesh);
   aux1->translate_global({20, 0, 0});
@@ -79,8 +79,8 @@ World::World(Camera* cm) :
   Mesh* aux2 = new Mesh (*a_mesh);
   aux2->translate_global({20, 0, 0});
 
-  a_mesh->add_nested_mesh(aux1);
-  aux1->add_nested_mesh(aux2);
+//  a_mesh->add_nested_mesh(aux1);
+//  aux1->add_nested_mesh(aux2);
 
   //125000
   for (unsigned i = 0; i < 125000; i++) {
@@ -98,7 +98,7 @@ World::World(Camera* cm) :
   }
 
   Mesh* b_mesh = new Mesh;
-  b_mesh->local_coordinates_faces =
+  b_mesh->local_coordenates_faces =
     {
       {
         {-50, -50,  0},
@@ -122,12 +122,11 @@ World::World(Camera* cm) :
   a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("car.obj");
+  Mesh* parsed_mesh = parser ("file.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {100, 100, 100};
-  parsed_mesh->rotate_y(180);
-  parsed_mesh->position = {0, 0, -95};
-
+  parsed_mesh->translate_local({0, 0, 20});
+ // parsed_mesh->rotate_y(180);
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -177,14 +176,14 @@ void World::calculate_next_frame() const {
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 */
 
-  meshes.back()->rotate_y(-0.025);
-  meshes.back()->rotate_x(-0.001);
-  meshes.back()->rotate_z(-0.001);
+//  meshes.back()->rotate_y(-0.025);
+//  meshes.back()->rotate_x(-0.001);
+//  meshes.back()->rotate_z(-0.001);
 
   //meshes.back()->translate_local({0.0, 0.0, 13.05});
   //rotate_meshes();
 
-  //camera->translate({0.0, 0.0, 13.05});
-  //camera->rotate_y(0.01);
+  camera->translate_local({0.0, 0.0, -0.01});
+  camera->rotate_y(-0.01);
 }
 

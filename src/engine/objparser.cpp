@@ -113,7 +113,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         if (i1 < 0 || i2 < 0 || i3 < 0)
           std::cout << "ARHC" << std::endl;
 
-        aux_mesh->local_coordinates_faces.push_back(Face3 {
+        aux_mesh->local_coordenates_faces.push_back(Face3 {
                               vertex_list[i1],
                               vertex_list[i2],
                               vertex_list[i3],

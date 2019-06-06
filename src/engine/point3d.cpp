@@ -1,33 +1,41 @@
 #include "point3d.h"
 
-std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
+std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
+                                                const Point3& translation) {
   std::list<Mesh*> mesh_list {this};
 
   for (auto& nested_mesh : nested_meshes)
-    mesh_list.splice(mesh_list.end(), nested_mesh->express_in_parents_basis(new_basis));
+    mesh_list.splice(mesh_list.end(),
+                     nested_mesh->express_in_parents_basis(new_basis, translation));
 
-  if (base_changed) {
+  if (true) {
     copy_faces_local2global();
     Matrix3 basis_changer;
     MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer);
 
-    for (const auto& mesh : mesh_list) {
-      for (auto& face : mesh->global_coordinates_faces) {
-        for (unsigned j = 0; j < 3; j++) {
-          Point3Ops::change_basis(basis_changer, face[j], face[j]);
+    for (const auto& mesh : mesh_list) {      
+      for (auto& face : mesh->global_coordenates_faces) {
+        for (unsigned j = 0; j < 3; j++) {            
           face[j] += position;
+          Point3Ops::change_basis(basis_changer, face[j], face[j]);
         }
         Point3Ops::change_basis(basis_changer, face.normal, face.normal);
       }
     }
 
-  } else if (position_changed) {
+  } else if (position_changed) {    
     copy_faces_local2global();
     for (const auto& mesh : mesh_list)
-      for (auto& face : mesh->global_coordinates_faces)
+      for (auto& face : mesh->global_coordenates_faces)
         for (unsigned j = 0; j < 3; j++)
-          face[j] += position;
+          face[j] += position;              
   }
+
+  // Offset world to match camera position
+  for (const auto& mesh : mesh_list)
+    for (auto& face : mesh->global_coordenates_faces)
+      for (unsigned j = 0; j < 3; j++)
+        face[j] += translation;
 
   position_changed = false;
   base_changed     = false;
@@ -36,7 +44,7 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3 &new_basis) {
 }
 
 void Face3::generate_normal() {
-  const Vector3& u = Vector3::create_vector(a, b);
+  const Vector3& u = Vector3::create_vector(b, a);
   const Vector3& v = Vector3::create_vector(a, c);
 
   double X = (v.y() * u.z() - v.z() * u.y());
@@ -51,7 +59,7 @@ void Face3::generate_normal() {
              a.z() * v.x() * u.y();
 */
 
-  normal = {-X, -Y, -Z};
+  normal = {X, Y, Z};
   normal.normalize();
 }
 

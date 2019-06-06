@@ -38,13 +38,10 @@ public:
   inline Rect get_bounds() const { return bounds; }
 
   void translate (const Vector3& vec) {
-    global_parameters.fuge += vec;
-    //global_parameters.vector_plane += vec;
-    global_parameters.point_plane += vec;
+    position += vec;
   }
 
-  void express_in_different_basis (const Basis3& new_basis);
-
+  void apply_transform ();
 };
 
 #endif // CAMERA_H

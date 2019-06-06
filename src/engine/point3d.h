@@ -66,6 +66,7 @@ typedef Point3 Color;
 struct Vector3 : public Point3 {  
   Vector3 () : Point3 (0, 0, 0) {}
   Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
+  Vector3 (const Vector3& vec) : Point3 (vec.x(), vec.y(), vec.z()) {}
 
   static inline Vector3 create_vector (const Point3& a, const Point3& b) {
     return {a.x() - b.x(),
@@ -277,8 +278,8 @@ struct Spatial {
 };
 
 struct Mesh : public Spatial {  
-  std::vector<Face3> local_coordinates_faces;
-  std::vector<Face3> global_coordinates_faces;
+  std::vector<Face3> local_coordenates_faces;
+  std::vector<Face3> global_coordenates_faces;
 
   std::vector<Mesh*> nested_meshes;
   Color color{0, 0, 0};
@@ -288,14 +289,14 @@ struct Mesh : public Spatial {
   ~Mesh () {}
 
   Mesh (unsigned i) :
-    local_coordinates_faces(i),
-    global_coordinates_faces(i)
+    local_coordenates_faces(i),
+    global_coordenates_faces(i)
   {}
 
   Mesh (const Mesh& m) :
     Spatial(m.basis, m.position),
-    local_coordinates_faces (m.local_coordinates_faces),
-    global_coordinates_faces (m.global_coordinates_faces),
+    local_coordenates_faces (m.local_coordenates_faces),
+    global_coordenates_faces (m.global_coordenates_faces),
     color (m.color)    
   {}
 
@@ -308,20 +309,21 @@ struct Mesh : public Spatial {
   }
 
   void generate_normals () {
-    for (auto& face : local_coordinates_faces)
+    for (auto& face : local_coordenates_faces)
       face.generate_normal();
   }  
 
   void generate_data () {
     generate_normals();
-    global_coordinates_faces = local_coordinates_faces;
+    global_coordenates_faces = local_coordenates_faces;
   }
 
   void copy_faces_local2global () {
-    global_coordinates_faces = local_coordinates_faces;
+    global_coordenates_faces = local_coordenates_faces;
   }
 
-  std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis);
+  std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
+                                             const Point3& translation);
 };
 
 #endif // POINT3D_H

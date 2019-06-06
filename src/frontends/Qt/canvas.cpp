@@ -1,5 +1,7 @@
 #include "canvas.h"
 
+#define WIREFRAME false
+
 Canvas::Canvas(QWidget *parent) :
   QWidget(parent) {
 }
@@ -15,13 +17,15 @@ void Canvas::paintEvent(QPaintEvent *event) {
     //QPolygonF poly ({a, b, c});
 
     QPointF points[3] = {a, b, c};
-    p.setPen(Qt::NoPen);
-    p.setBrush(QColor(
-      triangle->color.x(),
-      triangle->color.y(),
-      triangle->color.z()
-    ));
-    p.drawConvexPolygon(points, 3);
+    if (!WIREFRAME) {
+      p.setPen(Qt::NoPen);
+      p.setBrush(QColor(
+        triangle->color.x(),
+        triangle->color.y(),
+        triangle->color.z()
+      ));
+    }
+    p.drawPolygon(points, 3);
   }
 }
 
