@@ -11,7 +11,7 @@ Camera::Camera() {
 
   bounds = {-150, -150, 150, 150};
 
-  position = {0, 0, 0};
+  translation = {0, 0, 0};
 
   basis = Basis3 ({
     {1, 0, 0},

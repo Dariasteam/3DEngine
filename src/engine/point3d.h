@@ -39,6 +39,12 @@ struct Point3 {
     set_z(p.z() + z());
   }
 
+  inline void operator-= (const Point3& p) {
+    set_x(x() - p.x());
+    set_y(y() - p.y());
+    set_z(z() - p.z());
+  }
+
   inline void operator*= (const double v) {
     set_x(x() * v);
     set_y(y() * v);
@@ -188,9 +194,9 @@ struct Face3 {
 
 };
 
-struct Spatial {
-  bool position_changed = false;
-  bool basis_changed = false;
+struct Spatial {      
+  bool basis_changed = true;
+  bool position_changed = true;
 
   const Basis3 canonical_base {
     {1, 0, 0},
@@ -199,15 +205,17 @@ struct Spatial {
   };
 
   Spatial (const Spatial& sp) :
+    basis_changed (sp.basis_changed),
+    position_changed (sp.position_changed),
     basis (sp.basis),
-    position (sp.position)
+    translation (sp.translation)
   {} 
 
   Spatial () {}
 
   Spatial (const Basis3& b, const Point3& p) :
     basis (b),
-    position (p)
+    translation (p)
   {}  
 
   Basis3 basis {
@@ -215,22 +223,24 @@ struct Spatial {
           {0, 1, 0},
           {0, 0, 1}};
 
+  Point3 translation {0, 0, 0};
   Point3 position {0, 0, 0};
-
+/*
   void translate_local (const Vector3& v) {
-    position += v;
-    position_changed = true;
+    position += v;    
   }  
-
+*/
   void translate_global (const Vector3& v) {
 
     // FIXME: is this usefull for nested meshes?
-
+/*
     Matrix3 m;
     MatrixOps::generate_basis_change_matrix(basis, canonical_base, m);
     Point3Ops::change_basis(m, position, position);
+*/
+    translation = v;
     position += v;
-
+//    position += v;
     position_changed = true;
   }
 
@@ -241,7 +251,7 @@ struct Spatial {
                               {0, std::sin(deg),  std::cos(deg)}
                             };
 
-    basis = rotation_matrix * basis;
+    basis = rotation_matrix * basis;    
     basis_changed = true;
   }
 
@@ -252,7 +262,7 @@ struct Spatial {
                               {-std::sin(deg), 0, std::cos(deg)}
                             };
 
-    basis = rotation_matrix * basis;
+    basis = rotation_matrix * basis;    
     basis_changed = true;
   }
 
@@ -263,14 +273,13 @@ struct Spatial {
                               {0, 0, 1}
                             };
 
-    basis = rotation_matrix * basis;
+    basis = rotation_matrix * basis;    
     basis_changed = true;
   }
 };
 
-struct Mesh : public Spatial {
-  std::vector<Face3> local_coordenates_faces;
-  std::vector<Face3> intermediate_coordenates_faces;  // for rotations
+struct Mesh : public Spatial {  
+  std::vector<Face3> local_coordenates_faces;  
   std::vector<Face3> global_coordenates_faces;
 
   std::vector<Mesh*> nested_meshes;
@@ -286,10 +295,10 @@ struct Mesh : public Spatial {
   {}
 
   Mesh (const Mesh& m) :
-    Spatial(m.basis, m.position),
-    local_coordenates_faces (m.local_coordenates_faces),
+    Spatial(m.basis, m.translation),
+    local_coordenates_faces (m.local_coordenates_faces),    
     global_coordenates_faces (m.global_coordenates_faces),
-    color (m.color)    
+    color (m.color)
   {}
 
   void add_nested_mesh (Mesh* mesh) {
@@ -306,22 +315,36 @@ struct Mesh : public Spatial {
   }  
 
   void generate_data () {
-    generate_normals();
-    intermediate_coordenates_faces = local_coordenates_faces;
-    global_coordenates_faces = local_coordenates_faces;
+    generate_normals();    
+    global_coordenates_faces       = local_coordenates_faces;
 
     local_coordenates_faces.shrink_to_fit();
     global_coordenates_faces.shrink_to_fit();
-    intermediate_coordenates_faces.shrink_to_fit();
   }  
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
-                                             const Point3& translation);
+                                             const Point3& camera_translation,
+                                             bool camera_rotated,
+                                             bool camera_translated);
 
-  void inline apply_rotations (const std::list<Mesh*> mesh_list);
-  void inline change_basis    (const std::list<Mesh*> mesh_list,
-                               const Basis3& new_basis,
-                               const Point3& translation);
+  void inline change_basis_multithreaded    (const std::list<Mesh*> mesh_list,
+                                             const Basis3& new_basis,
+                                             const Point3& translation,
+                                             bool update_rotation,
+                                             bool update_translation);
+
+  void inline change_basis       (const std::list<Mesh*> mesh_list,
+                                  const Basis3& new_basis,
+                                  const Point3& camera_translation,
+                                  bool update_rotation,
+                                  bool update_translation);
+
+  void inline apply_translation_part (const Vector3& translation,
+                                      unsigned from, unsigned to);
+
+  void inline change_basis_part (const Matrix3& basis_changer,
+                                 const Vector3& translation,
+                                 unsigned from, unsigned to);
 };
 
 #endif // POINT3D_H

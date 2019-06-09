@@ -70,24 +70,26 @@ World::World(Camera* cm) :
 //  add_mesh(a_mesh);
   a_mesh->color = {0, 200, 200};
   a_mesh->generate_data();
-
+//  a_mesh->translate_global({100, -80, 200});
+/*
   Mesh* aux1 = new Mesh (*a_mesh);
   aux1->translate_global({20, 0, 0});
 
   Mesh* aux2 = new Mesh (*a_mesh);
   aux2->translate_global({20, 0, 0});
-
-//  a_mesh->add_nested_mesh(aux1);
-//  aux1->add_nested_mesh(aux2);
-
+  */
+/*
+  a_mesh->add_nested_mesh(aux1);
+  aux1->add_nested_mesh(aux2);
+*/
   //125000
-
+  /*
   for (unsigned i = 0; i < 125000; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
-    aux1->translate_global ({-100,-70, static_cast<double>(i * 100)});
-    aux2->translate_global ({ 100,-70, static_cast<double>(i * 100)});
+    aux1->translate_global ({-100, -70, static_cast<double>(i * 100)});
+    aux2->translate_global ({ 100, -70, static_cast<double>(i * 100)});
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};
@@ -95,7 +97,7 @@ World::World(Camera* cm) :
 //    add_mesh(aux1);
 //    add_mesh(aux2);
   }
-
+*/
 
   Mesh* b_mesh = new Mesh;
   b_mesh->local_coordenates_faces =
@@ -118,16 +120,16 @@ World::World(Camera* cm) :
   b_mesh->color = {255, 10, 25};
   b_mesh->generate_data();
 
-  b_mesh->position = {0, 0, 100};
-  a_mesh->position = {0, 10, 50};
+//  b_mesh->position = {0, 0, 100};
+//  a_mesh->position = {0, 10, 50};
 
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("car.obj");
+  Mesh* parsed_mesh = parser ("file.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {100, 100, 100};
 //  parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_local({0, -1, 8});
+  parsed_mesh->translate_global({0, -1, 8});
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -169,6 +171,7 @@ void World::rotate_meshes() const {
 void World::calculate_next_frame() const {
 
   auto* front = meshes.front();
+  //front->translate_local({0, 0, 2});
 /*
   front->rotate_y(0.005);
   front->translate_local({0, 0, 13.2});
@@ -180,12 +183,11 @@ void World::calculate_next_frame() const {
   meshes.back()->rotate_y(-0.03);
 //  meshes.back()->rotate_x(-0.01);
 //  meshes.back()->rotate_z(-0.01);
-//  meshes.back()->translate_local({0, 0, 000.1});
+  meshes.back()->translate_global({0, 0, 0.09});
 
-  //meshes.back()->translate_local({0.0, 0.0, 13.05});
   //rotate_meshes();
 
-// camera->translate_local({0.0, 0.0, -0.1});
-// camera->rotate_x(-0.01);
+ camera->translate_global({0, 0.0, 0.1});
+   camera->rotate_x(-0.01);
 }
 

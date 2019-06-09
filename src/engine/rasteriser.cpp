@@ -24,11 +24,20 @@ void Rasteriser::set_rasterization_data() {
   unsigned size = meshes.size();  
   unsigned segments = (size / N_THREADS);
 
+  Vector3 camera_t;
+  if (!camera->basis_changed)
+    camera_t = camera->position;
+  else
+    camera_t = camera->translation;
+
   // Change basis to camera
   auto lambda = [&](unsigned init, unsigned end) {
     for (unsigned j = init; j < end; j++)
-      meshes[j]->express_in_parents_basis(camera->basis, camera->position);
-  };
+      meshes[j]->express_in_parents_basis(camera->basis,
+                                          camera_t,
+                                          camera->basis_changed,
+                                          camera->position_changed);
+  }; 
 
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS - 1; i++)
@@ -38,6 +47,9 @@ void Rasteriser::set_rasterization_data() {
 
   for (auto& promise : promises)
     promise.get();
+
+  camera->basis_changed = false;
+  camera->position_changed = false;
 
   // Generate iterable list of meshes
   meshes_vector.clear();
@@ -118,9 +130,7 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 }
 
 void Rasteriser::rasterise() {
-  set_rasterization_data(); 
-
-  unsigned segments = (meshes_vector.size() / N_THREADS);
+  set_rasterization_data();   
 
   auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
     Point3 a, b, c;    
@@ -143,10 +153,12 @@ void Rasteriser::rasterise() {
     }
   };  
 
+  unsigned segments = (meshes_vector.size() / N_THREADS);
+
   std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i <N_THREADS  - 1; i++) {
+  for (unsigned i = 0; i < N_THREADS  - 1; i++)
     promises[i] = std::async(lambda, i * segments, (i + 1) * segments, i);
-  }
+
   promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments,
                                                meshes_vector.size(),
                                                N_THREADS - 1);
