@@ -23,7 +23,8 @@ private:
 
   std::vector<std::vector <Triangle2>> projected_elements;    
 
-  std::vector<Triangle2> elements_to_render;
+  std::vector<Triangle2> elements_to_render_buff_a;
+  std::vector<Triangle2> elements_to_render_buff_b;
 
   std::vector <Mesh*> meshes_vector;
 

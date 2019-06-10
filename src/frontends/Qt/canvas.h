@@ -23,19 +23,33 @@ private:
 
   unsigned n_triangles = 0;
 
-  std::vector<Triangle2> triangles_a;
-  std::vector<Triangle2> triangles_b;
+  const std::vector<Triangle2>* triangles_buffer_a;
+  const std::vector<Triangle2>* triangles_buffer_b;
 
   std::mutex mtx;
-  bool t_a = false;
+  bool reading_buffer_a = false;
 
   inline QPointF adjust_coordinates (const Point2& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
   void paintEvent(QPaintEvent *event);  
-  void update_frame (Rect bounds, const std::vector<Triangle2>& aux_tr);
+  void update_frame (Rect bounds);
   void resizeEvent(QResizeEvent *event);
-  void set_triangles_buffer (const std::vector<Triangle2>* buff);
+  void set_triangles_buffer (const std::vector<Triangle2>* buff_a,
+                             const std::vector<Triangle2>* buff_b);
+
+  inline bool reading_from_buffer_a () {
+    return reading_buffer_a;
+  }
+
+  inline void lock_buffer_mutex () {
+    mtx.lock();
+  }
+
+  inline void unlock_buffer_mutex () {
+    mtx.unlock();
+  }
+
 signals:
 
 public slots:

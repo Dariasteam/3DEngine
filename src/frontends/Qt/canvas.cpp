@@ -9,16 +9,15 @@ Canvas::Canvas(QWidget *parent) :
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
-
   const std::vector<Triangle2>* triangles;
 
-  mtx.lock();
-  if (!t_a)
-    triangles = &triangles_a;
+  lock_buffer_mutex();
+  if (reading_from_buffer_a())
+    triangles = triangles_buffer_b;
   else
-    triangles = &triangles_b;
-  t_a = !t_a;
-  mtx.unlock();
+    triangles = triangles_buffer_a;
+  reading_buffer_a = !reading_buffer_a;
+  unlock_buffer_mutex();
 
   for (const auto& triangle : *triangles) {
     const QPointF a = adjust_coordinates(triangle.a);
@@ -36,20 +35,12 @@ void Canvas::paintEvent(QPaintEvent *event) {
     #endif
     p.drawConvexPolygon(points, 3);
   }  
+
 }
 
-void Canvas::update_frame(Rect b, const std::vector<Triangle2>& aux_tr) {
+void Canvas::update_frame(Rect b) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
-
-  mtx.lock();
-  if (t_a) {
-    triangles_b = aux_tr;
-  } else {
-    triangles_a = aux_tr;
-  }
-  mtx.unlock();
-  //repaint();
 }
 
 // Translates the coordinates to the canvas size and
@@ -65,6 +56,9 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = event->size().height() / 2;
 }
 
-void Canvas::set_triangles_buffer(const std::vector<Triangle2>* buff) {
-  //triangles = buff;
+void Canvas::set_triangles_buffer(const std::vector<Triangle2> *buff_a,
+                                  const std::vector<Triangle2> *buff_b) {
+  triangles_buffer_a = buff_a;
+  triangles_buffer_b = buff_b;
 }
+
