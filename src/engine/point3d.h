@@ -329,9 +329,9 @@ struct Mesh : public Spatial {
 
   void inline change_basis_multithreaded    (const std::list<Mesh*> mesh_list,
                                              const Basis3& new_basis,
-                                             const Point3& translation,
-                                             bool update_rotation,
-                                             bool update_translation);
+                                             const Point3& camera_translation,
+                                             bool camera_rotated,
+                                             bool camera_translated);
 
   void inline change_basis       (const std::list<Mesh*> mesh_list,
                                   const Basis3& new_basis,

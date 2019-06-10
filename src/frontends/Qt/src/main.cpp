@@ -15,9 +15,7 @@ int main(int argc, char *argv[])
   Camera camera;
   World world (&camera);
   Rasteriser rasteriser (w.get_canvas(), &camera, &world);
-  RenderEngine engine (&rasteriser, &camera, &world);  
-
-  engine.main_loop();
+  RenderEngine engine (&rasteriser, w.get_canvas(), &world);
 
   return a.exec();
 }

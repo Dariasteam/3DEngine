@@ -1,6 +1,6 @@
 #include "canvas.h"
 
-#define FILL
+//#define WIREFRAME
 
 Canvas::Canvas(QWidget *parent) :
   QWidget(parent) {
@@ -9,29 +9,47 @@ Canvas::Canvas(QWidget *parent) :
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
-  for (const auto triangle: *triangles) {
-    const QPointF a = adjust_coordinates(triangle->a);
-    const QPointF b = adjust_coordinates(triangle->b);
-    const QPointF c = adjust_coordinates(triangle->c);
+
+  const std::vector<Triangle2>* triangles;
+
+  mtx.lock();
+  if (!t_a)
+    triangles = &triangles_a;
+  else
+    triangles = &triangles_b;
+  t_a = !t_a;
+  mtx.unlock();
+
+  for (const auto& triangle : *triangles) {
+    const QPointF a = adjust_coordinates(triangle.a);
+    const QPointF b = adjust_coordinates(triangle.b);
+    const QPointF c = adjust_coordinates(triangle.c);
 
     QPointF points[3] = {a, b, c};
-    #ifdef FILL
+    #ifndef WIREFRAME
       p.setPen(Qt::NoPen);
       p.setBrush(QColor(
-        triangle->color.x(),
-        triangle->color.y(),
-        triangle->color.z()
+        triangle.color.x(),
+        triangle.color.y(),
+        triangle.color.z()
       ));
     #endif
     p.drawConvexPolygon(points, 3);
-  }
+  }  
 }
 
-void Canvas::update_frame(Rect b) {
+void Canvas::update_frame(Rect b, const std::vector<Triangle2>& aux_tr) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
 
-  repaint();
+  mtx.lock();
+  if (t_a) {
+    triangles_b = aux_tr;
+  } else {
+    triangles_a = aux_tr;
+  }
+  mtx.unlock();
+  //repaint();
 }
 
 // Translates the coordinates to the canvas size and
@@ -47,6 +65,6 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = event->size().height() / 2;
 }
 
-void Canvas::set_triangles_buffer(const std::vector<Triangle2*>* buff) {
-  triangles = buff;
+void Canvas::set_triangles_buffer(const std::vector<Triangle2>* buff) {
+  //triangles = buff;
 }

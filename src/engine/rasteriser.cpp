@@ -8,6 +8,8 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
 {
   canvas->set_triangles_buffer(&elements_to_render);
 
+  //elements_to_render.reserve(1000000);
+
   for (auto& element : projected_elements)
     element.reserve(300000);
 }
@@ -53,6 +55,7 @@ void Rasteriser::set_rasterization_data() {
 
   // Generate iterable list of meshes
   meshes_vector.clear();
+
   elements_to_render.clear();
   generate_mesh_list(world->get_elements());  
 }
@@ -130,10 +133,10 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 }
 
 void Rasteriser::rasterise() {
-  set_rasterization_data();   
+  set_rasterization_data();
 
   auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
-    Point3 a, b, c;    
+    Point3 a, b, c;
     unsigned i_from = 0, i_to = 0;
 
     for (unsigned j = init; j < end; j++) {
@@ -145,13 +148,13 @@ void Rasteriser::rasterise() {
         // Copy triangles to elements_to_render vector
         if (((i_to - i_from) > 10 || i_to == (end - 1)) && mtx.try_lock()) {
           for (unsigned i = i_from; i < i_to; i++)
-            elements_to_render.push_back(&projected_elements[vec_index][i]);
-          mtx.unlock();
+            elements_to_render.push_back(projected_elements[vec_index][i]);
           i_from = i_to;
+          mtx.unlock();
         }
       }
     }
-  };  
+  };
 
   unsigned segments = (meshes_vector.size() / N_THREADS);
 
@@ -167,12 +170,12 @@ void Rasteriser::rasterise() {
 
   // Order by distance to camera
   std::sort(elements_to_render.begin(), elements_to_render.end(),
-    [](const Triangle2* a, const Triangle2* b) {
-      return a->z_value > b->z_value;
+    [](const Triangle2& a, const Triangle2& b) {
+      return a.z_value > b.z_value;
   });
 
   // FIXME: Calculate triangle occlusion here?
-  canvas->update_frame(camera->get_bounds());
+  canvas->update_frame(camera->get_bounds(), elements_to_render);
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {

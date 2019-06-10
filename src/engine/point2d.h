@@ -80,6 +80,14 @@ struct Triangle2 {
 
   double z_value;   // distance to camera
   Color color = {0, 0, 0};
+
+  Triangle2 (const Triangle2& t) :
+    a (t.a),
+    b (t.b),
+    c (t.c),
+    z_value (t.z_value),
+    color (t.color)
+  {}
 };
 
 

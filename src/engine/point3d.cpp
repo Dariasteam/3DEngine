@@ -30,39 +30,60 @@ void Mesh::apply_translation_part (const Vector3& translation,
 // Multithreaded change basis
 void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
                                       const Basis3 &new_basis,
-                                      const Point3 &translation,
-                                      bool update_rotation,
-                                      bool update_translation) {
+                                      const Point3 &camera_translation,
+                                      bool camera_rotated,
+                                      bool camera_translated) {
 
+
+  bool update_rotation    = basis_changed    | camera_rotated;
+  bool update_translation = position_changed | camera_translated;
 
   Matrix3 basis_changer_1;
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_1);
 
-  Matrix3 basis_changer_2;
-  MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
+  Vector3 aux_pos {0, 0, 0};
+  if (update_rotation || position_changed) {
+    Matrix3 basis_changer_2;
+    MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 
-  Vector3 aux_pos;
-  Point3Ops::change_basis(basis_changer_2, translation, aux_pos);
+    if (update_rotation)
+      Point3Ops::change_basis(basis_changer_2, position, aux_pos);
+    else if (position_changed)
+      Point3Ops::change_basis(basis_changer_2, translation, aux_pos);
 
-  aux_pos += translation;
+    aux_pos -= camera_translation;
+  } else {
+    return;
+  }
 
-  global_coordenates_faces = local_coordenates_faces;
+  std::function<void (Mesh* mesh, unsigned from, unsigned to)> lambda;
 
-  for (const auto& mesh : mesh_list) {
-    auto lambda = [&](unsigned from, unsigned to) {
+  if (update_rotation) {
+    global_coordenates_faces = local_coordenates_faces;
+    lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
       mesh->change_basis_part(basis_changer_1, aux_pos, from, to);
     };
+  } else {
+    lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
+      mesh->apply_translation_part(aux_pos, 0,
+                                   mesh->local_coordenates_faces.size());
+    };
+  }
 
+  for (const auto& mesh : mesh_list) {
     unsigned size = mesh->global_coordenates_faces.size();
     unsigned segment = size / N_THREADS;
     std::vector<std::future<void>> promises (N_THREADS);
     for (unsigned i = 0; i < N_THREADS - 1; i++)
-      promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
-    promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segment, size);
+      promises[i] = std::async(lambda, mesh, i * segment, (i + 1) * segment);
+    promises[N_THREADS - 1] = std::async(lambda, mesh, (N_THREADS - 1) * segment, size);
 
     for (auto& promise : promises)
       promise.get();
   }
+
+  basis_changed = false;
+  position_changed = false;
 }
 
 void Mesh::change_basis(const std::list<Mesh *> mesh_list,
@@ -78,21 +99,22 @@ void Mesh::change_basis(const std::list<Mesh *> mesh_list,
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_1);
 
   Vector3 aux_pos {0, 0, 0};
-
-//  if (update_translation || update_rotation) {/
+  if (update_rotation || position_changed) {
     Matrix3 basis_changer_2;
     MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 
-    if (basis_changed || camera_rotated)
+    if (update_rotation)
       Point3Ops::change_basis(basis_changer_2, position, aux_pos);
     else if (position_changed)
       Point3Ops::change_basis(basis_changer_2, translation, aux_pos);
 
     aux_pos -= camera_translation;
-//  }
+  } else {
+    return;
+  }
 
   if (update_rotation) {
-    global_coordenates_faces = local_coordenates_faces;    
+    global_coordenates_faces = local_coordenates_faces;
 
     for (const auto& mesh : mesh_list) {
       mesh->change_basis_part(basis_changer_1, aux_pos, 0,
@@ -122,7 +144,7 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
                      nested_mesh->express_in_parents_basis(new_basis,
                        camera_translation, camera_rotated, camera_translated));
 
-  change_basis (mesh_list, new_basis, camera_translation, camera_rotated,
+  change_basis_multithreaded (mesh_list, new_basis, camera_translation, camera_rotated,
                                                           camera_translated);
 
   return mesh_list;

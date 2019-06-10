@@ -763,6 +763,7 @@ moc_renderengine.cpp: src/renderengine.h \
 		../../engine/camera.h \
 		../../engine/point2d.h \
 		../../engine/world.h \
+		../../engine/objparser.h \
 		canvas.h \
 		moc_predefs.h \
 		/usr/bin/moc
@@ -802,6 +803,7 @@ main.o: src/main.cpp src/mainwindow.h \
 		../../engine/rasteriser.h \
 		../../engine/camera.h \
 		../../engine/world.h \
+		../../engine/objparser.h \
 		src/renderengine.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
@@ -826,6 +828,7 @@ renderengine.o: src/renderengine.cpp src/renderengine.h \
 		../../engine/camera.h \
 		../../engine/point2d.h \
 		../../engine/world.h \
+		../../engine/objparser.h \
 		canvas.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o renderengine.o src/renderengine.cpp
 
@@ -837,7 +840,8 @@ world.o: ../../engine/world.cpp ../../engine/world.h \
 		../../engine/point3d.h \
 		../../engine/matrix.h \
 		../../engine/camera.h \
-		../../engine/point2d.h
+		../../engine/point2d.h \
+		../../engine/objparser.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o world.o ../../engine/world.cpp
 
 camera.o: ../../engine/camera.cpp ../../engine/camera.h \
@@ -852,6 +856,7 @@ rasteriser.o: ../../engine/rasteriser.cpp ../../engine/rasteriser.h \
 		../../engine/matrix.h \
 		../../engine/point2d.h \
 		../../engine/world.h \
+		../../engine/objparser.h \
 		canvas.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rasteriser.o ../../engine/rasteriser.cpp
 

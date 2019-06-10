@@ -1,30 +1,30 @@
 #include "renderengine.h"
 
-RenderEngine::RenderEngine(Rasteriser *r, Camera *cm, World *w) :
+RenderEngine::RenderEngine(Rasteriser *r, Canvas* c, World* w) :
     rasteriser (r),
-    camera (cm),
-    world (w)
+    canvas (c),
+    world (w),
+    fps_render("RENDER"),
+    fps_painter("PAINTER")
   {
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(main_loop()));    
-    timer->start(17);
-    last_time = std::chrono::system_clock::now();
+
+  std::thread t (&RenderEngine::render_loop, this);
+  t.detach();
+
+  QTimer *painter_timer = new QTimer(this);
+  connect(painter_timer, SIGNAL(timeout()), this, SLOT(painting_loop()));
+  painter_timer->start(17);
 }
 
-void RenderEngine::main_loop () {
-  rasteriser->rasterise();
-  frame_counter++;
-  world->calculate_next_frame();
+void RenderEngine::painting_loop() {
+  canvas->repaint();
+  fps_painter.update();
+}
 
-  std::chrono::time_point<std::chrono::system_clock> start;
-  start = std::chrono::system_clock::now();
-
-  float elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
-                               (start - last_time).count();
-  if (elapsed_seconds > 1000) {
-    std::cout << "FPS: " << double(frame_counter) / (double(elapsed_seconds) / 1000) << std::endl;
-    frame_counter = 0;
-    last_time = std::chrono::system_clock::now();
+void RenderEngine::render_loop () {
+  while (1) {
+    world->calculate_next_frame();
+    rasteriser->rasterise();
+    fps_render.update();
   }
 }
-
