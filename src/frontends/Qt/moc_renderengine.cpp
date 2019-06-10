@@ -22,7 +22,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_RenderEngine_t {
     QByteArrayData data[4];
-    char stringdata0[40];
+    char stringdata0[41];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -32,12 +32,12 @@ struct qt_meta_stringdata_RenderEngine_t {
 static const qt_meta_stringdata_RenderEngine_t qt_meta_stringdata_RenderEngine = {
     {
 QT_MOC_LITERAL(0, 0, 12), // "RenderEngine"
-QT_MOC_LITERAL(1, 13, 11), // "render_loop"
-QT_MOC_LITERAL(2, 25, 0), // ""
-QT_MOC_LITERAL(3, 26, 13) // "painting_loop"
+QT_MOC_LITERAL(1, 13, 13), // "painting_loop"
+QT_MOC_LITERAL(2, 27, 0), // ""
+QT_MOC_LITERAL(3, 28, 12) // "render_frame"
 
     },
-    "RenderEngine\0render_loop\0\0painting_loop"
+    "RenderEngine\0painting_loop\0\0render_frame"
 };
 #undef QT_MOC_LITERAL
 
@@ -71,8 +71,8 @@ void RenderEngine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         auto *_t = static_cast<RenderEngine *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->render_loop(); break;
-        case 1: _t->painting_loop(); break;
+        case 0: _t->painting_loop(); break;
+        case 1: _t->render_frame(); break;
         default: ;
         }
     }

@@ -28,14 +28,13 @@ void Canvas::paintEvent(QPaintEvent *event) {
     #ifndef WIREFRAME
       p.setPen(Qt::NoPen);
       p.setBrush(QColor(
-        triangle.color.x(),
-        triangle.color.y(),
-        triangle.color.z()
+        static_cast<int>(triangle.color.x()),
+        static_cast<int>(triangle.color.y()),
+        static_cast<int>(triangle.color.z())
       ));
     #endif
     p.drawConvexPolygon(points, 3);
-  }  
-
+  }
 }
 
 void Canvas::update_frame(Rect b) {
@@ -52,8 +51,8 @@ QPointF Canvas::adjust_coordinates(const Point2& p) {
 }
 
 void Canvas::resizeEvent(QResizeEvent *event) {
-  x_offset = event->size().width()  / 2;
-  y_offset = event->size().height() / 2;
+  x_offset = static_cast<double>(event->size().width())  / 2;
+  y_offset = static_cast<double>(event->size().height()) / 2;
 }
 
 void Canvas::set_triangles_buffer(const std::vector<Triangle2> *buff_a,

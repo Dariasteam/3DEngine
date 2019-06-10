@@ -12,7 +12,7 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   //elements_to_render.reserve(1000000);
 
   for (auto& element : projected_elements)
-    element.reserve(300000);
+    element.reserve(400000);
 }
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
@@ -84,9 +84,12 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
                                            const Color& color) {  
 
   // 1. Check face is not behind camera. Since we are using camera basis
-  // fugue is always at 0,0,0. Also each point coordinate is also
+  // we only need z value of the plane. Also each point coordinate is also
   // it's vector
-  if (face.a.z() < 0.0 && face.b.z() < 0.0 && face.c.z() < 0.0) return false;
+  auto plane_distance = camera->get_plane_point().z();
+  if (face.a.z() < plane_distance &&
+      face.b.z() < plane_distance &&
+      face.c.z() < plane_distance) return false;
 
   // 2. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(face.a);
