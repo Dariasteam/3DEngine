@@ -182,8 +182,7 @@ void Gauss::next_step(Matrix &matrix, unsigned col) {
 
 void Gauss::next_step_reverse(Matrix &matrix, unsigned col) {
   bool end = false;
-  unsigned row = col - 1;
-  unsigned size = matrix.size_rows();
+  unsigned row = col - 1;  
 
   reorder_rows_non_zero_first (matrix, col);
 

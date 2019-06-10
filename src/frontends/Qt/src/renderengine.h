@@ -55,16 +55,11 @@ private:
   FPSControl fps_render;
   FPSControl fps_painter;
 
-  std::mutex m;
-  std::condition_variable cv;
-  bool ready = false;
-
   void render_loop ();
 public:
   RenderEngine(Rasteriser* r, Canvas* c, World* w);
 public slots:  
   void painting_loop ();
-  void render_frame ();
 };
 
 #endif // RENDERENGINE_H

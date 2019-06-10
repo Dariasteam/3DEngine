@@ -65,8 +65,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
     };
   } else {
     lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
-      mesh->apply_translation_part(aux_pos, 0,
-                                   mesh->local_coordenates_faces.size());
+      mesh->apply_translation_part(aux_pos, from, to);
     };
   }
 

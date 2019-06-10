@@ -179,7 +179,7 @@ void World::calculate_next_frame() const {
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 */
 
-  meshes.back()->rotate_y(-0.03);
+//  meshes.back()->rotate_y(-0.03);
 //  meshes.back()->rotate_x(-0.01);
 //  meshes.back()->rotate_z(-0.01);
 //  meshes.back()->translate_global({0, 0, 0.09});
