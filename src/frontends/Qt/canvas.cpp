@@ -3,9 +3,9 @@
 //#define WIREFRAME
 
 Canvas::Canvas(QWidget *parent) :
-  QWidget(parent) {
+  QLabel(parent) {
 }
-
+/*
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
 
@@ -36,10 +36,12 @@ void Canvas::paintEvent(QPaintEvent *event) {
     p.drawConvexPolygon(points, 3);
   }
 }
-
+*/
 void Canvas::update_frame(Rect b) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
+
+  paint();
 }
 
 // Translates the coordinates to the canvas size and
@@ -59,5 +61,28 @@ void Canvas::set_triangles_buffer(const std::vector<Triangle2> *buff_a,
                                   const std::vector<Triangle2> *buff_b) {
   triangles_buffer_a = buff_a;
   triangles_buffer_b = buff_b;
+}
+
+void Canvas::set_screen_buffer(const std::vector<std::vector<Color888> >* buff) {
+  screen_buffer = buff;
+}
+
+void Canvas::paint() {
+  QImage image (1000, 1000, QImage::Format_RGB888);
+  for (unsigned i = 0; i < 1000; i++) {
+    for (unsigned j = 0; j < 1000; j++) {
+      const Color888& aux_color = (*screen_buffer)[j][i];
+
+      QColor color (
+        aux_color.r,
+        aux_color.g,
+        aux_color.b
+      );
+
+      image.setPixelColor(i, j, color);
+    }
+  }
+
+  setPixmap(QPixmap::fromImage(image));
 }
 

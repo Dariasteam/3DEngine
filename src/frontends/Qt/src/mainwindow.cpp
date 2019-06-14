@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
   canvas = new Canvas (this);  
   this->setCentralWidget(canvas);  
-
 }
 
 MainWindow::~MainWindow() {

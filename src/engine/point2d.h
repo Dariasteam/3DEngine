@@ -26,6 +26,50 @@ struct Point2 {
     X = vx;
     Y = vy;
   }
+
+  inline Point2 operator- (const Point2& p) const {
+    return {x() - p.x(), y() - p.y()};
+  }
+
+  inline Point2 operator+ (const Point2& p) const {
+    return {x() + p.x(), y() + p.y()};
+  }
+
+  inline double operator* (const Point2& p) const {
+    return x() * p.x() + y() * p.y();
+  }
+
+  inline double operator/ (const Point2& p) const {
+    return x() * p.x() + y() * p.y();
+  }
+
+  inline Point2 operator* (const double d) const {
+    return {x() * d, y() * d};
+  }
+
+  inline Point2 operator/ (const double d) const {
+    return {x() / d, y() / d};
+  }
+
+  inline void operator+= (const Point2& p)  {
+    set_x(x() + p.x());
+    set_y(y() + p.y());
+  }
+
+  inline void operator-= (const Point2& p)  {
+    set_x(x() - p.x());
+    set_y(y() - p.y());
+  }
+
+  inline void operator*= (const double d) {
+    set_x(x() * d);
+    set_y(y() * d);
+  }
+
+  inline void operator/= (const double d) {
+    set_x(x() / d);
+    set_y(y() / d);
+  }
 };
 
 struct Matrix2 : public Matrix {
@@ -88,6 +132,24 @@ struct Triangle2 {
     z_value (t.z_value),
     color (t.color)
   {}
+
+  Triangle2 (const Point2& aa,
+             const Point2& bb,
+             const Point2& cc,
+             const double z,
+             const Color& col) :
+    a (aa),
+    b (bb),
+    c (cc),
+    z_value (z),
+    color (col)
+  {}
+};
+
+struct Color888 {
+  unsigned r;
+  unsigned g;
+  unsigned b;
 };
 
 

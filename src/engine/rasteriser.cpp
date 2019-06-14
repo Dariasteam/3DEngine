@@ -4,12 +4,13 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   world (wd),
   camera (cm),
   canvas (cv),
+  screen_buffer (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
   projected_elements (N_THREADS)
 {
   canvas->set_triangles_buffer(&elements_to_render_buff_a,
                                &elements_to_render_buff_b);
 
-  //elements_to_render.reserve(1000000);
+  canvas->set_screen_buffer(&screen_buffer);
 
   for (auto& element : projected_elements)
     element.reserve(400000);
@@ -19,7 +20,193 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   for (const auto& mesh : meshes) {
     meshes_vector.push_back(mesh);
     generate_mesh_list(mesh->get_nested_meshes());
+    }
+}
+
+void write_file(const std::vector<std::vector<Color888>>& canvas) {
+  std::ofstream file;
+  file.open("test_picture.ppm");
+
+  if (file.is_open()) {
+    file << "P3\n" << canvas[0].size() << " " << canvas.size() << " " << 255 << "\n";
+    for (const auto &row : canvas) {
+      for (const auto &pixel : row) {
+        file << pixel.r << " "
+             << pixel.g << " "
+             << pixel.b << "\n";
+      }
+    }
+    file.close();
+  } else {
+    std::cerr << "Could not create picture" << std::endl;
   }
+}
+
+inline double Rasteriser::get_y (const Point2& u, const Vector2& v, double x) {
+  return u.y() + (x - u.x()) * (v.y() / v.x());
+}
+
+inline double Rasteriser::get_x (const Point2& u, const Vector2& v, double y) {
+  return u.x() + (y - u.y()) * (v.x() / v.y());
+}
+
+inline void Rasteriser::paint_line (const Point2& a, const Point2& b) {
+
+  Vector2 v;
+  Point2  u = a;
+
+  // Calculate y knowing x
+
+  if (a.x() > b.x())
+    v = a - b;
+  else
+    v = b - a;
+
+  uint init = static_cast<uint>(std::round((a.x())));
+  uint end =  static_cast<uint>(std::floor((b.x())));
+
+  for (unsigned x = init; x < end; x++) {
+    uint y = static_cast<uint>(std::round(get_y(u, v, x)));
+    screen_buffer[y][x] = {255, 255, 255};
+  }
+
+  // Calculate x knowing y
+
+  if (a.y() > b.y())
+    v = a - b;
+  else
+    v = b - a;
+
+  init = static_cast<uint>(std::round((a.y())));
+  end  = static_cast<uint>(std::floor((b.y())));
+
+  for (unsigned y = init; y < end; y++) {
+    uint x = static_cast<uint>(std::round(get_x(u, v, y)));
+    screen_buffer[y][x] = {255, 255, 255};
+  }
+}
+
+inline void Rasteriser::raster_triangle (const Triangle2& triangle) {
+
+  const Point2& a = triangle.a;
+  const Point2& b = triangle.b;
+  const Point2& c = triangle.c;
+
+  Point2 min_y_p;
+  Point2 mid_y_p;
+  Point2 max_y_p;
+
+  bool p_a = false;
+  bool p_b = false;
+  bool p_c = false;
+
+  if (a.y() <= b.y() && a.y() <= c.y()) { min_y_p = a; p_a = true; }
+  if (b.y() <= a.y() && b.y() <= c.y()) { min_y_p = b; p_b = true; }
+  if (c.y() <= a.y() && c.y() <= b.y()) { min_y_p = c; p_c = true; }
+
+  if (a.y() >= b.y() && a.y() >= c.y()) { max_y_p = a; p_a = true; }
+  if (b.y() >= a.y() && b.y() >= c.y()) { max_y_p = b; p_b = true; }
+  if (c.y() >= a.y() && c.y() >= b.y()) { max_y_p = c; p_c = true; }
+
+  if (!p_a) mid_y_p = a;
+  if (!p_b) mid_y_p = b;
+  if (!p_c) mid_y_p = c;
+
+  // Now vertices are ordered from top to bottom
+
+  Point2 min_x;
+  Point2 max_x;
+
+  if (mid_y_p.x() < max_y_p.x()) {
+    min_x = mid_y_p;
+    max_x = max_y_p;
+  } else {
+    min_x = max_y_p;
+    max_x = mid_y_p;
+  }
+
+  unsigned y_min = static_cast<unsigned>(std::round(min_y_p.y()));
+  unsigned y_max = static_cast<unsigned>(std::floor(mid_y_p.y()));
+
+  for (unsigned y = y_min; y < y_max; y++) {
+    int x_min = static_cast<int>(std::round(get_x(min_y_p, min_y_p - min_x, y)));
+    int x_max = static_cast<int>(std::floor(get_x(min_y_p, min_y_p - max_x, y)));
+    //unsigned Y = static_cast<unsigned>(std::round((y)));
+
+    for (unsigned x = x_min; x <= x_max; x++) {
+      screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
+                             static_cast<unsigned>(triangle.color.y()),
+                             static_cast<unsigned>(triangle.color.z())
+                            };
+    }
+  }
+
+  if (mid_y_p.x() < min_y_p.x()) {
+    min_x = mid_y_p;
+    max_x = min_y_p;
+  } else {
+    min_x = min_y_p;
+    max_x = mid_y_p;
+  }
+
+  for (double y = max_y_p.y(); y >= mid_y_p.y(); y-=1) {
+    double x_min = get_x(max_y_p, max_y_p - min_x, y);
+    double x_max = get_x(max_y_p, max_y_p - max_x, y);
+
+    for (double x = x_min; x <= x_max; x+=1) {
+
+      unsigned X = static_cast<unsigned>(std::round((x)));
+      unsigned Y = static_cast<unsigned>(std::round((y)));
+
+      screen_buffer[Y][X] = {static_cast<unsigned>(triangle.color.x()),
+                             static_cast<unsigned>(triangle.color.y()),
+                             static_cast<unsigned>(triangle.color.z())
+                            };
+    }
+  }
+}
+
+void Rasteriser::paint_triangle (const Triangle2& triangle) {
+
+  unsigned height = screen_buffer.size();
+  unsigned width = screen_buffer[0].size();
+
+  double v_factor = height / 6;
+  double h_factor = width  / 6;
+
+  unsigned x_offset = width / 2;
+  unsigned y_offset = height / 2;
+
+  Point2 a = {triangle.a.x() * h_factor + x_offset,
+              triangle.a.y() * v_factor + y_offset};
+
+  Point2 b = {triangle.b.x() * h_factor + x_offset,
+              triangle.b.y() * v_factor + y_offset};
+
+  Point2 c = {triangle.c.x() * h_factor + x_offset,
+              triangle.c.y() * v_factor + y_offset};
+
+//  paint_line(a, b);
+//  paint_line(a, c);
+//  paint_line(b, c);
+
+  raster_triangle(Triangle2{a, b, c, triangle.z_value, triangle.color});
+}
+
+
+
+void Rasteriser::generate_frame(const std::vector<Triangle2>* buff) {  
+
+  screen_buffer.clear();
+  screen_buffer.resize(screen_size, std::vector<Color888>(screen_size, {0,0,0}));
+
+  for (const auto& triangle : *buff) {
+    for (unsigned i = 0; i < 3; i++) {
+      paint_triangle(triangle);
+    }
+  }
+
+//  write_file(screen_buffer);
 }
 
 void Rasteriser::set_rasterization_data() {
@@ -138,7 +325,7 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 void Rasteriser::rasterise() {
   set_rasterization_data();
 
-  std::vector<Triangle2>* buff = &elements_to_render_buff_a;
+  std::vector<Triangle2>* buff;
 
   auto lambda = [&](unsigned init, unsigned end, unsigned vec_index) {
     Point3 a, b, c;
@@ -171,7 +358,7 @@ void Rasteriser::rasterise() {
                                                meshes_vector.size(),
                                                N_THREADS - 1);
 
-  canvas->lock_buffer_mutex();
+//  canvas->lock_buffer_mutex();
 
   if (canvas->reading_from_buffer_a()) {
     elements_to_render_buff_b.clear();
@@ -190,10 +377,12 @@ void Rasteriser::rasterise() {
       return a.z_value > b.z_value;
   });
 
-  canvas->unlock_buffer_mutex();
+//  canvas->unlock_buffer_mutex();
+
+  generate_frame(buff);
 
   // FIXME: Calculate triangle occlusion here?
-  canvas->update_frame(camera->get_bounds());
+  canvas->update_frame(camera->get_bounds());  
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {

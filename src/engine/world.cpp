@@ -124,7 +124,7 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("car.obj");
+  Mesh* parsed_mesh = parser ("file.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {100, 100, 100};
   parsed_mesh->rotate_y(10);
@@ -145,14 +145,11 @@ void World::delete_mesh(Mesh* mesh) {
 }
 
 void World::rotate_meshes() const {
-  auto lambda = [&](unsigned start, unsigned end){
-    auto it_1 = meshes.begin();
-    auto it_2 = meshes.begin();
-
-    std::advance (it_1, start);
+  auto lambda = [&](unsigned start, unsigned end){    
+    auto it_2 = meshes.begin();    
     std::advance (it_2, end);
 
-    for (it_1; it_1 < it_2; it_1++)
+    for (auto it_1 = meshes.begin(); it_1 < it_2; it_1++)
       (*it_1)->rotate_y(0.15);
   };
 
@@ -169,7 +166,7 @@ void World::rotate_meshes() const {
 
 void World::calculate_next_frame() const {
 
-  auto* front = meshes.front();
+  //auto* front = meshes.front();
   //front->translate_local({0, 0, 2});
 /*
   front->rotate_y(0.005);
@@ -179,9 +176,9 @@ void World::calculate_next_frame() const {
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 */
 
-//  meshes.back()->rotate_y(-0.03);
-//  meshes.back()->rotate_x(-0.01);
-//  meshes.back()->rotate_z(-0.01);
+  meshes.back()->rotate_y(-0.03);
+  meshes.back()->rotate_x(-0.01);
+  meshes.back()->rotate_z(-0.01);
 //  meshes.back()->translate_global({0, 0, 0.09});
 
   //rotate_meshes();

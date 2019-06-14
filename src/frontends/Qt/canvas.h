@@ -7,12 +7,16 @@
 #include <QPainter>
 #include <QResizeEvent>
 #include <QPolygonF>
+#include <QImage>
+#include <QPixmap>
+#include <QBoxLayout>
+#include <QLabel>
 
 #include <vector>
 #include <algorithm>
 #include <mutex>
 
-class Canvas : public QWidget {
+class Canvas : public QLabel {
   Q_OBJECT
 private:
   double x_offset {0}; // adjust x = 0 point to the center of screen
@@ -26,17 +30,21 @@ private:
   const std::vector<Triangle2>* triangles_buffer_a {nullptr};
   const std::vector<Triangle2>* triangles_buffer_b {nullptr};
 
+  const std::vector<std::vector<Color888>>* screen_buffer;
+
   std::mutex mtx;
   bool reading_buffer_a = false;
 
   inline QPointF adjust_coordinates (const Point2& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
-  void paintEvent(QPaintEvent *event) override;
+//  void paintEvent(QPaintEvent *event) override;
   void update_frame (Rect bounds);
   void resizeEvent(QResizeEvent *event) override;
   void set_triangles_buffer (const std::vector<Triangle2>* buff_a,
                              const std::vector<Triangle2>* buff_b);
+
+  void set_screen_buffer (const std::vector<std::vector<Color888>>* buff);
 
   inline bool reading_from_buffer_a () {
     return reading_buffer_a;
@@ -49,6 +57,8 @@ public:
   inline void unlock_buffer_mutex () {
     mtx.unlock();
   }
+
+  void paint();
 
 signals:
 
