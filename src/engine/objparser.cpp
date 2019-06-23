@@ -35,7 +35,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
   char c;
   unsigned n_line = 1;
   double v_x, v_y, v_z;
-  long i1, i2, i3;
+  long long i1, i2, i3;
 
   Mesh* aux_mesh = new Mesh ();
   bool end = false;
@@ -89,7 +89,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         end = true;
       }
     } catch (...) {
-      std::cerr << "[ERROR] Reading " << file_name << "bad formattin at line "
+      std::cerr << "[ERROR] Reading " << file_name << " bad formattin at line "
                 << n_line << "\n";
       delete aux_mesh;
       return nullptr;
@@ -119,11 +119,11 @@ Mesh *ObjParser::operator ()(std::string file_name) {
                               vertex_list[i3],
                             });
       } else {
-        std::cerr << "[ERROR] Reading " << file_name << "expecting f at "
-                  << n_line << "\n";
+        std::cerr << "[ERROR] Reading " << file_name << " expecting f at "
+                  << n_line << "instead of " << c << "\n";
       }
     } catch (...) {
-      std::cerr << "[ERROR] Readin " << file_name << "bad formattin at line "
+      std::cerr << "[ERROR] Readin " << file_name << " bad formattin at line "
                 << n_line << "\n";
       delete aux_mesh;
       return nullptr;

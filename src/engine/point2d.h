@@ -117,6 +117,25 @@ struct Rect {
   }
 };
 
+struct iRect {
+  unsigned x;
+  unsigned y;
+  unsigned height;
+  unsigned width;
+
+  unsigned size_x () const {
+    return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+  }
+
+  unsigned size_y () const {
+    return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+  }
+
+  unsigned area ()  const {
+    return size_x() * size_y();
+  }
+};
+
 struct Triangle2 {  
   Point2 a;
   Point2 b;
@@ -132,6 +151,8 @@ struct Triangle2 {
     z_value (t.z_value),
     color (t.color)
   {}
+
+  Triangle2 () {}
 
   Triangle2 (const Point2& aa,
              const Point2& bb,
@@ -150,6 +171,12 @@ struct Color888 {
   unsigned r;
   unsigned g;
   unsigned b;
+
+  bool operator != (const Color888& c) const {
+    if (r != c.r || g != c.g || b != c.b)
+      return true;
+    return false;
+  }
 };
 
 

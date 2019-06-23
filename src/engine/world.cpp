@@ -124,11 +124,11 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("file.obj");
+  Mesh* parsed_mesh = parser ("bitxo.obj");
   add_mesh(parsed_mesh);
-  parsed_mesh->color = {100, 100, 100};
+  parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 14});
+  parsed_mesh->translate_global({0, -4.5, 30});
 }
 
 bool World::add_mesh(Mesh* mesh) {

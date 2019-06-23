@@ -68,9 +68,10 @@ void Canvas::set_screen_buffer(const std::vector<std::vector<Color888> >* buff) 
 }
 
 void Canvas::paint() {
-  QImage image (1000, 1000, QImage::Format_RGB888);
-  for (unsigned i = 0; i < 1000; i++) {
-    for (unsigned j = 0; j < 1000; j++) {
+  unsigned screen_size = 500;
+  QImage image (screen_size, screen_size, QImage::Format_RGB888);
+  for (unsigned i = 0; i < screen_size; i++) {
+    for (unsigned j = 0; j < screen_size; j++) {
       const Color888& aux_color = (*screen_buffer)[j][i];
 
       QColor color (
