@@ -133,5 +133,9 @@ Mesh *ObjParser::operator ()(std::string file_name) {
   }
 
   aux_mesh->generate_data();
+
+  std::cout << "Succesfully loaded " << file_name << "\n"
+            << " → Faces: " << aux_mesh->local_coordenates_faces.size() << "\n";
+
   return aux_mesh;
 }

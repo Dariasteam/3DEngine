@@ -9,6 +9,8 @@
 #include <future>
 #include <mutex>
 #include <fstream>
+#include <chrono>
+#include <ctime>
 
 class Rasteriser {
 private:
@@ -18,17 +20,15 @@ private:
   Camera* camera;
   Canvas* canvas;
   bool double_faces = false;
-  unsigned screen_size = 500;
+  unsigned screen_size = SCREEN_SIZE;
 
-  std::vector<std::vector<Color888>> screen_buffer;
+  std::vector<std::vector<ImagePixel>> screen_buffer_a;
+  std::vector<std::vector<ImagePixel>> screen_buffer_b;
+
+  std::vector<Triangle2> elements_to_render;
 
   bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
-
-  std::vector<std::vector <Triangle2>> projected_elements;    
-
-  std::vector<Triangle2> elements_to_render_buff_a;
-  std::vector<Triangle2> elements_to_render_buff_b;
 
   std::vector <Mesh*> meshes_vector;
 
@@ -40,8 +40,8 @@ private:
 
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 
-  void generate_frame (const std::vector<Triangle2>* buff);
-  void paint_triangle (const Triangle2& triangle);
+  void generate_frame ();
+  void paint_triangle (const Triangle2& triangle, std::vector<std::vector<ImagePixel>>* screen_buffer);
   void paint_triangle_multithread (const Triangle2& triangle);
 
   /*   a___b
@@ -53,23 +53,21 @@ private:
   void paint_half_rect_ad_down (const iRect& r, const Color888& c);
   void paint_half_rect_cb_up (const iRect& r, const Color888& c);
   void paint_half_rect_cb_down (const iRect& r, const Color888& c);
-
+/*
   inline void raster_triangle_y (const Triangle2& triangle);
   inline void raster_triangle_x (const Triangle2& triangle);
-  inline void raster_triangle (const Triangle2& triangle);
   inline void paint_line (const Point2& a, const Point2& b);
-
+*/
+  inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<ImagePixel>>* screen_buffer);
   inline double get_y (const Point2& u, const Vector2& v, double x);
   inline double get_x (const Point2& u, const Vector2& v, double y);
 
 
   inline void multithreaded_rasterize_mesh_list (unsigned init,
-                                                 unsigned end,
-                                                 std::vector<Triangle2>* buff);
+                                                 unsigned end);
 
   inline void multithreaded_rasterize_single_mesh (unsigned init,
-                                                   unsigned end,
-                                                   std::vector<Triangle2>* buff,
+                                                   unsigned end,                                                   
                                                    const Mesh* aux_mesh);
 
 public:

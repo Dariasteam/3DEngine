@@ -179,6 +179,11 @@ struct Color888 {
   }
 };
 
+struct ImagePixel {
+  Color888 color;
+  double z;
+};
+
 
 #endif // POINT2D_H
 

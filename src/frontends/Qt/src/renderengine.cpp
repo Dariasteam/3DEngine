@@ -15,13 +15,13 @@ RenderEngine::RenderEngine(Rasteriser *r, Canvas* c, World* w) :
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &RenderEngine::painting_loop);
   std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(120));
-//  timer->start(17);
+  timer->start(1);
 }
 
 void RenderEngine::painting_loop() {
 //  canvas->repaint();
-  canvas->paint();
-  fps_painter.update();
+  if (canvas->paint())
+    fps_painter.update();
 }
 
 void RenderEngine::render_loop () {

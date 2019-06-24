@@ -4,26 +4,21 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   world (wd),
   camera (cm),
   canvas (cv),
-  screen_buffer (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
-  projected_elements (N_THREADS)
+  screen_buffer_a (screen_size, std::vector<ImagePixel>(screen_size, {{0,0,0}, 100000000})),
+  screen_buffer_b (screen_size, std::vector<ImagePixel>(screen_size, {{0,0,0}, 100000000}))
 {
-  canvas->set_triangles_buffer(&elements_to_render_buff_a,
-                               &elements_to_render_buff_b);
+  canvas->set_screen_buffer(&screen_buffer_a, &screen_buffer_b);
 
-  canvas->set_screen_buffer(&screen_buffer);
-
-  for (auto& element : projected_elements)
-    element.reserve(400000);
 }
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   for (const auto& mesh : meshes) {
     meshes_vector.push_back(mesh);
     generate_mesh_list(mesh->get_nested_meshes());
-    }
+  }
 }
 
-void write_file(const std::vector<std::vector<Color888>>& canvas) {
+void write_file(const std::vector<std::vector<ImagePixel>>& canvas) {
   std::ofstream file;
   file.open("test_picture.ppm");
 
@@ -31,9 +26,9 @@ void write_file(const std::vector<std::vector<Color888>>& canvas) {
     file << "P3\n" << canvas[0].size() << " " << canvas.size() << " " << 255 << "\n";
     for (const auto &row : canvas) {
       for (const auto &pixel : row) {
-        file << pixel.r << " "
-             << pixel.g << " "
-             << pixel.b << "\n";
+        file << pixel.color.r << " "
+             << pixel.color.g << " "
+             << pixel.color.b << "\n";
       }
     }
     file.close();
@@ -50,9 +45,7 @@ double Rasteriser::get_x (const Point2& u, const Vector2& v, double y) {
   return u.x() + (y - u.y()) * (v.x() / v.y());
 }
 
-void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end,
-                                                   std::vector<Triangle2>* buff) {
-
+void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
     unsigned segments = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
@@ -60,20 +53,17 @@ void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end,
 
     for (unsigned j = 0; j < N_THREADS  - 1; j++)
       promises_2[j] = std::async(&Rasteriser::multithreaded_rasterize_single_mesh,
-                                 this, j * segments, (j + 1) * segments,
-                                 buff, aux_mesh);
+                                 this, j * segments, (j + 1) * segments, aux_mesh);
 
     promises_2[N_THREADS - 1] = std::async(&Rasteriser::multithreaded_rasterize_single_mesh,
                                            this, (N_THREADS - 1) * segments,
-                                           meshes_vector.size(), buff, aux_mesh);
+                                           meshes_vector.size(), aux_mesh);
     for (auto& promise : promises_2)
       promise.get();
-
   }
 }
 
-void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,
-                                                     std::vector<Triangle2>* buff,
+void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,                                                     
                                                      const Mesh* aux_mesh) {
   Point3 a, b, c;
   std::vector <Triangle2> tmp_triangles;
@@ -84,12 +74,11 @@ void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end
   }
 
   mtx.lock();
-  buff->insert(std::end(*buff), std::begin(tmp_triangles), std::end(tmp_triangles));
+  elements_to_render.insert(std::end(elements_to_render), std::begin(tmp_triangles), std::end(tmp_triangles));
   mtx.unlock();
 }
-
-
-void Rasteriser::paint_line (const Point2& a, const Point2& b) {
+/*
+void Rasteriser::paint_line (const Point2& a, const Point2& b, ) {
 
   Vector2 v;
   Point2  u = a;
@@ -124,7 +113,8 @@ void Rasteriser::paint_line (const Point2& a, const Point2& b) {
     screen_buffer[y][x] = {255, 255, 255};
   }
 }
-
+*/
+/*
 void Rasteriser::raster_triangle_y (const Triangle2& triangle) {
 
   const Point2& a = triangle.a;
@@ -202,9 +192,8 @@ void Rasteriser::raster_triangle_y (const Triangle2& triangle) {
     }
   }
 }
-
-
-
+*/
+/*
 void Rasteriser::raster_triangle_x (const Triangle2& triangle) {
 
   const Point2& a = triangle.a;
@@ -282,8 +271,10 @@ void Rasteriser::raster_triangle_x (const Triangle2& triangle) {
     }
   }
 }
+*/
 
-void Rasteriser::raster_triangle(const Triangle2& triangle) {  
+void Rasteriser::raster_triangle(const Triangle2& triangle,
+                                 std::vector<std::vector<ImagePixel>>* screen_buffer) {
   // Generate a rectangle that envolves the triangle
   double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
   double right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
@@ -319,24 +310,23 @@ void Rasteriser::raster_triangle(const Triangle2& triangle) {
       double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
       // Check if point is in triangle
-      if ((u >= 0) && (v >= 0) && (u + v < 1)) {
-        screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                               static_cast<unsigned>(triangle.color.y()),
-                               static_cast<unsigned>(triangle.color.z())
-                               };
+      if ((u >= 0) && (v >= 0) && (u + v < 1) && triangle.z_value < (*screen_buffer)[y][x].z) {
+        (*screen_buffer)[y][x] = {{static_cast<unsigned>(triangle.color.x()),
+                                static_cast<unsigned>(triangle.color.y()),
+                                static_cast<unsigned>(triangle.color.z())
+                               }, triangle.z_value};
       }
     }
   }
-
 }
 
+void Rasteriser::paint_triangle (const Triangle2& triangle,
+                                 std::vector<std::vector<ImagePixel>>* screen_buffer) {
 
+  unsigned height = screen_buffer->size();
+  unsigned width = (*screen_buffer)[0].size();
 
-void Rasteriser::paint_triangle (const Triangle2& triangle) {
-
-  unsigned height = screen_buffer.size();
-  unsigned width = screen_buffer[0].size();
-
+  // FIXME: Use actual camera values
   double v_factor = height / 6;
   double h_factor = width  / 6;
 
@@ -359,124 +349,44 @@ void Rasteriser::paint_triangle (const Triangle2& triangle) {
 //  raster_triangle_y(Triangle2{a, b, c, triangle.z_value, triangle.color});
 //  raster_triangle_x(Triangle2{a, b, c, triangle.z_value, triangle.color});
 
-  raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color});
+  raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
 }
 
-void Rasteriser::paint_triangle_multithread(const Triangle2& triangle) {
-  unsigned height = screen_buffer.size();
-  unsigned width = screen_buffer[0].size();
+void Rasteriser::generate_frame() {
+  // Select unused buffer
+  std::vector<std::vector<ImagePixel>>* buff;
+  canvas->lock_buffer_mutex();
+  if (canvas->reading_from_buffer_a())
+    buff = &screen_buffer_b;
+  else
+    buff = &screen_buffer_a;
 
-  double v_factor = height / 6;
-  double h_factor = width  / 6;
-
-  unsigned x_offset = width / 2;
-  unsigned y_offset = height / 2;
-
-  Point2 a = {triangle.a.x() * h_factor + x_offset,
-              triangle.a.y() * v_factor + y_offset};
-
-  Point2 b = {triangle.b.x() * h_factor + x_offset,
-              triangle.b.y() * v_factor + y_offset};
-
-  Point2 c = {triangle.c.x() * h_factor + x_offset,
-              triangle.c.y() * v_factor + y_offset};
-
-  raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color});
-}
-
-
-
-void Rasteriser::paint_half_rect_ad_up(const iRect& r, const Color888& c) {
-  unsigned size_x = r.size_x();
-  unsigned size_y = r.size_y();
-
-  if (size_x > size_y) {
-    // Horizontal case
-    unsigned segment = size_x / size_y;
-
-    for (unsigned x = r.x; x <= r.width; x++)
-      for (unsigned y = r.y; y <= r.y + (segment * x); y++)
-        screen_buffer[y][x] = c;
-
-  } else {
-    // Vertical case
-    unsigned segment = size_y / size_x;
-
-    for (unsigned y = r.y; y <= r.height; y++)
-      for (unsigned x = r.x; x <= r.x + (segment * y); x++)
-        screen_buffer[y][x] = c;
-  }
-}
-
-void Rasteriser::paint_half_rect_ad_down(const iRect& r, const Color888& c) {
-  unsigned size_x = r.size_x();
-  unsigned size_y = r.size_y();
-
-  if (size_x > size_y) {
-    unsigned segment = size_x / size_y;
-
-    for (unsigned x = r.x; x <= r.width; x++)
-      for (unsigned y = r.y + (segment * x); y >= r.y; y--)
-        screen_buffer[y][x] = c;
-
-  } else {
-    unsigned segment = size_y / size_x;
-
-    for (unsigned y = r.y; y <= r.height; y++)
-      for (unsigned x = r.x + (segment * y); x >= r.x; x--)
-        screen_buffer[y][x] = c;
-  }
-}
-
-void Rasteriser::paint_half_rect_cb_up(const iRect& r, const Color888& c) {
-  for (unsigned x = r.x; x < r.width; x++)
-    for (unsigned y = r.y; y < r.height; y++)
-      screen_buffer[y][x] = c;
-}
-
-void Rasteriser::paint_half_rect_cb_down(const iRect& r, const Color888& c) {
-  for (unsigned x = r.x; x < r.width; x++)
-    for (unsigned y = r.y; y < r.height; y++)
-      screen_buffer[y][x] = c;
-}
-
-#include <thread>
-#include <chrono>
-#include <ctime>
-
-void Rasteriser::generate_frame(const std::vector<Triangle2>* buff) {  
+  std::fill(buff->begin(), buff->end(),
+            std::vector<ImagePixel>(screen_size, {{0,0,0}, 10000000}));
 /*
-  for (unsigned i = 0; i < screen_size; i++)
-    for (unsigned j = 0; j < screen_size; j++)
-      screen_buffer[i][j] = Color888{0, 0, 0};
+  for (const auto& triangle : elements_to_render)
+    paint_triangle(triangle, buff);
 */
-  screen_buffer.clear();
-  screen_buffer.resize(screen_size, std::vector<Color888>(screen_size, {0,0,0}));
 
-  for (const auto& triangle : *buff)
-    paint_triangle(triangle);  
-
-  // Can't multithread since z order is important
-/*
-  unsigned size = buff->size();
+  unsigned size = elements_to_render.size();
   unsigned segments = (size / N_THREADS);
 
   auto lambda = [&](unsigned init, unsigned end) {
-    for (unsigned j = init; j < end; j++) {
-      paint_triangle((*buff)[j]);
-    }
+    for (unsigned j = init; j < end; j++)
+      paint_triangle(elements_to_render[j], buff);
   };
 
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS - 1; i++)
     promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
 
-  promises[N_THREADS - 1] = std::async(lambda,
-                                       (3) * segments, size);
+  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, size);
 
   for (auto& promise : promises)
     promise.get();
-*/
+
+  canvas->update_frame(camera->get_bounds());
+  canvas->unlock_buffer_mutex();  // Acts like Vsync
 //  write_file(screen_buffer);
 }
 
@@ -509,13 +419,13 @@ void Rasteriser::set_rasterization_data() {
   for (auto& promise : promises)
     promise.get();
 
-  camera->basis_changed = false;
+  camera->basis_changed    = false;
   camera->position_changed = false;
 
   // Generate iterable list of meshes
   meshes_vector.clear();
-
-  generate_mesh_list(world->get_elements());  
+  generate_mesh_list(world->get_elements());
+  elements_to_render.clear();
 }
 
 Color Rasteriser::calculate_lights (const Color& m_color,
@@ -538,8 +448,7 @@ Color Rasteriser::calculate_lights (const Color& m_color,
 
 bool Rasteriser::calculate_mesh_projection(const Face3& face,                                           
                                            std::vector<Triangle2>& triangles,                                           
-                                           const Color& color) {  
-
+                                           const Color& color) {
   Triangle2 tmp_triangle;
 
   // 1. Check face is not behind camera. Since we are using camera basis
@@ -596,46 +505,35 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 }
 
 void Rasteriser::rasterise() {
-  set_rasterization_data();
-  std::vector<Triangle2>* buff;
-
-  // Select unused buffer
-  if (canvas->reading_from_buffer_a()) {
-    elements_to_render_buff_b.clear();
-    buff = &elements_to_render_buff_b;
-  } else {
-    elements_to_render_buff_a.clear();
-    buff = &elements_to_render_buff_a;
-  }
+  set_rasterization_data();    
 
   // Prepare threads
   unsigned segments = (meshes_vector.size() / N_THREADS);
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS  - 1; i++)
     promises[i] = std::async(&Rasteriser::multithreaded_rasterize_mesh_list, this,
-                             i * segments, (i + 1) * segments, buff);
+                             i * segments, (i + 1) * segments);
 
   promises[N_THREADS - 1] = std::async(&Rasteriser::multithreaded_rasterize_mesh_list, this,
-                                       (N_THREADS - 1) * segments, meshes_vector.size(),
-                                        buff);
+                                       (N_THREADS - 1) * segments, meshes_vector.size());
 
-//  canvas->lock_buffer_mutex();
+
   // Trigger calculations
   for (auto& promise : promises)
     promise.get();
 
   // Order by distance to camera
+  // Do not order since we are using a multithreaded painting
+  /*
   std::sort(buff->begin(), buff->end(),
     [](const Triangle2& a, const Triangle2& b) {
       return a.z_value > b.z_value;
   });
+  */
 
-//  canvas->unlock_buffer_mutex();
+  generate_frame();
 
-  generate_frame(buff);
-
-  // FIXME: Calculate triangle occlusion here?
-  canvas->update_frame(camera->get_bounds());  
+  // FIXME: Calculate triangle occlusion here?  
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {

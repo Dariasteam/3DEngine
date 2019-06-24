@@ -3,8 +3,9 @@
 //#define WIREFRAME
 
 Canvas::Canvas(QWidget *parent) :
-  QLabel(parent) {
-}
+  QLabel(parent),
+  image (SCREEN_SIZE, SCREEN_SIZE, QImage::Format_RGB888)
+{}
 /*
 void Canvas::paintEvent(QPaintEvent *event) {
   QPainter p(this);
@@ -40,14 +41,16 @@ void Canvas::paintEvent(QPaintEvent *event) {
 void Canvas::update_frame(Rect b) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
+  new_frame_redered = true;
 
-  paint();
+//  paint();
 }
 
 // Translates the coordinates to the canvas size and
 // the non centered coordinate system
 QPointF Canvas::adjust_coordinates(const Point2& p) {
-  return {(p.x() * h_factor + x_offset),
+  return {
+          (p.x() * h_factor + x_offset),
           (p.y() * v_factor + y_offset)
          };
 }
@@ -57,33 +60,64 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = static_cast<double>(event->size().height()) / 2;
 }
 
+void Canvas::set_screen_buffer(const std::vector<std::vector<ImagePixel> >* buff_a,
+                               const std::vector<std::vector<ImagePixel> >* buff_b) {
+  screen_buffer_a = buff_a;
+  screen_buffer_b = buff_b;
+}
+
+/*
 void Canvas::set_triangles_buffer(const std::vector<Triangle2> *buff_a,
                                   const std::vector<Triangle2> *buff_b) {
   triangles_buffer_a = buff_a;
   triangles_buffer_b = buff_b;
 }
 
-void Canvas::set_screen_buffer(const std::vector<std::vector<Color888> >* buff) {
+void Canvas::set_screen_buffer(const std::vector<std::vector<ImagePixel> >* buff) {
   screen_buffer = buff;
 }
+*/
+bool Canvas::paint() {
+  if (!new_frame_redered)
+    return false;
 
-void Canvas::paint() {
-  unsigned screen_size = 500;
-  QImage image (screen_size, screen_size, QImage::Format_RGB888);
-  for (unsigned i = 0; i < screen_size; i++) {
-    for (unsigned j = 0; j < screen_size; j++) {
-      const Color888& aux_color = (*screen_buffer)[j][i];
+  new_frame_redered = false;
+  unsigned screen_size = SCREEN_SIZE;
+  const std::vector<std::vector<ImagePixel>>* screen_buffer;
 
-      QColor color (
-        aux_color.r,
-        aux_color.g,
-        aux_color.b
-      );
+  // Select unused buffer and mark it as used
+  lock_buffer_mutex();
+  if (reading_from_buffer_a())
+    screen_buffer = screen_buffer_b;
+  else
+    screen_buffer = screen_buffer_a;
+  reading_buffer_a = !reading_buffer_a;
+  unlock_buffer_mutex();
 
-      image.setPixelColor(i, j, color);
+  auto lambda = [&](unsigned init_x, unsigned end_x) {
+    for (unsigned i = init_x; i < end_x; i++) {
+      for (unsigned j = 0; j < screen_size; j++) {
+        const Color888& aux_color = (*screen_buffer)[j][i].color;
+        image.setPixelColor(i, j, QColor (
+                                  aux_color.r,
+                                  aux_color.g,
+                                  aux_color.b
+                                ));
+      }
     }
-  }
+  };
+
+  unsigned segments = (screen_size / N_THREADS);
+  std::vector<std::future<void>> promises (N_THREADS);
+  for (unsigned i = 0; i < N_THREADS  - 1; i++)
+    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
+
+  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments,
+                                                screen_size);
+  for (auto& promise : promises)
+    promise.get();
 
   setPixmap(QPixmap::fromImage(image));
+  return true;
 }
 
