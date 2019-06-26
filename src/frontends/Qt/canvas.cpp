@@ -92,7 +92,7 @@ bool Canvas::paint() {
   else
     screen_buffer = screen_buffer_a;
   reading_buffer_a = !reading_buffer_a;
-  unlock_buffer_mutex();
+
 
   unsigned char* buffer_;
   buffer_ = new unsigned char[3 * screen_size * screen_size];
@@ -124,7 +124,9 @@ bool Canvas::paint() {
   QImage image(buffer_, screen_size, screen_size, QImage::Format_RGB888);
   setPixmap(QPixmap::fromImage(image));
 
-  delete buffer_;
+  unlock_buffer_mutex();
+
+  delete[] buffer_;
   return true;
 }
 
