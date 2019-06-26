@@ -4,8 +4,9 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   world (wd),
   camera (cm),
   canvas (cv),
-  screen_buffer_a (screen_size, std::vector<ImagePixel>(screen_size, {{0,0,0}, 100000000})),
-  screen_buffer_b (screen_size, std::vector<ImagePixel>(screen_size, {{0,0,0}, 100000000}))
+  screen_buffer_a (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
+  screen_buffer_b (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
+  z_buffer (screen_size, std::vector<double>(screen_size, 10000))
 {
   canvas->set_screen_buffer(&screen_buffer_a, &screen_buffer_b);
 
@@ -18,7 +19,7 @@ void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   }
 }
 
-void write_file(const std::vector<std::vector<ImagePixel>>& canvas) {
+void write_file(const std::vector<std::vector<Color888>>& canvas) {
   std::ofstream file;
   file.open("test_picture.ppm");
 
@@ -26,9 +27,9 @@ void write_file(const std::vector<std::vector<ImagePixel>>& canvas) {
     file << "P3\n" << canvas[0].size() << " " << canvas.size() << " " << 255 << "\n";
     for (const auto &row : canvas) {
       for (const auto &pixel : row) {
-        file << pixel.color.r << " "
-             << pixel.color.g << " "
-             << pixel.color.b << "\n";
+        file << pixel.r << " "
+             << pixel.g << " "
+             << pixel.b << "\n";
       }
     }
     file.close();
@@ -274,7 +275,7 @@ void Rasteriser::raster_triangle_x (const Triangle2& triangle) {
 */
 
 void Rasteriser::raster_triangle(const Triangle2& triangle,
-                                 std::vector<std::vector<ImagePixel>>* screen_buffer) {
+                                 std::vector<std::vector<Color888>>* screen_buffer) {
   // Generate a rectangle that envolves the triangle
   double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
   double right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
@@ -310,18 +311,18 @@ void Rasteriser::raster_triangle(const Triangle2& triangle,
       double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
       // Check if point is in triangle
-      if ((u >= 0) && (v >= 0) && (u + v < 1) && triangle.z_value < (*screen_buffer)[y][x].z) {
-        (*screen_buffer)[y][x] = {{static_cast<unsigned>(triangle.color.x()),
-                                static_cast<unsigned>(triangle.color.y()),
-                                static_cast<unsigned>(triangle.color.z())
-                               }, triangle.z_value};
+      if ((u >= 0) && (v >= 0) && (u + v < 1) && triangle.z_value < z_buffer[y][x]) {
+        (*screen_buffer)[y][x] = {static_cast<unsigned>(triangle.color.x()),
+                                   static_cast<unsigned>(triangle.color.y()),
+                                   static_cast<unsigned>(triangle.color.z())};
+        z_buffer[y][x] = triangle.z_value;
       }
     }
   }
 }
 
 void Rasteriser::paint_triangle (const Triangle2& triangle,
-                                 std::vector<std::vector<ImagePixel>>* screen_buffer) {
+                                 std::vector<std::vector<Color888>>* screen_buffer) {
 
   unsigned height = screen_buffer->size();
   unsigned width = (*screen_buffer)[0].size();
@@ -352,22 +353,25 @@ void Rasteriser::paint_triangle (const Triangle2& triangle,
   raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
 }
 
-void Rasteriser::generate_frame() {
-  // Select unused buffer
-  std::vector<std::vector<ImagePixel>>* buff;
+void Rasteriser::generate_frame() {  
+  std::vector<std::vector<Color888>>* buff;
+
+  // 1. Select unused buffer
   canvas->lock_buffer_mutex();
   if (canvas->reading_from_buffer_a())
     buff = &screen_buffer_b;
   else
-    buff = &screen_buffer_a;
+    buff = &screen_buffer_a;  
 
+  // FIXME: Too much cost cleaning these buffers
+  // 2. Clear buffers
   std::fill(buff->begin(), buff->end(),
-            std::vector<ImagePixel>(screen_size, {{0,0,0}, 10000000}));
-/*
-  for (const auto& triangle : elements_to_render)
-    paint_triangle(triangle, buff);
-*/
+            std::vector<Color888>(screen_size, {0,0,0}));
 
+  std::fill(z_buffer.begin(), z_buffer.end(),
+            std::vector<double>(screen_size, 100000));
+
+  // 3. Populate
   unsigned size = elements_to_render.size();
   unsigned segments = (size / N_THREADS);
 
@@ -385,8 +389,8 @@ void Rasteriser::generate_frame() {
   for (auto& promise : promises)
     promise.get();
 
+  canvas->unlock_buffer_mutex();                 // Acts like Vsync
   canvas->update_frame(camera->get_bounds());
-  canvas->unlock_buffer_mutex();  // Acts like Vsync
 //  write_file(screen_buffer);
 }
 
@@ -476,8 +480,7 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
                 | calculate_cut_point(face.c, face.c, pc);
   if (!visible) return false;
 
-  // 4. Set triangle in the list. If the function return false this will be
-  // overwritten
+  // Set values
   tmp_triangle.a.set_values(pa.x(), pa.y());
   tmp_triangle.b.set_values(pb.x(), pb.y());
   tmp_triangle.c.set_values(pc.x(), pc.y());
@@ -523,7 +526,7 @@ void Rasteriser::rasterise() {
     promise.get();
 
   // Order by distance to camera
-  // Do not order since we are using a multithreaded painting
+  // EDIT: Do not order since we are using a multithreaded painting
   /*
   std::sort(buff->begin(), buff->end(),
     [](const Triangle2& a, const Triangle2& b) {
@@ -543,7 +546,8 @@ bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
          p.y() < camera->get_bounds().height;
 }
 
-// Calculate the intersection point between the camera plane and the vertex
+// Calculate the intersection point between the camera plane and the
+// line described by vertex and camera_fugue (dir_v)
 /* Plane expresed as Ax + By + Cz + D = 0
  * Rect expresed as
  *  x = a + bß

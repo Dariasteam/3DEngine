@@ -19,7 +19,7 @@ private:
   std::string text;
 
   std::chrono::time_point<std::chrono::system_clock> last_time;
-  unsigned frame_counter = 0;
+  unsigned frame_counter {0};
 
 public:
 

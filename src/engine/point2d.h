@@ -168,22 +168,20 @@ struct Triangle2 {
 };
 
 struct Color888 {
-  unsigned r;
-  unsigned g;
-  unsigned b;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
 
   bool operator != (const Color888& c) const {
     if (r != c.r || g != c.g || b != c.b)
       return true;
     return false;
   }
-};
 
-struct ImagePixel {
-  Color888 color;
-  double z;
+  unsigned char to_uchar () {
+//    return
+  }
 };
-
 
 #endif // POINT2D_H
 

@@ -38,8 +38,8 @@ private:
   const std::vector<Triangle2>* triangles_buffer_a {nullptr};
   const std::vector<Triangle2>* triangles_buffer_b {nullptr};
 
-  const std::vector<std::vector<ImagePixel>>* screen_buffer_a {nullptr};
-  const std::vector<std::vector<ImagePixel>>* screen_buffer_b {nullptr};
+  const std::vector<std::vector<Color888>>* screen_buffer_a {nullptr};
+  const std::vector<std::vector<Color888>>* screen_buffer_b {nullptr};
 
   std::mutex mtx;
   bool reading_buffer_a = false;
@@ -49,12 +49,9 @@ public:
   explicit Canvas(QWidget *parent = nullptr);
   void update_frame (Rect bounds);
   void resizeEvent(QResizeEvent *event) override;
-  /*
-  void set_triangles_buffer (const std::vector<Triangle2>* buff_a,
-                             const std::vector<Triangle2>* buff_b);
-  */
-  void set_screen_buffer (const std::vector<std::vector<ImagePixel>>* buff_a,
-                          const std::vector<std::vector<ImagePixel>>* buff_b);
+
+  void set_screen_buffer (const std::vector<std::vector<Color888>>* buff_a,
+                          const std::vector<std::vector<Color888>>* buff_b);
 
   inline bool reading_from_buffer_a () {
     return reading_buffer_a;

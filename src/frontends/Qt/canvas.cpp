@@ -60,8 +60,8 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = static_cast<double>(event->size().height()) / 2;
 }
 
-void Canvas::set_screen_buffer(const std::vector<std::vector<ImagePixel> >* buff_a,
-                               const std::vector<std::vector<ImagePixel> >* buff_b) {
+void Canvas::set_screen_buffer(const std::vector<std::vector<Color888>>* buff_a,
+                               const std::vector<std::vector<Color888>>* buff_b) {
   screen_buffer_a = buff_a;
   screen_buffer_b = buff_b;
 }
@@ -77,13 +77,13 @@ void Canvas::set_screen_buffer(const std::vector<std::vector<ImagePixel> >* buff
   screen_buffer = buff;
 }
 */
-bool Canvas::paint() {
+bool Canvas::paint() {  
   if (!new_frame_redered)
     return false;
 
   new_frame_redered = false;
   unsigned screen_size = SCREEN_SIZE;
-  const std::vector<std::vector<ImagePixel>>* screen_buffer;
+  const std::vector<std::vector<Color888>>* screen_buffer;
 
   // Select unused buffer and mark it as used
   lock_buffer_mutex();
@@ -94,15 +94,19 @@ bool Canvas::paint() {
   reading_buffer_a = !reading_buffer_a;
   unlock_buffer_mutex();
 
+  unsigned char* buffer_;
+  buffer_ = new unsigned char[3 * screen_size * screen_size];
+
+  // FIXME: This copy does not make sense
+
   auto lambda = [&](unsigned init_x, unsigned end_x) {
     for (unsigned i = init_x; i < end_x; i++) {
       for (unsigned j = 0; j < screen_size; j++) {
-        const Color888& aux_color = (*screen_buffer)[j][i].color;
-        image.setPixelColor(i, j, QColor (
-                                  aux_color.r,
-                                  aux_color.g,
-                                  aux_color.b
-                                ));
+        const Color888& aux_color = (*screen_buffer)[j][i];
+
+        buffer_[3 * (j * screen_size + i)    ] = aux_color.r;
+        buffer_[3 * (j * screen_size + i) + 1] = aux_color.g;
+        buffer_[3 * (j * screen_size + i) + 2] = aux_color.b;
       }
     }
   };
@@ -117,7 +121,10 @@ bool Canvas::paint() {
   for (auto& promise : promises)
     promise.get();
 
+  QImage image(buffer_, screen_size, screen_size, QImage::Format_RGB888);
   setPixmap(QPixmap::fromImage(image));
+
+  delete buffer_;
   return true;
 }
 

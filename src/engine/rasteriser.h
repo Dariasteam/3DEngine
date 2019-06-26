@@ -22,8 +22,10 @@ private:
   bool double_faces = false;
   unsigned screen_size = SCREEN_SIZE;
 
-  std::vector<std::vector<ImagePixel>> screen_buffer_a;
-  std::vector<std::vector<ImagePixel>> screen_buffer_b;
+  std::vector<std::vector<Color888>> screen_buffer_a;
+  std::vector<std::vector<Color888>> screen_buffer_b;
+
+  std::vector<std::vector<double>> z_buffer;
 
   std::vector<Triangle2> elements_to_render;
 
@@ -41,7 +43,7 @@ private:
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 
   void generate_frame ();
-  void paint_triangle (const Triangle2& triangle, std::vector<std::vector<ImagePixel>>* screen_buffer);
+  void paint_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
   void paint_triangle_multithread (const Triangle2& triangle);
 
   /*   a___b
@@ -58,7 +60,7 @@ private:
   inline void raster_triangle_x (const Triangle2& triangle);
   inline void paint_line (const Point2& a, const Point2& b);
 */
-  inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<ImagePixel>>* screen_buffer);
+  inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
   inline double get_y (const Point2& u, const Vector2& v, double x);
   inline double get_x (const Point2& u, const Vector2& v, double y);
 
