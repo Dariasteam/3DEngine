@@ -42,7 +42,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_1);
 
   Vector3 aux_pos {0, 0, 0};
-  if (update_rotation || position_changed) {
+  if (update_rotation || update_translation) {
     Matrix3 basis_changer_2;
     MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 
@@ -98,7 +98,7 @@ void Mesh::change_basis(const std::list<Mesh *> mesh_list,
   MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_1);
 
   Vector3 aux_pos {0, 0, 0};
-  if (update_rotation || position_changed) {
+  if (update_rotation || update_translation) {
     Matrix3 basis_changer_2;
     MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
 

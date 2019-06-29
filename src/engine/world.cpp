@@ -129,7 +129,7 @@ World::World(Camera* cm) :
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
   parsed_mesh->translate_global({0, -1.5, 30});
-/*
+
   for (unsigned i = 0; i < 15; i++) {
     parsed_mesh = new Mesh(*parsed_mesh);
     add_mesh(parsed_mesh);
@@ -137,7 +137,6 @@ World::World(Camera* cm) :
     parsed_mesh->rotate_y(10);
     parsed_mesh->translate_global({0, -4.5, 30.0 * (i + 2)});
   }
-*/
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -184,18 +183,19 @@ void World::calculate_next_frame() const {
   front->rotate_x(0.01);
   front->nested_meshes[0]->nested_meshes[0]->rotate_y(0.1);
 */
-
+/*
   for (auto& mesh : meshes)
-//    mesh->translate_global({0, 0, 0});
-  meshes.back()->rotate_y(-0.03);
-  meshes.back()->rotate_x(-0.03);
-  meshes.back()->rotate_z(-0.01);
+    mesh->translate_global({0, 0, 0.0000001});
+    */
+//  meshes.back()->rotate_y(-0.03);
+//  meshes.back()->rotate_x(-0.03);
+//  meshes.back()->rotate_z(-0.01);
 
 //  meshes.back()->translate_global({0, 0, 0.09});
 
   //rotate_meshes();
 
-// camera->translate_global({0, 0.0, 0.1});
+ camera->translate_global({0, 0.0, 0.1});
 //   camera->rotate_z(-0.1);
 }
 
