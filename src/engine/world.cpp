@@ -83,13 +83,13 @@ World::World(Camera* cm) :
   aux1->add_nested_mesh(aux2);
 */
   //125000
-  /*
-  for (unsigned i = 0; i < 125000; i++) {
+/*
+  for (unsigned i = 0; i < 1200; i++) {
     Mesh* aux1 = new Mesh (*a_mesh);
     Mesh* aux2 = new Mesh (*a_mesh);
 
-    aux1->translate_global ({-100, -70, static_cast<double>(i * 100)});
-    aux2->translate_global ({ 100, -70, static_cast<double>(i * 100)});
+    aux1->translate_global ({-100, 0, static_cast<double>(i * 100)});
+    aux2->translate_global ({ 100, 0, static_cast<double>(i * 100)});
 
     aux1->color = {255, 0, 255};
     aux2->color = {255, 0, 255};

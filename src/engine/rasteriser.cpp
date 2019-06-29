@@ -8,8 +8,7 @@ Rasteriser::Rasteriser(Canvas* cv, Camera* cm, World* wd) :
   screen_buffer_b (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
   z_buffer (screen_size, std::vector<double>(screen_size, 10000))
 {
-  canvas->set_screen_buffer(&screen_buffer_a, &screen_buffer_b);
-
+  canvas->set_screen_buffers(&screen_buffer_a, &screen_buffer_b);
 }
 
 void Rasteriser::generate_mesh_list(const std::vector<Mesh*> &meshes) {
@@ -277,19 +276,19 @@ void Rasteriser::raster_triangle_x (const Triangle2& triangle) {
 void Rasteriser::raster_triangle(const Triangle2& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
   // Generate a rectangle that envolves the triangle
-  double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
-  double right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
+  const double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
+  const double right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
 
-  double top  = std::min ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
-  double bttm = std::max ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
+  const double top  = std::min ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
+  const double bttm = std::max ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
 
-  unsigned l = std::max(static_cast<unsigned>(std::round(left)),  unsigned(0));
-  unsigned r = std::min(static_cast<unsigned>(std::round(right)), screen_size - 1);
-  unsigned t = std::max(static_cast<unsigned>(std::round(top)),   unsigned(0));
-  unsigned b = std::min(static_cast<unsigned>(std::round(bttm)),  screen_size - 1);
+  const unsigned l = std::max(static_cast<unsigned>(std::round(left)),  unsigned(0));
+  const unsigned r = std::min(static_cast<unsigned>(std::round(right)), screen_size - 1);
+  const unsigned t = std::max(static_cast<unsigned>(std::round(top)),   unsigned(0));
+  const unsigned b = std::min(static_cast<unsigned>(std::round(bttm)),  screen_size - 1);
 
   // Use barycentric coordinates, iterate over every pixel inside the
-  // rect and check if belongs to the triangle or not
+  // rect and check if it belongs to the triangle or not
   Vector2 v0 = triangle.c - triangle.a;
   Vector2 v1 = triangle.b - triangle.a;
 
@@ -312,9 +311,9 @@ void Rasteriser::raster_triangle(const Triangle2& triangle,
 
       // Check if point is in triangle
       if ((u >= 0) && (v >= 0) && (u + v < 1) && triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                                   static_cast<unsigned>(triangle.color.y()),
-                                   static_cast<unsigned>(triangle.color.z())};
+        (*screen_buffer)[y][x] = {static_cast<unsigned char>(triangle.color.x()),
+                                  static_cast<unsigned char>(triangle.color.y()),
+                                  static_cast<unsigned char>(triangle.color.z())};
         z_buffer[y][x] = triangle.z_value;
       }
     }
@@ -363,7 +362,7 @@ void Rasteriser::generate_frame() {
   else
     buff = &screen_buffer_a;  
 
-  // FIXME: Too much cost cleaning these buffers
+  // FIXME: Too much cost cleaning theese buffers
   // 2. Clear buffers
   std::fill(buff->begin(), buff->end(),
             std::vector<Color888>(screen_size, {0,0,0}));
@@ -534,9 +533,9 @@ void Rasteriser::rasterise() {
   });
   */
 
+  // FIXME: Calculate triangle occlusion here?
+  // EDIT: Currently calculated using a z_buffer
   generate_frame();
-
-  // FIXME: Calculate triangle occlusion here?  
 }
 
 bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {

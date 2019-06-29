@@ -11,7 +11,6 @@ struct Point2 {
   double Y;
 
   Point2 () : Point2 (0, 0) {}
-  Point2 (const Point2& p) : X(p.x()), Y(p.y()) {}
   Point2 (double x, double y) :
     X(x),
     Y(y)
@@ -124,11 +123,13 @@ struct iRect {
   unsigned width;
 
   unsigned size_x () const {
-    return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+    double v = std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+    return static_cast<unsigned>(std::round(v));
   }
 
   unsigned size_y () const {
-    return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+    double v = std::sqrt(std::pow(x, 2) + std::pow(width, 2));
+    return static_cast<unsigned>(std::round(v));
   }
 
   unsigned area ()  const {
@@ -176,10 +177,6 @@ struct Color888 {
     if (r != c.r || g != c.g || b != c.b)
       return true;
     return false;
-  }
-
-  unsigned char to_uchar () {
-//    return
   }
 };
 

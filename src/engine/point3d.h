@@ -86,7 +86,7 @@ struct Vector3 : public Point3 {
     vec.set_x(a.x() - b.x());
     vec.set_y(a.y() - b.y());
     vec.set_z(a.z() - b.z());
-  };
+  }
 
   static Vector3 cross_product (const Vector3& v, const Vector3& u) {
     return Vector3 {
@@ -240,7 +240,6 @@ struct Spatial {
 */
     translation = v;
     position += v;
-//    position += v;
     position_changed = true;
   }
 
@@ -327,17 +326,17 @@ struct Mesh : public Spatial {
                                              bool camera_rotated,
                                              bool camera_translated);
 
-  void inline change_basis_multithreaded    (const std::list<Mesh*> mesh_list,
-                                             const Basis3& new_basis,
-                                             const Point3& camera_translation,
-                                             bool camera_rotated,
-                                             bool camera_translated);
+  void inline change_basis_multithreaded (const std::list<Mesh*> mesh_list,
+                                          const Basis3& new_basis,
+                                          const Point3& camera_translation,
+                                          bool camera_rotated,
+                                          bool camera_translated);
 
-  void inline change_basis       (const std::list<Mesh*> mesh_list,
-                                  const Basis3& new_basis,
-                                  const Point3& camera_translation,
-                                  bool update_rotation,
-                                  bool update_translation);
+  void inline change_basis (const std::list<Mesh*> mesh_list,
+                            const Basis3& new_basis,
+                            const Point3& camera_translation,
+                            bool update_rotation,
+                            bool update_translation);
 
   void inline apply_translation_part (const Vector3& translation,
                                       unsigned from, unsigned to);

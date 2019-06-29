@@ -50,7 +50,7 @@ public:
   void update_frame (Rect bounds);
   void resizeEvent(QResizeEvent *event) override;
 
-  void set_screen_buffer (const std::vector<std::vector<Color888>>* buff_a,
+  void set_screen_buffers (const std::vector<std::vector<Color888>>* buff_a,
                           const std::vector<std::vector<Color888>>* buff_b);
 
   inline bool reading_from_buffer_a () {

@@ -60,7 +60,7 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = static_cast<double>(event->size().height()) / 2;
 }
 
-void Canvas::set_screen_buffer(const std::vector<std::vector<Color888>>* buff_a,
+void Canvas::set_screen_buffers(const std::vector<std::vector<Color888>>* buff_a,
                                const std::vector<std::vector<Color888>>* buff_b) {
   screen_buffer_a = buff_a;
   screen_buffer_b = buff_b;
