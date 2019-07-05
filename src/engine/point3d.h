@@ -2,12 +2,12 @@
 #define POINT3D_H
 
 #include "matrix.h"
+#include "multithreadmanager.h"
 
 #include <iostream>
 #include <cmath>
 #include <list>
 
-#define N_THREADS 8
 #define PI 3.14159265
 
 struct Point3 {
@@ -239,7 +239,7 @@ struct Spatial {
     Point3Ops::change_basis(m, position, position);
 */
     translation = v;
-    position += v;
+    position = v;
     position_changed = true;
   }
 

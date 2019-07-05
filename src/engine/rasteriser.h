@@ -5,6 +5,7 @@
 #include "world.h"
 #include "canvas.h"
 #include "list"
+#include "multithreadmanager.h"
 
 #include <future>
 #include <mutex>
@@ -44,22 +45,7 @@ private:
 
   void generate_frame ();
   void paint_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
-  void paint_triangle_multithread (const Triangle2& triangle);
 
-  /*   a___b
-   *   |   |
-   *   c___d
-   *
-   * */
-  void paint_half_rect_ad_up (const iRect& r, const Color888& c);
-  void paint_half_rect_ad_down (const iRect& r, const Color888& c);
-  void paint_half_rect_cb_up (const iRect& r, const Color888& c);
-  void paint_half_rect_cb_down (const iRect& r, const Color888& c);
-/*
-  inline void raster_triangle_y (const Triangle2& triangle);
-  inline void raster_triangle_x (const Triangle2& triangle);
-  inline void paint_line (const Point2& a, const Point2& b);
-*/
   inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
   inline double get_y (const Point2& u, const Vector2& v, double x);
   inline double get_x (const Point2& u, const Vector2& v, double y);
@@ -69,7 +55,7 @@ private:
                                                  unsigned end);
 
   inline void multithreaded_rasterize_single_mesh (unsigned init,
-                                                   unsigned end,                                                   
+                                                   unsigned end,
                                                    const Mesh* aux_mesh);
 
 public:

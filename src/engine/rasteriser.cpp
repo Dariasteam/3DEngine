@@ -65,7 +65,6 @@ void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) 
 
 void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,                                                     
                                                      const Mesh* aux_mesh) {
-  Point3 a, b, c;
   std::vector <Triangle2> tmp_triangles;
 
   for (unsigned k = init; k < end; k++) {
@@ -77,201 +76,6 @@ void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end
   elements_to_render.insert(std::end(elements_to_render), std::begin(tmp_triangles), std::end(tmp_triangles));
   mtx.unlock();
 }
-/*
-void Rasteriser::paint_line (const Point2& a, const Point2& b, ) {
-
-  Vector2 v;
-  Point2  u = a;
-
-  // Calculate y knowing x
-
-  if (a.x() > b.x())
-    v = a - b;
-  else
-    v = b - a;
-
-  uint init = static_cast<uint>(std::round((a.x())));
-  uint end =  static_cast<uint>(std::floor((b.x())));
-
-  for (unsigned x = init; x < end; x++) {
-    uint y = static_cast<uint>(std::round(get_y(u, v, x)));
-    screen_buffer[y][x] = {255, 255, 255};
-  }
-
-  // Calculate x knowing y
-
-  if (a.y() > b.y())
-    v = a - b;
-  else
-    v = b - a;
-
-  init = static_cast<uint>(std::round((a.y())));
-  end  = static_cast<uint>(std::floor((b.y())));
-
-  for (unsigned y = init; y < end; y++) {
-    uint x = static_cast<uint>(std::round(get_x(u, v, y)));
-    screen_buffer[y][x] = {255, 255, 255};
-  }
-}
-*/
-/*
-void Rasteriser::raster_triangle_y (const Triangle2& triangle) {
-
-  const Point2& a = triangle.a;
-  const Point2& b = triangle.b;
-  const Point2& c = triangle.c;
-
-  Point2 min_y_p;
-  Point2 mid_y_p;
-  Point2 max_y_p;
-
-  bool p_a = false;
-  bool p_b = false;
-  bool p_c = false;
-
-  if (a.y() <= b.y() && a.y() <= c.y()) { min_y_p = a; p_a = true; }
-  if (b.y() <= a.y() && b.y() <= c.y()) { min_y_p = b; p_b = true; }
-  if (c.y() <= a.y() && c.y() <= b.y()) { min_y_p = c; p_c = true; }
-
-  if (a.y() >= b.y() && a.y() >= c.y()) { max_y_p = a; p_a = true; }
-  if (b.y() >= a.y() && b.y() >= c.y()) { max_y_p = b; p_b = true; }
-  if (c.y() >= a.y() && c.y() >= b.y()) { max_y_p = c; p_c = true; }
-
-  if (!p_a) mid_y_p = a;
-  if (!p_b) mid_y_p = b;
-  if (!p_c) mid_y_p = c;
-
-  // Now vertices are ordered from top to bottom
-
-  Point2 min_x;
-  Point2 max_x;
-
-  if (mid_y_p.x() < max_y_p.x()) {
-    min_x = mid_y_p;
-    max_x = max_y_p;
-  } else {
-    min_x = max_y_p;
-    max_x = mid_y_p;
-  }
-
-  unsigned y_min = static_cast<unsigned>(std::round(min_y_p.y()));
-  unsigned y_max = static_cast<unsigned>(std::floor(mid_y_p.y()));
-
-  for (unsigned y = y_min; y < y_max; y++) {
-    int x_min = static_cast<int>(std::round(get_x(min_y_p, min_y_p - min_x, y)));
-    int x_max = static_cast<int>(std::floor(get_x(min_y_p, min_y_p - max_x, y)));
-
-    for (unsigned x = x_min; x <= x_max; x++) {
-      screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                             static_cast<unsigned>(triangle.color.y()),
-                             static_cast<unsigned>(triangle.color.z())
-                            };
-    }
-  }
-
-  if (mid_y_p.x() < min_y_p.x()) {
-    min_x = mid_y_p;
-    max_x = min_y_p;
-  } else {
-    min_x = min_y_p;
-    max_x = mid_y_p;
-  }
-
-  y_min = static_cast<unsigned>(std::round(mid_y_p.y()));
-  y_max = static_cast<unsigned>(std::floor(max_y_p.y()));
-
-  for (unsigned y = y_max; y > y_min; y--) {
-    int x_min = static_cast<int>(std::round(get_x(max_y_p, max_y_p - min_x, y)));
-    int x_max = static_cast<int>(std::floor(get_x(max_y_p, max_y_p - max_x, y)));
-
-    for (unsigned x = x_min; x <= x_max; x++) {
-      screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                             static_cast<unsigned>(triangle.color.y()),
-                             static_cast<unsigned>(triangle.color.z())
-                            };
-    }
-  }
-}
-*/
-/*
-void Rasteriser::raster_triangle_x (const Triangle2& triangle) {
-
-  const Point2& a = triangle.a;
-  const Point2& b = triangle.b;
-  const Point2& c = triangle.c;
-
-  Point2 min_x_p;
-  Point2 mid_x_p;
-  Point2 max_x_p;
-
-  bool p_a = false;
-  bool p_b = false;
-  bool p_c = false;
-
-  if (a.x() <= b.x() && a.x() <= c.x()) { min_x_p = a; p_a = true; }
-  if (b.x() <= a.x() && b.x() <= c.x()) { min_x_p = b; p_b = true; }
-  if (c.x() <= a.x() && c.x() <= b.x()) { min_x_p = c; p_c = true; }
-
-  if (a.x() >= b.x() && a.x() >= c.x()) { max_x_p = a; p_a = true; }
-  if (b.x() >= a.x() && b.x() >= c.x()) { max_x_p = b; p_b = true; }
-  if (c.x() >= a.x() && c.x() >= b.x()) { max_x_p = c; p_c = true; }
-
-  if (!p_a) mid_x_p = a;
-  if (!p_b) mid_x_p = b;
-  if (!p_c) mid_x_p = c;
-
-  // Now vertices are ordered from left to right
-
-  Point2 min_y;
-  Point2 max_y;
-
-  if (mid_x_p.y() < max_x_p.y()) {
-    min_y = mid_x_p;
-    max_y = max_x_p;
-  } else {
-    min_y = max_x_p;
-    max_y = mid_x_p;
-  }
-
-  unsigned x_min = static_cast<unsigned>(std::round(min_x_p.x()));
-  unsigned x_max = static_cast<unsigned>(std::floor(mid_x_p.x()));
-
-  for (unsigned x = x_min; x < x_max; x++) {
-    int y_min = static_cast<int>(std::round(get_y(min_x_p, min_x_p - min_y, x)));
-    int y_max = static_cast<int>(std::floor(get_y(min_x_p, min_x_p - max_y, x)));
-
-    for (unsigned y = y_min; y <= y_max; y++) {
-      screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                             static_cast<unsigned>(triangle.color.y()),
-                             static_cast<unsigned>(triangle.color.z())
-                            };
-    }
-  }
-
-  if (mid_x_p.y() < max_x_p.y()) {
-    min_y = mid_x_p;
-    max_y = min_x_p;
-  } else {
-    min_y = min_x_p;
-    max_y = mid_x_p;
-  }
-
-  x_min = static_cast<unsigned>(std::round(mid_x_p.x()));
-  x_max = static_cast<unsigned>(std::floor(max_x_p.x()));
-
-  for (unsigned x = x_max; x > x_min; x--) {
-    int y_min = static_cast<int>(std::round(get_y(max_x_p, max_x_p - min_y, x)));
-    int y_max = static_cast<int>(std::floor(get_y(max_x_p, max_x_p - max_y, x)));
-
-    for (unsigned y = y_min; y <= y_max; y++) {
-      screen_buffer[y][x] = {static_cast<unsigned>(triangle.color.x()),
-                             static_cast<unsigned>(triangle.color.y()),
-                             static_cast<unsigned>(triangle.color.z())
-                            };
-    }
-  }
-}
-*/
 
 void Rasteriser::raster_triangle(const Triangle2& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
@@ -326,9 +130,8 @@ void Rasteriser::paint_triangle (const Triangle2& triangle,
   unsigned height = screen_buffer->size();
   unsigned width = (*screen_buffer)[0].size();
 
-  // FIXME: Use actual camera values
-  double v_factor = height / 6;
-  double h_factor = width  / 6;
+  double v_factor = height / camera->get_bounds().y;
+  double h_factor = width  / camera->get_bounds().x;
 
   unsigned x_offset = width / 2;
   unsigned y_offset = height / 2;
@@ -341,13 +144,6 @@ void Rasteriser::paint_triangle (const Triangle2& triangle,
 
   Point2 c = {triangle.c.x() * h_factor + x_offset,
               triangle.c.y() * v_factor + y_offset};
-
-//  paint_line(a, b);
-//  paint_line(b, c);
-//  paint_line(a, c);
-
-//  raster_triangle_y(Triangle2{a, b, c, triangle.z_value, triangle.color});
-//  raster_triangle_x(Triangle2{a, b, c, triangle.z_value, triangle.color});
 
   raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
 }
@@ -371,22 +167,10 @@ void Rasteriser::generate_frame() {
             std::vector<double>(screen_size, 100000));
 
   // 3. Populate
-  unsigned size = elements_to_render.size();
-  unsigned segments = (size / N_THREADS);
-
-  auto lambda = [&](unsigned init, unsigned end) {
-    for (unsigned j = init; j < end; j++)
-      paint_triangle(elements_to_render[j], buff);
-  };
-
-  std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i < N_THREADS - 1; i++)
-    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
-
-  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments, size);
-
-  for (auto& promise : promises)
-    promise.get();
+  auto& m = MultithreadManager::get_instance();
+  m.calculate_threaded(elements_to_render.size(), [&](unsigned i) {
+    paint_triangle(elements_to_render[i], buff);
+  });
 
   canvas->unlock_buffer_mutex();                 // Acts like Vsync
   canvas->update_frame(camera->get_bounds());
@@ -394,9 +178,7 @@ void Rasteriser::generate_frame() {
 }
 
 void Rasteriser::set_rasterization_data() {
-  const auto& meshes = world->get_elements();
-  unsigned size = meshes.size();  
-  unsigned segments = (size / N_THREADS);
+  const auto& meshes = world->get_elements();  
 
   Vector3 camera_t;
   if (!camera->basis_changed)
@@ -404,23 +186,13 @@ void Rasteriser::set_rasterization_data() {
   else
     camera_t = camera->translation;
 
-  // Change basis to camera
-  auto lambda = [&](unsigned init, unsigned end) {
-    for (unsigned j = init; j < end; j++)
-      meshes[j]->express_in_parents_basis(camera->basis,
-                                          camera_t,
-                                          camera->basis_changed,
-                                          camera->position_changed);
-  }; 
-
-  std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i < N_THREADS - 1; i++)
-    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
-  promises[N_THREADS - 1] = std::async(lambda,
-                                       (N_THREADS - 1) * segments,size);
-
-  for (auto& promise : promises)
-    promise.get();
+  auto& m = MultithreadManager::get_instance();
+  m.calculate_threaded(meshes_vector.size(), [&](unsigned i) {
+    meshes[i]->express_in_parents_basis(camera->basis,
+                                        camera_t,
+                                        camera->basis_changed,
+                                        camera->position_changed);
+  });
 
   camera->basis_changed    = false;
   camera->position_changed = false;
@@ -501,8 +273,9 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   }
 
   // 7. Calculate light contribution
-  tmp_triangle.color = calculate_lights(color, face);
+  tmp_triangle.color = calculate_lights(color, face);    
   triangles.push_back(tmp_triangle);
+//  triangles.emplace_back(tmp_triangle);
   return true;
 }
 
@@ -510,6 +283,14 @@ void Rasteriser::rasterise() {
   set_rasterization_data();    
 
   // Prepare threads
+/*
+  auto& m = MultithreadManager::get_instance();
+  m.calculate_threaded(meshes_vector.size(), [&](unsigned i) {
+    Mesh* aux_mesh = meshes_vector[i];
+    multithreaded_rasterize_single_mesh(aux_mesh);
+  });
+*/
+
   unsigned segments = (meshes_vector.size() / N_THREADS);
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS  - 1; i++)
@@ -580,7 +361,7 @@ bool Rasteriser::calculate_cut_point(const Point3& vertex,
   const double& f = dir_v.z();
 
   // NOTE: Changed from -D to avoid render upside down
-  double T1 {D + A*a + B*c + C*e};
+  double T1 {-D + A*a + B*c + C*e};
   double T2 {- A*b - B*d - C*f};  
 
   bool return_value = true;

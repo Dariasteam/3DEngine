@@ -128,15 +128,16 @@ World::World(Camera* cm) :
   add_mesh(parsed_mesh);
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 30});
-
-  for (unsigned i = 0; i < 15; i++) {
+  parsed_mesh->translate_global({0, -1.5, 40});
+/*
+  for (unsigned i = 0; i < 8; i++) {
     parsed_mesh = new Mesh(*parsed_mesh);
     add_mesh(parsed_mesh);
     parsed_mesh->color = {250 - 10.0 * i, 50 + i * 10.0 , 10.0 * i};
     parsed_mesh->rotate_y(10);
     parsed_mesh->translate_global({0, -4.5, 30.0 * (i + 2)});
   }
+*/
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -152,26 +153,6 @@ void World::delete_mesh(Mesh* mesh) {
   meshes.erase(std::remove(meshes.begin(), meshes.end(), mesh), meshes.end());
 }
 
-void World::rotate_meshes() const {
-  auto lambda = [&](unsigned start, unsigned end){    
-    auto it_2 = meshes.begin();    
-    std::advance (it_2, end);
-
-    for (auto it_1 = meshes.begin(); it_1 < it_2; it_1++)
-      (*it_1)->rotate_y(0.15);
-  };
-
-  unsigned segments = (meshes.size() / N_THREADS);
-  std::vector<std::future<void>> promises (N_THREADS);
-
-  for (unsigned i = 0; i < N_THREADS - 1; i++)
-    promises[i] = std::async(lambda, (i * segments) + 3, ((i + 1) * segments) - 3);
-  promises[N_THREADS - 1] = std::async(lambda, ((N_THREADS - 1) * segments) - 3, meshes.size() -1);
-
-  for (auto& promise : promises)
-    promise.get();
-}
-
 void World::calculate_next_frame() const {
 
   //auto* front = meshes.front();
@@ -185,9 +166,11 @@ void World::calculate_next_frame() const {
 */
 /*
   for (auto& mesh : meshes)
-    mesh->translate_global({0, 0, 0.0000001});
-    */
-//  meshes.back()->rotate_y(-0.03);
+    mesh->rotate_y(-0.03);
+*/
+  meshes.back()->rotate_y(-0.03);
+
+//  meshes.back()->color += {1, -1, 1};
 //  meshes.back()->rotate_x(-0.03);
 //  meshes.back()->rotate_z(-0.01);
 
@@ -195,7 +178,7 @@ void World::calculate_next_frame() const {
 
   //rotate_meshes();
 
- camera->translate_global({0, 0.0, 0.1});
+// camera->translate_global({0, 0.0, 1});
 //   camera->rotate_z(-0.1);
 }
 

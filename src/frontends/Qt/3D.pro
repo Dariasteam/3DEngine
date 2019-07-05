@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 3D
 TEMPLATE = app
+CONFIG += c++1z
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -24,7 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-  ../../engine/objparser.cpp \
+  ../../engine/objparser.cpp \  
+  ../../engine/multithreadmanager.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
@@ -38,7 +40,8 @@ SOURCES += \
 	../../engine/matrix.cpp
 
 HEADERS += \
-  ../../engine/objparser.h \
+  ../../engine/objparser.h \  
+  ../../engine/multithreadmanager.h \
         src/mainwindow.h \
         canvas.h \
         src/renderengine.h \
