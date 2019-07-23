@@ -37,11 +37,11 @@ void write_file(const std::vector<std::vector<Color888>>& canvas) {
   }
 }
 
-double Rasteriser::get_y (const Point2& u, const Vector2& v, double x) {
+double Rasteriser::get_y (const Point2F& u, const Vector2& v, double x) {
   return u.y() + (x - u.x()) * (v.y() / v.x());
 }
 
-double Rasteriser::get_x (const Point2& u, const Vector2& v, double y) {
+double Rasteriser::get_x (const Point2F& u, const Vector2& v, double y) {
   return u.x() + (y - u.y()) * (v.x() / v.y());
 }
 
@@ -65,7 +65,7 @@ void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) 
 
 void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,                                                     
                                                      const Mesh* aux_mesh) {
-  std::vector <Triangle2> tmp_triangles;
+  std::vector <Triangle2F> tmp_triangles;
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
@@ -77,7 +77,109 @@ void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end
   mtx.unlock();
 }
 
-void Rasteriser::raster_triangle(const Triangle2& triangle,
+void drawLine (unsigned x0, unsigned x1, unsigned y, Color888 color,
+               std::vector<std::vector<Color888>>* screen_buffer) {
+  for (unsigned i = x0; i < x1; i++)
+    (*screen_buffer)[y][i] = color;
+
+}
+
+void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
+                            std::vector<std::vector<Color888>>* screen_buffer) {
+  const auto& v1 = triangle.a;
+  const auto& v2 = triangle.b;
+  const auto& v3 = triangle.c;
+
+  if (v2.y() == v1.y() || v3.y() == v1.y()) return;
+
+  int invslope1 = (v2.x()  - v1.x()) / (v2.y() - v1.y());
+  int invslope2 = (v3.x()  - v1.x()) / (v3.y() - v1.y());
+
+  int curx1 = v1.x();
+  int curx2 = v1.x();
+
+  for (int y = v1.y(); y <= v2.y(); y++) {
+    for (int x = curx1; x < curx2; x++) {
+      if (triangle.z_value < z_buffer[y][x]) {
+        (*screen_buffer)[y][x] = triangle.color;
+        z_buffer[y][x] = triangle.z_value;
+      }
+    }
+    curx1 += invslope1;
+    curx2 += invslope2;
+  }
+}
+
+void Rasteriser::fillTopFlatTriangle(const Triangle2& triangle,
+                            std::vector<std::vector<Color888>>* screen_buffer) {
+  const auto& v1 = triangle.a;
+  const auto& v2 = triangle.b;
+  const auto& v3 = triangle.c;
+
+  if (v3.y() == v1.y() || v3.y() == v2.y()) return;
+
+  int invslope1 = (v3.x() - v1.x()) / (v3.y() - v1.y());
+  int invslope2 = (v3.x() - v2.x()) / (v3.y() - v2.y());
+
+  int curx1 = v3.x();
+  int curx2 = v3.x();
+
+  for (int y = v3.y(); y > v1.y(); y--) {
+    for (int x = curx1; x < curx2; x++) {
+      if (triangle.z_value < z_buffer[y][x]) {
+        (*screen_buffer)[y][x] = triangle.color;
+        z_buffer[y][x] = triangle.z_value;
+      }
+    }
+    curx1 -= invslope1;
+    curx2 -= invslope2;
+  }
+}
+
+void Rasteriser::fill_triangle (const Triangle2F& triangle,
+                                std::vector<std::vector<Color888>>* screen_buffer) {
+
+  // Sort vertices by Y and convert them to int
+  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
+    return a.y() < b.y();
+  });
+
+  Triangle2 aux_triangle {
+    aux_vec[0],
+    aux_vec[1],
+    aux_vec[2],
+    triangle.z_value,
+    triangle.color
+  };
+
+  const auto& v1 = aux_vec[0];
+  const auto& v2 = aux_vec[1];
+  const auto& v3 = aux_vec[2];
+
+  // aux_triangle is ordered
+  if (v2.y() == v3.y()) {
+    fillBottomFlatTriangle(aux_triangle, screen_buffer);
+  } else if (v1.y() == v2.y()) {
+    fillTopFlatTriangle(aux_triangle, screen_buffer);
+  } else {
+    Point2 v4 ((v1.x() + ((float)(v2.y() - v1.y()) / (float)(v3.y() - v1.y())) *
+                     (v3.x() - v1.x())), v2.y());
+
+    Triangle2 aux_t1 {aux_triangle};
+    Triangle2 aux_t2 {aux_triangle};
+
+    aux_t1.c = v4;
+
+    aux_t2.a = v2;
+    aux_t2.b = v4;
+
+    fillBottomFlatTriangle(aux_t1, screen_buffer);
+    fillBottomFlatTriangle(aux_t2, screen_buffer);
+  }
+}
+
+void Rasteriser::raster_triangle(const Triangle2F& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
   // Generate a rectangle that envolves the triangle
   const double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
@@ -98,7 +200,7 @@ void Rasteriser::raster_triangle(const Triangle2& triangle,
 
   for (unsigned x = l; x <= r; x++) {
     for (unsigned y = t; y <= b; y++) {
-      Vector2 v2 = Point2(x,y) - triangle.a;
+      Vector2 v2 = Point2F(x,y) - triangle.a;
       // Compute vectors
 
       // Compute dot products
@@ -124,7 +226,7 @@ void Rasteriser::raster_triangle(const Triangle2& triangle,
   }
 }
 
-void Rasteriser::paint_triangle (const Triangle2& triangle,
+void Rasteriser::paint_triangle (const Triangle2F& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
 
   unsigned height = screen_buffer->size();
@@ -133,19 +235,28 @@ void Rasteriser::paint_triangle (const Triangle2& triangle,
   double v_factor = height / camera->get_bounds().y;
   double h_factor = width  / camera->get_bounds().x;
 
-  unsigned x_offset = width / 2;
+  unsigned x_offset = width  / 2;
   unsigned y_offset = height / 2;
 
-  Point2 a = {triangle.a.x() * h_factor + x_offset,
-              triangle.a.y() * v_factor + y_offset};
+  Point2F a = {triangle.a.x() * h_factor + x_offset,
+               triangle.a.y() * v_factor + y_offset};
 
-  Point2 b = {triangle.b.x() * h_factor + x_offset,
-              triangle.b.y() * v_factor + y_offset};
+  Point2F b = {triangle.b.x() * h_factor + x_offset,
+               triangle.b.y() * v_factor + y_offset};
 
-  Point2 c = {triangle.c.x() * h_factor + x_offset,
-              triangle.c.y() * v_factor + y_offset};
+  Point2F c = {triangle.c.x() * h_factor + x_offset,
+               triangle.c.y() * v_factor + y_offset};
 
-  raster_triangle (Triangle2{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
+
+  if(a.x() < 0 || a.x() > 1000) return;
+  if(a.y() < 0 || a.y() > 1000) return;
+  if(b.x() < 0 || b.x() > 1000) return;
+  if(b.y() < 0 || b.y() > 1000) return;
+  if(c.x() < 0 || c.x() > 1000) return;
+  if(c.y() < 0 || c.y() > 1000) return;
+
+//  raster_triangle (Triangle2F{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
+  fill_triangle(Triangle2F{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
 }
 
 void Rasteriser::generate_frame() {  
@@ -222,9 +333,9 @@ Color Rasteriser::calculate_lights (const Color& m_color,
 }
 
 bool Rasteriser::calculate_mesh_projection(const Face3& face,                                           
-                                           std::vector<Triangle2>& triangles,                                           
+                                           std::vector<Triangle2F>& triangles,
                                            const Color& color) {
-  Triangle2 tmp_triangle;
+  Triangle2F tmp_triangle;
 
   // 1. Check face is not behind camera. Since we are using camera basis
   // we only need z value of the plane. Also each point coordinate is also
@@ -319,7 +430,7 @@ void Rasteriser::rasterise() {
   generate_frame();
 }
 
-bool Rasteriser::is_point_between_camera_bounds(const Point2& p) const {
+bool Rasteriser::is_point_between_camera_bounds(const Point2F& p) const {
   return p.x() > camera->get_bounds().x       &&
          p.x() < camera->get_bounds().width   &&
          p.y() > camera->get_bounds().y       &&

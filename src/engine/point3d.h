@@ -194,15 +194,15 @@ struct Face3 {
 
 };
 
+const Basis3 canonical_base {
+  {1, 0, 0},
+  {0, 1, 0},
+  {0, 0, 1},
+};
+
 struct Spatial {      
   bool basis_changed = true;
   bool position_changed = true;
-
-  const Basis3 canonical_base {
-    {1, 0, 0},
-    {0, 1, 0},
-    {0, 0, 1},
-  };
 
   Spatial (const Spatial& sp) :
     basis_changed (sp.basis_changed),

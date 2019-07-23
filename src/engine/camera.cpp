@@ -8,12 +8,4 @@ Camera::Camera() :
 
   double b = 3;    // angle
   bounds = {-b, -b, b, b};
-
-  translation = {0, 0, 0};
-
-  basis = Basis3 ({
-    {1, 0, 0},
-    {0, 1, 0},
-    {0, 0, 1}
-  });
 }

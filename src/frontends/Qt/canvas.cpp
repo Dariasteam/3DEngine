@@ -38,7 +38,7 @@ void Canvas::paintEvent(QPaintEvent *event) {
   }
 }
 */
-void Canvas::update_frame(Rect b) {
+void Canvas::update_frame(RectF b) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
   new_frame_redered = true;
@@ -48,7 +48,7 @@ void Canvas::update_frame(Rect b) {
 
 // Translates the coordinates to the canvas size and
 // the non centered coordinate system
-QPointF Canvas::adjust_coordinates(const Point2& p) {
+QPointF Canvas::adjust_coordinates(const Point2F& p) {
   return {
           (p.x() * h_factor + x_offset),
           (p.y() * v_factor + y_offset)

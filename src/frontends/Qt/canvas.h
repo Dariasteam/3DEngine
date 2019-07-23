@@ -35,8 +35,8 @@ private:
 
   unsigned n_triangles {0};
 
-  const std::vector<Triangle2>* triangles_buffer_a {nullptr};
-  const std::vector<Triangle2>* triangles_buffer_b {nullptr};
+  const std::vector<Triangle2F>* triangles_buffer_a {nullptr};
+  const std::vector<Triangle2F>* triangles_buffer_b {nullptr};
 
   const std::vector<std::vector<Color888>>* screen_buffer_a {nullptr};
   const std::vector<std::vector<Color888>>* screen_buffer_b {nullptr};
@@ -44,10 +44,10 @@ private:
   std::mutex mtx;
   bool reading_buffer_a = false;
 
-  inline QPointF adjust_coordinates (const Point2& p);
+  inline QPointF adjust_coordinates (const Point2F& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
-  void update_frame (Rect bounds);
+  void update_frame (RectF bounds);
   void resizeEvent(QResizeEvent *event) override;
 
   void set_screen_buffers (const std::vector<std::vector<Color888>>* buff_a,

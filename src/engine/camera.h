@@ -6,7 +6,7 @@
 
 class Camera : public Spatial {
 private:
-  Rect bounds;
+  RectF bounds;
   Point3 fuge;
   Vector3 vector_plane;
   Point3 point_plane;
@@ -23,7 +23,7 @@ public:
   inline Point3  get_fuge() const { return fuge; }
   inline Vector3 get_plane_vector() const { return vector_plane; }
   inline Point3  get_plane_point() const { return point_plane; }
-  inline Rect get_bounds() const { return bounds; }  
+  inline RectF get_bounds() const { return bounds; }
 };
 
 #endif // CAMERA_H
