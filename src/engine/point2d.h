@@ -156,10 +156,10 @@ struct Triangle2F {
   Triangle2F () {}
 
   Triangle2F (const Point2F& aa,
-             const Point2F& bb,
-             const Point2F& cc,
-             const double z,
-             const Color& col) :
+              const Point2F& bb,
+              const Point2F& cc,
+              const double z,
+              const Color& col) :
     a (aa),
     b (bb),
     c (cc),
@@ -178,6 +178,20 @@ struct Color888 {
       return true;
     return false;
   }
+
+  explicit Color888 (const Point3& color) :
+    r (static_cast<unsigned char>(color.x())),
+    g (static_cast<unsigned char>(color.y())),
+    b (static_cast<unsigned char>(color.z()))
+  {}
+
+  Color888 (unsigned char R,
+            unsigned char G,
+            unsigned char B) :
+    r (R),
+    g (G),
+    b (B)
+  {}
 };
 
 struct Point2 {

@@ -59,13 +59,13 @@ private:
                                                    unsigned end,
                                                    const Mesh* aux_mesh);
 
-  inline void fillTopFlatTriangle(const Triangle2& triangle,
+  inline void fillTopFlatTriangle(const Triangle2F& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void fillBottomFlatTriangle(const Triangle2& triangle,
+  inline void fillBottomFlatTriangle(const Triangle2F& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void fill_triangle (const Triangle2F& triangle,
+  inline void fill_triangle (Triangle2F& triangle,
                      std::vector<std::vector<Color888>>* screen_buffer);
 
 public:

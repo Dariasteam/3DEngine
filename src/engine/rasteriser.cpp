@@ -84,25 +84,35 @@ void drawLine (unsigned x0, unsigned x1, unsigned y, Color888 color,
 
 }
 
-void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
+void Rasteriser::fillBottomFlatTriangle(const Triangle2F& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
-  const auto& v1 = triangle.a;
-  const auto& v2 = triangle.b;
-  const auto& v3 = triangle.c;
+  auto v1 = triangle.a;
+  auto v2 = triangle.b;
+  auto v3 = triangle.c;
 
-  if (v2.y() == v1.y() || v3.y() == v1.y()) return;
+  if (std::isgreater(v2.x(), v3.x()))
+    std::swap(v2, v3);
 
-  int invslope1 = (v2.x()  - v1.x()) / (v2.y() - v1.y());
-  int invslope2 = (v3.x()  - v1.x()) / (v3.y() - v1.y());
+//  if (v2.y() == v1.y() || v3.y() == v1.y()) return;
 
-  int curx1 = v1.x();
-  int curx2 = v1.x();
+  int invslope1 = static_cast<int>(std::round((v2.x()  - v1.x()) / (v2.y() - v1.y())));
+  int invslope2 = static_cast<int>(std::round((v3.x()  - v1.x()) / (v3.y() - v1.y())));
 
-  for (int y = v1.y(); y <= v2.y(); y++) {
-    for (int x = curx1; x < curx2; x++) {
+  int curx1 = static_cast<int>(std::round(v1.x()));
+  int curx2 = curx1;
+
+  int y1 = static_cast<int>(std::round(v1.y()));
+  int y2 = static_cast<int>(std::round(v2.y()));
+
+  for (int y = y1; y <= y2; y++) {
+    for (int x = curx1; x <= curx2; x++) {
+
+      if (y < 0 || x < 0)
+        std::cout << "KAK" << std::endl;
+
       if (triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = triangle.color;
-        z_buffer[y][x] = triangle.z_value;
+        (*screen_buffer)[y][x] = Color888 (triangle.color);
+                z_buffer[y][x] = triangle.z_value;
       }
     }
     curx1 += invslope1;
@@ -110,25 +120,35 @@ void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
   }
 }
 
-void Rasteriser::fillTopFlatTriangle(const Triangle2& triangle,
+void Rasteriser::fillTopFlatTriangle(const Triangle2F& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
-  const auto& v1 = triangle.a;
-  const auto& v2 = triangle.b;
-  const auto& v3 = triangle.c;
+  auto v1 = triangle.a;
+  auto v2 = triangle.b;
+  auto v3 = triangle.c;
 
-  if (v3.y() == v1.y() || v3.y() == v2.y()) return;
+  if (std::isgreater(v1.x(), v2.x()))
+    std::swap(v1, v2);
 
-  int invslope1 = (v3.x() - v1.x()) / (v3.y() - v1.y());
-  int invslope2 = (v3.x() - v2.x()) / (v3.y() - v2.y());
+//  if (v3.y() == v1.y() || v3.y() == v2.y()) return;
 
-  int curx1 = v3.x();
-  int curx2 = v3.x();
+  int invslope1 = static_cast<int>(std::round((v3.x() - v1.x()) / (v3.y() - v1.y())));
+  int invslope2 = static_cast<int>(std::round((v3.x() - v2.x()) / (v3.y() - v2.y())));
 
-  for (int y = v3.y(); y > v1.y(); y--) {
-    for (int x = curx1; x < curx2; x++) {
+  int curx1 = static_cast<int>(std::round(v3.x()));
+  int curx2 = curx1;
+
+  int y3 = static_cast<int>(std::round(v3.y()));
+  int y1 = static_cast<int>(std::round(v1.y()));
+
+  for (int y = y3; y > y1; y--) {
+    for (int x = curx1; x <= curx2; x++) {
+
+      if (y < 0 || x < 0)
+        std::cout << "KEK" << std::endl;
+
       if (triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = triangle.color;
-        z_buffer[y][x] = triangle.z_value;
+        (*screen_buffer)[y][x] = Color888 (triangle.color);
+                z_buffer[y][x] = triangle.z_value;
       }
     }
     curx1 -= invslope1;
@@ -136,46 +156,48 @@ void Rasteriser::fillTopFlatTriangle(const Triangle2& triangle,
   }
 }
 
-void Rasteriser::fill_triangle (const Triangle2F& triangle,
+bool inline is_equal (double a, double b) {
+  return std::isless(std::abs(a - b), 0.00001);
+}
+
+void Rasteriser::fill_triangle (Triangle2F& triangle,
                                 std::vector<std::vector<Color888>>* screen_buffer) {
 
-  // Sort vertices by Y and convert them to int
-  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
-    return a.y() < b.y();
+  // Sort vertices by Y
+  std::vector<Point2F> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2F& a, const Point2F& b) {
+    return std::isless(a.y(), b.y());
   });
 
-  Triangle2 aux_triangle {
-    aux_vec[0],
-    aux_vec[1],
-    aux_vec[2],
-    triangle.z_value,
-    triangle.color
-  };
 
-  const auto& v1 = aux_vec[0];
-  const auto& v2 = aux_vec[1];
-  const auto& v3 = aux_vec[2];
+  triangle.a = aux_vec[0];
+  triangle.b = aux_vec[1];
+  triangle.c = aux_vec[2];
+
+  const Point2F& v1 = aux_vec[0];
+  const Point2F& v2 = aux_vec[1];
+  const Point2F& v3 = aux_vec[2];
 
   // aux_triangle is ordered
-  if (v2.y() == v3.y()) {
-    fillBottomFlatTriangle(aux_triangle, screen_buffer);
-  } else if (v1.y() == v2.y()) {
-    fillTopFlatTriangle(aux_triangle, screen_buffer);
+  if (is_equal(v2.y(), v3.y())) {
+    fillBottomFlatTriangle(triangle, screen_buffer);
+  } else if (is_equal(v1.y(), v2.y())) {
+    fillTopFlatTriangle(triangle, screen_buffer);
   } else {
-    Point2 v4 ((v1.x() + ((float)(v2.y() - v1.y()) / (float)(v3.y() - v1.y())) *
-                     (v3.x() - v1.x())), v2.y());
+    Point2F v4 (v1.x() +
+              ((v2.y() - v1.y()) / (v3.y() - v1.y())) *
+              (v3.x() - v1.x()), v2.y());
 
-    Triangle2 aux_t1 {aux_triangle};
-    Triangle2 aux_t2 {aux_triangle};
+    Triangle2F aux_t1 {triangle};
+    Triangle2F aux_t2 {triangle};
 
     aux_t1.c = v4;
 
     aux_t2.a = v2;
     aux_t2.b = v4;
 
-    fillBottomFlatTriangle(aux_t1, screen_buffer);
-    fillBottomFlatTriangle(aux_t2, screen_buffer);
+    fillBottomFlatTriangle (aux_t1, screen_buffer);
+    fillTopFlatTriangle    (aux_t2, screen_buffer);
   }
 }
 
@@ -247,7 +269,7 @@ void Rasteriser::paint_triangle (const Triangle2F& triangle,
   Point2F c = {triangle.c.x() * h_factor + x_offset,
                triangle.c.y() * v_factor + y_offset};
 
-
+  // Check all points inside render area
   if(a.x() < 0 || a.x() > 1000) return;
   if(a.y() < 0 || a.y() > 1000) return;
   if(b.x() < 0 || b.x() > 1000) return;
@@ -255,8 +277,10 @@ void Rasteriser::paint_triangle (const Triangle2F& triangle,
   if(c.x() < 0 || c.x() > 1000) return;
   if(c.y() < 0 || c.y() > 1000) return;
 
-//  raster_triangle (Triangle2F{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
-  fill_triangle(Triangle2F{a, b, c, triangle.z_value, triangle.color}, screen_buffer);
+  Triangle2F t {a, b, c, triangle.z_value, triangle.color};
+
+//  raster_triangle (t, screen_buffer);
+  fill_triangle(t, screen_buffer);
 }
 
 void Rasteriser::generate_frame() {  
@@ -277,10 +301,15 @@ void Rasteriser::generate_frame() {
   std::fill(z_buffer.begin(), z_buffer.end(),
             std::vector<double>(screen_size, 100000));
 
-  // 3. Populate
+  // 3. Translate triangles from real space to int
+  std::vector<Triangle2> final_triangles;
+  for (const auto& triangle : elements_to_render)
+    final_triangles.push_back(Triangle2{triangle});
+
+  // 4. Populate
   auto& m = MultithreadManager::get_instance();
   m.calculate_threaded(elements_to_render.size(), [&](unsigned i) {
-    paint_triangle(elements_to_render[i], buff);
+    paint_triangle(final_triangles[i], buff);
   });
 
   canvas->unlock_buffer_mutex();                 // Acts like Vsync
