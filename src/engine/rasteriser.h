@@ -29,7 +29,7 @@ private:
 
   std::vector<std::vector<double>> z_buffer;
 
-  std::vector<Triangle2F> elements_to_render;
+  std::vector<Triangle2> elements_to_render;
 
   bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2F&) const;
@@ -39,15 +39,15 @@ private:
   inline Color calculate_lights (const Color& m_color, const Face3& face) const;
   void set_rasterization_data ();
   inline bool calculate_mesh_projection (const Face3& face,                                         
-                                         std::vector<Triangle2F>& triangles,
+                                         std::vector<Triangle2>& triangles,
                                          const Color& color);
 
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 
   void generate_frame ();
-  void paint_triangle (const Triangle2F& triangle, std::vector<std::vector<Color888>>* screen_buffer);
+  void paint_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void raster_triangle (const Triangle2F& triangle, std::vector<std::vector<Color888>>* screen_buffer);
+  inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
   inline double get_y (const Point2F& u, const Vector2& v, double x);
   inline double get_x (const Point2F& u, const Vector2& v, double y);
 
@@ -59,14 +59,17 @@ private:
                                                    unsigned end,
                                                    const Mesh* aux_mesh);
 
-  inline void fillTopFlatTriangle(const Triangle2F& triangle,
+  inline void fillTopFlatTriangle(const Triangle2& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void fillBottomFlatTriangle(const Triangle2F& triangle,
+  inline void fillBottomFlatTriangle(const Triangle2& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void fill_triangle (Triangle2F& triangle,
+  inline void fill_triangle (Triangle2& triangle,
                      std::vector<std::vector<Color888>>* screen_buffer);
+
+  inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);
+  inline bool triangle_inside_screen (const Triangle2& triangle);
 
 public:
   Rasteriser(Canvas* canvas, Camera* camera, World* world);

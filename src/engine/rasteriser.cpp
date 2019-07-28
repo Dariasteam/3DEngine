@@ -65,7 +65,7 @@ void Rasteriser::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) 
 
 void Rasteriser::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,                                                     
                                                      const Mesh* aux_mesh) {
-  std::vector <Triangle2F> tmp_triangles;
+  std::vector <Triangle2> tmp_triangles;
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
@@ -84,32 +84,28 @@ void drawLine (unsigned x0, unsigned x1, unsigned y, Color888 color,
 
 }
 
-void Rasteriser::fillBottomFlatTriangle(const Triangle2F& triangle,
+void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
 
-  if (std::isgreater(v2.x(), v3.x()))
-    std::swap(v2, v3);
+  if (v3.y() == v1.y()) return; // we already know v2 = v3, triangle would be a line
 
-//  if (v2.y() == v1.y() || v3.y() == v1.y()) return;
+  if (v2.x() > v3.x()) // order from left to right
+    std::swap(v2, v3);  
 
-  int invslope1 = static_cast<int>(std::round((v2.x()  - v1.x()) / (v2.y() - v1.y())));
-  int invslope2 = static_cast<int>(std::round((v3.x()  - v1.x()) / (v3.y() - v1.y())));
+  double invslope1 = double(v2.x()  - v1.x()) / (v2.y() - v1.y());
+  double invslope2 = double(v3.x()  - v1.x()) / (v3.y() - v1.y());
 
-  int curx1 = static_cast<int>(std::round(v1.x()));
-  int curx2 = curx1;
+  double curx1 = v1.x();
+  double curx2 = curx1;
 
-  int y1 = static_cast<int>(std::round(v1.y()));
-  int y2 = static_cast<int>(std::round(v2.y()));
+  int y1 = v1.y();
+  int y2 = v2.y();
 
   for (int y = y1; y <= y2; y++) {
-    for (int x = curx1; x <= curx2; x++) {
-
-      if (y < 0 || x < 0)
-        std::cout << "KAK" << std::endl;
-
+    for (int x = static_cast<int>(std::round(curx1)); x <= static_cast<int>(std::round(curx2)); x++) {
       if (triangle.z_value < z_buffer[y][x]) {
         (*screen_buffer)[y][x] = Color888 (triangle.color);
                 z_buffer[y][x] = triangle.z_value;
@@ -120,31 +116,28 @@ void Rasteriser::fillBottomFlatTriangle(const Triangle2F& triangle,
   }
 }
 
-void Rasteriser::fillTopFlatTriangle(const Triangle2F& triangle,
+void Rasteriser::fillTopFlatTriangle(const Triangle2& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
 
-  if (std::isgreater(v1.x(), v2.x()))
+  if (v3.y() == v1.y()) return; // we already know v2 = v1, triangle would be a line
+
+  if (v1.x() > v2.x()) // order from left to right
     std::swap(v1, v2);
 
-//  if (v3.y() == v1.y() || v3.y() == v2.y()) return;
+  double invslope1 = double(v3.x() - v1.x()) / (v3.y() - v1.y());
+  double invslope2 = double(v3.x() - v2.x()) / (v3.y() - v2.y());
 
-  int invslope1 = static_cast<int>(std::round((v3.x() - v1.x()) / (v3.y() - v1.y())));
-  int invslope2 = static_cast<int>(std::round((v3.x() - v2.x()) / (v3.y() - v2.y())));
+  double curx1 = v3.x();
+  double curx2 = curx1;
 
-  int curx1 = static_cast<int>(std::round(v3.x()));
-  int curx2 = curx1;
+  int y3 = v3.y();
+  int y1 = v1.y();
 
-  int y3 = static_cast<int>(std::round(v3.y()));
-  int y1 = static_cast<int>(std::round(v1.y()));
-
-  for (int y = y3; y > y1; y--) {
-    for (int x = curx1; x <= curx2; x++) {
-
-      if (y < 0 || x < 0)
-        std::cout << "KEK" << std::endl;
+  for (int y = y3; y >= y1; y--) {
+    for (int x = static_cast<int>(std::round(curx1)); x <= static_cast<int>(std::round(curx2)); x++) {
 
       if (triangle.z_value < z_buffer[y][x]) {
         (*screen_buffer)[y][x] = Color888 (triangle.color);
@@ -156,40 +149,47 @@ void Rasteriser::fillTopFlatTriangle(const Triangle2F& triangle,
   }
 }
 
-bool inline is_equal (double a, double b) {
+inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void Rasteriser::fill_triangle (Triangle2F& triangle,
+void Rasteriser::fill_triangle (Triangle2& triangle,
                                 std::vector<std::vector<Color888>>* screen_buffer) {
 
   // Sort vertices by Y
-  std::vector<Point2F> aux_vec = {triangle.a, triangle.b, triangle.c};
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2F& a, const Point2F& b) {
+  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
     return std::isless(a.y(), b.y());
   });
-
 
   triangle.a = aux_vec[0];
   triangle.b = aux_vec[1];
   triangle.c = aux_vec[2];
 
-  const Point2F& v1 = aux_vec[0];
-  const Point2F& v2 = aux_vec[1];
-  const Point2F& v3 = aux_vec[2];
+  const Point2& v1 = aux_vec[0];
+  const Point2& v2 = aux_vec[1];
+  const Point2& v3 = aux_vec[2];
 
-  // aux_triangle is ordered
-  if (is_equal(v2.y(), v3.y())) {
+  // aux_triangle is ordered    
+  if (v2.y() == v3.y()) {
     fillBottomFlatTriangle(triangle, screen_buffer);
-  } else if (is_equal(v1.y(), v2.y())) {
+  } else if (v1.y() == v2.y()) {
     fillTopFlatTriangle(triangle, screen_buffer);
   } else {
-    Point2F v4 (v1.x() +
-              ((v2.y() - v1.y()) / (v3.y() - v1.y())) *
-              (v3.x() - v1.x()), v2.y());
 
-    Triangle2F aux_t1 {triangle};
-    Triangle2F aux_t2 {triangle};
+    double a = v3.y() - v1.y();
+    double b = v3.x() - v1.x();
+
+    double ratio = b / a;
+    double x = v1.x() + (ratio * (v2.y() - v1.y()));
+/*
+    double x = v1.x() + (double(v2.y() - v1.y()) / double(v3.y() - v1.y())) *
+                         double(v3.x() - v1.x());
+*/
+    Point2 v4 (static_cast<int>(std::round(x)), v2.y());
+
+    Triangle2 aux_t1 {triangle};
+    Triangle2 aux_t2 {triangle};
 
     aux_t1.c = v4;
 
@@ -201,28 +201,28 @@ void Rasteriser::fill_triangle (Triangle2F& triangle,
   }
 }
 
-void Rasteriser::raster_triangle(const Triangle2F& triangle,
+void Rasteriser::raster_triangle(const Triangle2& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
   // Generate a rectangle that envolves the triangle
-  const double left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
-  const double right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
+  const unsigned left  = std::min ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
+  const unsigned right = std::max ({triangle.a.x(), triangle.b.x(), triangle.c.x()});
 
-  const double top  = std::min ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
-  const double bttm = std::max ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
+  const unsigned top  = std::min ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
+  const unsigned bttm = std::max ({triangle.a.y(), triangle.b.y(), triangle.c.y()});
 
-  const unsigned l = std::max(static_cast<unsigned>(std::round(left)),  unsigned(0));
-  const unsigned r = std::min(static_cast<unsigned>(std::round(right)), screen_size - 1);
-  const unsigned t = std::max(static_cast<unsigned>(std::round(top)),   unsigned(0));
-  const unsigned b = std::min(static_cast<unsigned>(std::round(bttm)),  screen_size - 1);
+  const unsigned l = std::max(left,  unsigned(0));
+  const unsigned r = std::min(right, (screen_size - 1));
+  const unsigned t = std::max(top,   unsigned(0));
+  const unsigned b = std::min(bttm,  (screen_size - 1));
 
   // Use barycentric coordinates, iterate over every pixel inside the
   // rect and check if it belongs to the triangle or not
-  Vector2 v0 = triangle.c - triangle.a;
-  Vector2 v1 = triangle.b - triangle.a;
+  Point2 v0 = triangle.c - triangle.a;
+  Point2 v1 = triangle.b - triangle.a;
 
   for (unsigned x = l; x <= r; x++) {
     for (unsigned y = t; y <= b; y++) {
-      Vector2 v2 = Point2F(x,y) - triangle.a;
+      Point2 v2 = Point2(x,y) - triangle.a;
       // Compute vectors
 
       // Compute dot products
@@ -238,17 +238,56 @@ void Rasteriser::raster_triangle(const Triangle2F& triangle,
       double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
       // Check if point is in triangle
-      if ((u >= 0) && (v >= 0) && (u + v < 1) && triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = {static_cast<unsigned char>(triangle.color.x()),
-                                  static_cast<unsigned char>(triangle.color.y()),
-                                  static_cast<unsigned char>(triangle.color.z())};
+      if ((u >= 0) && (v >= 0) && (u + v < 1.00) && triangle.z_value < z_buffer[y][x]) {
+        (*screen_buffer)[y][x] = triangle.color;
         z_buffer[y][x] = triangle.z_value;
       }
     }
   }
 }
 
-void Rasteriser::paint_triangle (const Triangle2F& triangle,
+bool Rasteriser::triangle_inside_screen(const Triangle2 &triangle) {
+  // Check all points inside render area
+  if (triangle.a.x() < 0.0 || triangle.a.x() > screen_size) return false;
+  if (triangle.a.y() < 0.0 || triangle.a.y() > screen_size) return false;
+  if (triangle.b.x() < 0.0 || triangle.b.x() > screen_size) return false;
+  if (triangle.b.y() < 0.0 || triangle.b.y() > screen_size) return false;
+  if (triangle.c.x() < 0.0 || triangle.c.x() > screen_size) return false;
+  if (triangle.c.y() < 0.0 || triangle.c.y() > screen_size) return false;
+
+  return true;
+}
+
+Triangle2 Rasteriser::triangle_to_screen_space (const Triangle2F& triangle) {
+
+  unsigned height = screen_size;
+  unsigned width = screen_size;
+
+  double v_factor = height / camera->get_bounds().y;
+  double h_factor = width  / camera->get_bounds().x;
+
+  unsigned x_offset = width  / 2;
+  unsigned y_offset = height / 2;
+
+  Point2F a = {triangle.a.x() * h_factor + x_offset,
+               triangle.a.y() * v_factor + y_offset};
+
+  Point2F b = {triangle.b.x() * h_factor + x_offset,
+               triangle.b.y() * v_factor + y_offset};
+
+  Point2F c = {triangle.c.x() * h_factor + x_offset,
+               triangle.c.y() * v_factor + y_offset};
+
+  Triangle2 t {triangle};
+  t.a = a;
+  t.b = b;
+  t.c = c;
+
+  return t;
+}
+
+/*
+void Rasteriser::paint_triangle (const Triangle2& triangle,
                                  std::vector<std::vector<Color888>>* screen_buffer) {
 
   unsigned height = screen_buffer->size();
@@ -277,11 +316,15 @@ void Rasteriser::paint_triangle (const Triangle2F& triangle,
   if(c.x() < 0 || c.x() > 1000) return;
   if(c.y() < 0 || c.y() > 1000) return;
 
-  Triangle2F t {a, b, c, triangle.z_value, triangle.color};
+  Triangle2 t {triangle};
+  t.a = a;
+  t.b = b;
+  t.c = c;
 
-//  raster_triangle (t, screen_buffer);
-  fill_triangle(t, screen_buffer);
+  raster_triangle (t, screen_buffer);
+//  fill_triangle(t, screen_buffer);
 }
+*/
 
 void Rasteriser::generate_frame() {  
   std::vector<std::vector<Color888>>* buff;
@@ -293,7 +336,6 @@ void Rasteriser::generate_frame() {
   else
     buff = &screen_buffer_a;  
 
-  // FIXME: Too much cost cleaning theese buffers
   // 2. Clear buffers
   std::fill(buff->begin(), buff->end(),
             std::vector<Color888>(screen_size, {0,0,0}));
@@ -301,15 +343,11 @@ void Rasteriser::generate_frame() {
   std::fill(z_buffer.begin(), z_buffer.end(),
             std::vector<double>(screen_size, 100000));
 
-  // 3. Translate triangles from real space to int
-  std::vector<Triangle2> final_triangles;
-  for (const auto& triangle : elements_to_render)
-    final_triangles.push_back(Triangle2{triangle});
-
-  // 4. Populate
+  // 3. Populate 
   auto& m = MultithreadManager::get_instance();
   m.calculate_threaded(elements_to_render.size(), [&](unsigned i) {
-    paint_triangle(final_triangles[i], buff);
+//    raster_triangle(elements_to_render[i], buff);
+    fill_triangle(elements_to_render[i], buff);
   });
 
   canvas->unlock_buffer_mutex();                 // Acts like Vsync
@@ -362,7 +400,7 @@ Color Rasteriser::calculate_lights (const Color& m_color,
 }
 
 bool Rasteriser::calculate_mesh_projection(const Face3& face,                                           
-                                           std::vector<Triangle2F>& triangles,
+                                           std::vector<Triangle2>& triangles,
                                            const Color& color) {
   Triangle2F tmp_triangle;
 
@@ -414,8 +452,16 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
 
   // 7. Calculate light contribution
   tmp_triangle.color = calculate_lights(color, face);    
-  triangles.push_back(tmp_triangle);
-//  triangles.emplace_back(tmp_triangle);
+
+  // 8. Convert triangle to screen space
+  const Triangle2 final_triangle = triangle_to_screen_space(tmp_triangle);
+
+  // 9. Check triangle inside screen area
+  if (!triangle_inside_screen(final_triangle)) return false;
+
+  // 10. Insert triangle
+  triangles.push_back(final_triangle);
+
   return true;
 }
 
