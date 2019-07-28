@@ -65,7 +65,7 @@ private:
   inline void fillBottomFlatTriangle(const Triangle2& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
-  inline void fill_triangle (Triangle2& triangle,
+  inline void rasterize_triangle (Triangle2& triangle,
                      std::vector<std::vector<Color888>>* screen_buffer);
 
   inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);

@@ -6,9 +6,37 @@
 #include "matrix.h"
 #include "point3d.h"
 
+struct Color888 {
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
+
+  bool operator != (const Color888& c) const {
+    if (r != c.r || g != c.g || b != c.b)
+      return true;
+    return false;
+  }
+
+  explicit Color888 (const Point3& color) :
+    r (static_cast<unsigned char>(color.x())),
+    g (static_cast<unsigned char>(color.y())),
+    b (static_cast<unsigned char>(color.z()))
+  {}
+
+  Color888 (unsigned char R,
+            unsigned char G,
+            unsigned char B) :
+    r (R),
+    g (G),
+    b (B)
+  {}
+};
+
 struct Point2F {
   double X;
   double Y;
+
+  Color color = {0,0,0};
 
   Point2F () : Point2F (0, 0) {}
   Point2F (double x, double y) :
@@ -143,7 +171,7 @@ struct Triangle2F {
   Point2F c;
 
   double z_value;   // distance to camera
-  Color color = {0, 0, 0};
+  Color888 color = {0, 0, 0};
 
   Triangle2F (const Triangle2F& t) :
     a (t.a),
@@ -168,48 +196,31 @@ struct Triangle2F {
   {}
 };
 
-struct Color888 {
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-
-  bool operator != (const Color888& c) const {
-    if (r != c.r || g != c.g || b != c.b)
-      return true;
-    return false;
-  }
-
-  explicit Color888 (const Point3& color) :
-    r (static_cast<unsigned char>(color.x())),
-    g (static_cast<unsigned char>(color.y())),
-    b (static_cast<unsigned char>(color.z()))
-  {}
-
-  Color888 (unsigned char R,
-            unsigned char G,
-            unsigned char B) :
-    r (R),
-    g (G),
-    b (B)
-  {}
-};
-
-struct Point2 {
+struct Vertex2 {
   int X;
   int Y;
 
-  Point2 () : Point2 (0, 0) {}
-  Point2 (int x, int y) :
+  Color color {0,0,0};
+
+  Vertex2 () : Vertex2 (0, 0, {0,0,0}) {}
+  Vertex2 (int x, int y, const Color& c) :
+    X(x),
+    Y(y),
+    color (c)
+  {}
+  Vertex2 (int x, int y) :
     X(x),
     Y(y)
   {}
-  Point2 (const Point2F& p) :
+  Vertex2 (const Point2F& p) :
     X (static_cast<int>(std::round(p.x()))),
     Y (static_cast<int>(std::round(p.y())))
+//    color (c)
   {}
-  Point2 (const Point2& p) :
+  Vertex2 (const Vertex2& p) :
     X (p.x()),
-    Y (p.y())
+    Y (p.y()),
+    color (p.color)
   {}
 
   inline int x() const { return X;}
@@ -222,36 +233,36 @@ struct Point2 {
     Y = vy;
   }
 
-  inline Point2 operator- (const Point2& p) const {
+  inline Vertex2 operator- (const Vertex2& p) const {
     return {x() - p.x(), y() - p.y()};
   }
 
-  inline Point2 operator+ (const Point2& p) const {
+  inline Vertex2 operator+ (const Vertex2& p) const {
     return {x() + p.x(), y() + p.y()};
   }
 
-  inline double operator* (const Point2& p) const {
+  inline double operator* (const Vertex2& p) const {
     return x() * p.x() + y() * p.y();
   }
 
-  inline double operator/ (const Point2& p) const {
+  inline double operator/ (const Vertex2& p) const {
     return x() * p.x() + y() * p.y();
   }
 
-  inline Point2 operator* (const int d) const {
+  inline Vertex2 operator* (const int d) const {
     return {x() * d, y() * d};
   }
 
-  inline Point2 operator/ (const int d) const {
+  inline Vertex2 operator/ (const int d) const {
     return {x() / d, y() / d};
   }
 
-  inline void operator+= (const Point2& p)  {
+  inline void operator+= (const Vertex2& p)  {
     set_x(x() + p.x());
     set_y(y() + p.y());
   }
 
-  inline void operator-= (const Point2& p)  {
+  inline void operator-= (const Vertex2& p)  {
     set_x(x() - p.x());
     set_y(y() - p.y());
   }
@@ -268,9 +279,9 @@ struct Point2 {
 };
 
 struct Triangle2 {
-  Point2 a;
-  Point2 b;
-  Point2 c;
+  Vertex2 a;
+  Vertex2 b;
+  Vertex2 c;
 
   double z_value;   // distance to camera
   Color888 color = {0, 0, 0};
@@ -287,33 +298,23 @@ struct Triangle2 {
     a (t.a),
     b (t.b),
     c (t.c),
-    z_value (t.z_value)
-  {
-    color = {
-      static_cast<unsigned char>(t.color.x()),
-      static_cast<unsigned char>(t.color.y()),
-      static_cast<unsigned char>(t.color.z())
-    };
-  }
+    z_value (t.z_value),
+    color (t.color)
+  {}
 
   Triangle2 () {}
 
-  Triangle2 (const Point2& aa,
-             const Point2& bb,
-             const Point2& cc,
+  Triangle2 (const Vertex2& aa,
+             const Vertex2& bb,
+             const Vertex2& cc,
              const double z,
              const Color& col) :
     a (aa),
     b (bb),
     c (cc),
-    z_value (z)
-  {
-    color = {
-      static_cast<unsigned char>(col.x()),
-      static_cast<unsigned char>(col.y()),
-      static_cast<unsigned char>(col.z())
-    };
-  }
+    z_value (z),
+    color (col)
+  {}
 };
 
 #endif // POINT2D_H
