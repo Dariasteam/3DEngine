@@ -3,7 +3,7 @@
 World::World(Camera* cm) :
   camera (cm)
   {
-
+/*
   Mesh* a_mesh = new Mesh;
   a_mesh->local_coordenates_faces = { // face list
     // UPER FACES
@@ -66,10 +66,10 @@ World::World(Camera* cm) :
       {0, 0,  0}     // fake_normal
     }),
   };
-
+*/
 //  add_mesh(a_mesh);
-  a_mesh->color = {0, 200, 200};
-  a_mesh->generate_data();
+//  a_mesh->color = {0, 200, 200};
+//  a_mesh->generate_data();
 //  a_mesh->translate_global({100, -80, 200});
 /*
   Mesh* aux1 = new Mesh (*a_mesh);
@@ -98,7 +98,7 @@ World::World(Camera* cm) :
 //    add_mesh(aux2);
   }
 */
-
+/*
   Mesh* b_mesh = new Mesh;
   b_mesh->local_coordenates_faces =
     {
@@ -119,16 +119,16 @@ World::World(Camera* cm) :
 //  add_mesh(b_mesh);
   b_mesh->color = {255, 10, 25};
   b_mesh->generate_data();
-
+*/
 //  b_mesh->position = {0, 0, 100};
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("bitxo.obj");
+  Mesh* parsed_mesh = parser ("car.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 40});
+  parsed_mesh->translate_global({0, -1.5, 20});
 /*
   for (unsigned i = 0; i < 8; i++) {
     parsed_mesh = new Mesh(*parsed_mesh);

@@ -167,6 +167,10 @@ void Face3::generate_normal() {
 
   normal = {X, Y, Z};
   normal.normalize();
+
+  normal_a = normal;
+  normal_b = normal;
+  normal_c = normal;
 }
 
 

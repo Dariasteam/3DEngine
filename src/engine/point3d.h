@@ -33,6 +33,12 @@ struct Point3 {
     set_z(p.z());
   }
 
+  inline bool operator== (const Point3& p) {
+    return (x() == p.x() &&
+            y() == p.y() &&
+            z() == p.z());
+  }
+
   inline void operator+= (const Point3& p) {
     set_x(p.x() + x());
     set_y(p.y() + y());
@@ -49,6 +55,12 @@ struct Point3 {
     set_x(x() * v);
     set_y(y() * v);
     set_z(z() * v);
+  }
+
+  inline void operator/= (const double v) {
+    set_x(x() / v);
+    set_y(y() / v);
+    set_z(z() / v);
   }
 
   inline double x() const { return X;}
@@ -162,6 +174,10 @@ struct Face3 {
   Point3 c;
   Vector3 normal;
 
+  Vector3 normal_a;
+  Vector3 normal_b;
+  Vector3 normal_c;
+
   inline const Point3& operator[] (unsigned i) const {
     switch (i) {
       case 0:
@@ -184,13 +200,18 @@ struct Face3 {
     }
   }
 
-  void generate_normal ();  
-
-  void operator+= (const Face3& face) {
-    a += face.a;
-    b += face.b;
-    c += face.c;
+  inline Vector3& get_normal (unsigned i) {
+    switch (i) {
+      case 0:
+        return normal_a;
+      case 1:
+        return normal_b;
+      default:
+        return normal_c;
+    }
   }
+
+  void generate_normal ();  
 
 };
 
@@ -313,8 +334,54 @@ struct Mesh : public Spatial {
       face.generate_normal();
   }  
 
+  inline std::vector<Vector3*> get_adjacent_vertices (Point3& p,
+                                                   unsigned from,
+                                                   std::vector<bool>& vertex_normals) {
+    std::vector<Vector3*> adjacents;
+
+    for (unsigned i = from; i < local_coordenates_faces.size(); i++) {
+      for (unsigned j = 0; j < 3; j++) {
+        if (!vertex_normals[i * 3 + j] && local_coordenates_faces[i][j] == p) {
+          adjacents.push_back(&local_coordenates_faces[i].get_normal(j));
+          vertex_normals[i + j] = true;
+        }
+      }
+    }
+
+    return adjacents;
+  }
+
   void generate_data () {
     generate_normals();    
+
+    std::vector<bool> vertex_normals (local_coordenates_faces.size() * 3, false);
+
+    // Interpolate vertex normals
+    for (unsigned i = 0; i < local_coordenates_faces.size(); i++) {
+      for (unsigned j = 0; j < 3; j++) {
+
+        if (!vertex_normals[i * 3 + j]) {
+          vertex_normals[i * 3 + j] = true;
+          Point3 point = local_coordenates_faces[i][j];
+          Vector3& p_normal = local_coordenates_faces[i].get_normal(j);
+          auto adjacents = get_adjacent_vertices(point, i + 1, vertex_normals);
+
+          Vector3 ac = p_normal;
+          for (Vector3* aux_p : adjacents) {
+            ac += *aux_p;
+          }
+
+          ac /= (adjacents.size() + 1);
+//          ac.normalize();
+
+          for (Vector3* aux_p : adjacents) {
+            (*aux_p) = ac;
+          }
+          p_normal = ac;
+        }
+      }
+    }
+
     global_coordenates_faces       = local_coordenates_faces;
 
     local_coordenates_faces.shrink_to_fit();

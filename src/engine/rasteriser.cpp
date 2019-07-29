@@ -113,6 +113,54 @@ inline Color get_color_at_position_in_grading (const Color& color1,
 }
 
 /* Considering a triangle with the form
+ *      v1
+ *    /   \
+ *   /     \
+ *  v2 _____v3
+ *
+ * First we calculate the linear grading color of the lines l1 = v1 - v2,
+ * and l2 = v1 - v3
+ *
+ * Then in base of the Y of the point, we calculate the linear grading of
+ * l3 = l1[y] - l2[y]
+ *
+ * Finally, we find the color of l3[y][x]
+ *
+ * */
+inline Color888 calculate_color_bottom_flat (const Triangle2& triangle, int x, int y,
+                                             int min_x, int max_x) {
+  auto v1 = triangle.a;
+  auto v2 = triangle.b;
+  auto v3 = triangle.c;
+
+  if (v2.x() > v3.x()) // order from left to right
+    std::swap(v2, v3);
+
+  // grading between v1 and v2
+  Color color_l1 = get_color_at_position_in_grading(v1.color,
+                                                    v2.color,
+                                                    v1.y(),
+                                                    v2.y(),
+                                                    y);
+
+  // grading between v1 and v3
+  Color color_l2 = get_color_at_position_in_grading(v1.color,
+                                                    v3.color,
+                                                    v1.y(),
+                                                    v3.y(),
+                                                    y);
+
+  Color final_color = get_color_at_position_in_grading(color_l1,
+                                                       color_l2,
+                                                       min_x,
+                                                       max_x,
+                                                       x);
+
+  clamp_color(final_color);
+  return Color888 (final_color);
+}
+
+/* Considering a triangle with the form
  *
  *  v1 _____v2
  *   \    /
@@ -133,6 +181,9 @@ inline Color888 calculate_color_top_flat (const Triangle2& triangle, int x, int 
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
+
+  if (v1.x() > v2.x()) // order from left to right
+    std::swap(v1, v2);
 
   // grading between v3 and v1
   Color color_l1 = get_color_at_position_in_grading(v1.color,
@@ -158,7 +209,6 @@ inline Color888 calculate_color_top_flat (const Triangle2& triangle, int x, int 
   return Color888 (final_color);
 }
 
-
 void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
@@ -180,9 +230,14 @@ void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
   int y2 = v2.y();
 
   for (int y = y1; y <= y2; y++) {
-    for (int x = static_cast<int>(std::round(curx1)); x <= static_cast<int>(std::round(curx2)); x++) {
+    int min_x = static_cast<int>(std::round(curx1));
+    int max_x = static_cast<int>(std::round(curx2));
+    for (int x = min_x; x <= max_x; x++) {
+      Color888 aux = calculate_color_bottom_flat (triangle, x, y, min_x, max_x);
+
       if (triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = Color888 (triangle.color);
+//        (*screen_buffer)[y][x] = Color888 (triangle.color);
+        (*screen_buffer)[y][x] = aux;
                 z_buffer[y][x] = triangle.z_value;
       }
     }
@@ -215,7 +270,6 @@ void Rasteriser::fillTopFlatTriangle(const Triangle2& triangle,
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
     for (int x = min_x; x <= max_x; x++) {
-
       Color888 aux = calculate_color_top_flat (triangle, x, y, min_x, max_x);
 
       if (triangle.z_value < z_buffer[y][x]) {
@@ -382,12 +436,12 @@ void Rasteriser::set_rasterization_data() {
 }
 
 Color Rasteriser::calculate_lights (const Color& m_color,
-                                    const Face3& face) const {
+                                    const Vector3& normal) const {
 
   const DirectionalLight& light = world->get_light();
 
   // Using dot product as angle
-  double angle_to_light = 1 + (face.normal * light.direction);
+  double angle_to_light = 1 + (normal * light.direction);
 
   Color color = light.color;
   color *= angle_to_light * world->get_light().intensity;;  
@@ -453,13 +507,11 @@ bool Rasteriser::calculate_mesh_projection(const Face3& face,
   }
 
   // 7. Calculate light contribution for each vertices
-  Color aux_color = calculate_lights(color, face);
+  Color aux_color = calculate_lights(color, face.normal);
   tmp_triangle.color   = Color888(aux_color);
-  tmp_triangle.a.color = aux_color;
-  tmp_triangle.b.color = aux_color;
-  tmp_triangle.c.color = aux_color;
-//  tmp_triangle.b.color = {0, 200, 100};
-  tmp_triangle.c.color = {0, 0, 250};
+  tmp_triangle.a.color = calculate_lights(color, face.normal_a);
+  tmp_triangle.b.color = calculate_lights(color, face.normal_b);
+  tmp_triangle.c.color = calculate_lights(color, face.normal_c);
 
   // 8. Convert triangle to screen space
   const Triangle2 final_triangle = triangle_to_screen_space(tmp_triangle);

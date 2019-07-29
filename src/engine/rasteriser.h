@@ -36,7 +36,7 @@ private:
 
   std::vector <Mesh*> meshes_vector;
 
-  inline Color calculate_lights (const Color& m_color, const Face3& face) const;
+  inline Color calculate_lights (const Color& m_color, const Vector3& normal) const;
   void set_rasterization_data ();
   inline bool calculate_mesh_projection (const Face3& face,                                         
                                          std::vector<Triangle2>& triangles,
