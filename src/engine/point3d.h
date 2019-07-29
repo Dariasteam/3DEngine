@@ -343,7 +343,7 @@ struct Mesh : public Spatial {
       for (unsigned j = 0; j < 3; j++) {
         if (!vertex_normals[i * 3 + j] && local_coordenates_faces[i][j] == p) {
           adjacents.push_back(&local_coordenates_faces[i].get_normal(j));
-          vertex_normals[i + j] = true;
+          vertex_normals[i * 3 + j] = true;
         }
       }
     }
@@ -358,6 +358,7 @@ struct Mesh : public Spatial {
 
     // Interpolate vertex normals
     for (unsigned i = 0; i < local_coordenates_faces.size(); i++) {
+      std::cout << i << " of " << local_coordenates_faces.size() << std::endl;
       for (unsigned j = 0; j < 3; j++) {
 
         if (!vertex_normals[i * 3 + j]) {
@@ -367,16 +368,14 @@ struct Mesh : public Spatial {
           auto adjacents = get_adjacent_vertices(point, i + 1, vertex_normals);
 
           Vector3 ac = p_normal;
-          for (Vector3* aux_p : adjacents) {
+          for (Vector3* aux_p : adjacents)
             ac += *aux_p;
-          }
 
           ac /= (adjacents.size() + 1);
-//          ac.normalize();
 
-          for (Vector3* aux_p : adjacents) {
+          for (Vector3* aux_p : adjacents)
             (*aux_p) = ac;
-          }
+
           p_normal = ac;
         }
       }

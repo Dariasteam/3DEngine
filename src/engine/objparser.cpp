@@ -39,43 +39,6 @@ Mesh *ObjParser::operator ()(std::string file_name) {
 
   Mesh* aux_mesh = new Mesh ();
   bool end = false;
-/*
-  while (!file.eof()) {
-    file >> c;
-    switch (c) {
-      case 'v':
-        {
-          file >> v_x;
-          file >> v_y;
-          file >> v_z;
-
-          vertex_list.push_back(Point3{v_x, v_y, v_z});
-        }
-      break;
-      case 'f':
-        {
-          file >> i1;
-          file >> i2;
-          file >> i3;
-
-          // Fix posible negative indexes
-          i1 = (i1 < 0 ? vertex_list.size() - i1 : i1 - 1);
-          i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
-          i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
-
-          aux_mesh->local_coordinates_faces.push_back(Face3 {
-                                vertex_list[i1],
-                                vertex_list[i2],
-                                vertex_list[i3],
-                              });
-        }
-      break;
-
-      default:
-      break;
-    }
-  }
-*/
 
   while (!end) {
     try {

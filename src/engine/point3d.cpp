@@ -11,6 +11,7 @@ void Mesh::change_basis_part (const Matrix3& basis_changer,
     auto& face = global_coordenates_faces[k];
     for (unsigned j = 0; j < 3; j++) {
       Point3Ops::change_basis(basis_changer, face[j], face[j]);
+      Point3Ops::change_basis(basis_changer, face.get_normal(j), face.get_normal(j));
       face[j] += translation;
     }
     Point3Ops::change_basis(basis_changer, face.normal, face.normal);
