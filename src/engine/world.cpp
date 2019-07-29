@@ -124,7 +124,7 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("car.obj");
+  Mesh* parsed_mesh = parser ("file.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
