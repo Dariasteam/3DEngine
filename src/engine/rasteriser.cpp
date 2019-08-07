@@ -81,7 +81,6 @@ void drawLine (unsigned x0, unsigned x1, unsigned y, Color888 color,
                std::vector<std::vector<Color888>>* screen_buffer) {
   for (unsigned i = x0; i < x1; i++)
     (*screen_buffer)[y][i] = color;
-
 }
 
 inline void clamp_color (Color& color) {
@@ -164,7 +163,6 @@ void Rasteriser::fillBottomFlatTriangle(const Triangle2& triangle,
   for (int y = y1; y <= y2; y++) {
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
-
 
     Color color1 = get_color_in_gradient(v2.color, gradient_1, v2.y(), y);
     Color color2 = get_color_in_gradient(v3.color, gradient_2, v3.y(), y);
@@ -428,7 +426,7 @@ Color Rasteriser::calculate_lights (const Color& m_color,
   double angle_to_light = 1 + (normal * light.direction);
 
   Color color = light.color;
-  color *= angle_to_light * world->get_light().intensity;;  
+  color *= angle_to_light * world->get_light().intensity;
 
   color.set_x((color.x() * m_color.x() / 255));
   color.set_y((color.y() * m_color.y() / 255));
