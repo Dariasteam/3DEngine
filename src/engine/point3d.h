@@ -347,7 +347,6 @@ struct Mesh : public Spatial {
         }
       }
     }
-
     return adjacents;
   }
 
@@ -358,9 +357,10 @@ struct Mesh : public Spatial {
 
     std::vector<Point3>  current_point_per_thread (N_THREADS);
     std::mutex mtx;
+    unsigned last_index = 0;
 
     auto lambda = [&](unsigned i_thread) {
-      unsigned init = i_thread;
+      unsigned init = last_index;
       unsigned j = 0;
       unsigned k = 0;
       bool end = false;
@@ -368,6 +368,7 @@ struct Mesh : public Spatial {
       // find next point not used by another thread
       do {
         mtx.lock();
+        init = last_index;
         do {
           for (j = 0; j < 3; j++) {
             for (k = 0; k < current_point_per_thread.size(); k++) {
@@ -382,12 +383,14 @@ struct Mesh : public Spatial {
               current_point_per_thread[i_thread] = local_coordenates_faces[init][j];
               break;
             }
-            init++;
           }
+          if (!end)
+            init++;
         } while (!end && init < local_coordenates_faces.size());
-        mtx.unlock();
 
-        std::cout << init << " of " << local_coordenates_faces.size() << std::endl;
+        last_index = init;
+        std::cout << '\r' << 100 * double(init) / double(local_coordenates_faces.size()) << " % " << std::flush;
+        mtx.unlock();
 
         Point3 point = local_coordenates_faces[init][j];
         Vector3& p_normal = local_coordenates_faces[init].get_normal(j);
@@ -415,7 +418,6 @@ struct Mesh : public Spatial {
 
 
     global_coordenates_faces       = local_coordenates_faces;
-
     local_coordenates_faces.shrink_to_fit();
     global_coordenates_faces.shrink_to_fit();
   }  
