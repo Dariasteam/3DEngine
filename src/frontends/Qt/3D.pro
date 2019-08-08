@@ -25,30 +25,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-  ../../engine/objparser.cpp \  
+  ../../engine/objparser.cpp \
   ../../engine/multithreadmanager.cpp \
+  ../../engine/projector.cpp \
+  ../../engine/rasteriser.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
+  ../../engine/rasteriserinterpolatedvertex.cpp \
         src/renderengine.cpp \
 	../../engine/point3d.cpp \	
 	../../engine/world.cpp \
 	../../engine/camera.cpp \
-	../../engine/rasteriser.cpp \
 	../../engine/point2d.cpp \
 	../../engine/triangle.cpp \
 	../../engine/matrix.cpp
 
 HEADERS += \
-  ../../engine/objparser.h \  
+  ../../engine/objparser.h \
   ../../engine/multithreadmanager.h \
+  ../../engine/projector.h \
+  ../../engine/rasteriser.h \
         src/mainwindow.h \
         canvas.h \
+  ../../engine/rasteriserinterpolatedvertex.h \
         src/renderengine.h \
 	../../engine/point3d.h \
 	../../engine/world.h \
 	../../engine/camera.h \
-	../../engine/rasteriser.h \
 	../../engine/point2d.h \
 	../../engine/triangle.h \
 	../../engine/matrix.h

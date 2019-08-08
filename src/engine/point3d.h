@@ -80,7 +80,15 @@ static double deg2rad (double deg) {
   return deg * PI / 180.0;
 }
 
+// FIXME: Inherit Color
+
 typedef Point3 Color;
+
+inline void clamp_color (Color& color) {
+  color.set_x(std::max (0.0, std::min(color.x(), 255.0)));
+  color.set_y(std::max (0.0, std::min(color.y(), 255.0)));
+  color.set_z(std::max (0.0, std::min(color.z(), 255.0)));
+}
 
 struct Vector3 : public Point3 {  
   Vector3 () : Point3 (0, 0, 0) {}
@@ -246,11 +254,7 @@ struct Spatial {
 
   Point3 translation {0, 0, 0};
   Point3 position {0, 0, 0};
-/*
-  void translate_local (const Vector3& v) {
-    position += v;    
-  }  
-*/
+
   void translate_global (const Vector3& v) {
 
     // FIXME: is this usefull for nested meshes?
@@ -336,91 +340,9 @@ struct Mesh : public Spatial {
 
   inline std::vector<Vector3*> get_adjacent_vertices (Point3& p,
                                                       unsigned from,
-                                                      std::vector<bool>& vertex_normals) {
-    std::vector<Vector3*> adjacents;
+                                                      std::vector<bool>& vertex_normals);
 
-    for (unsigned i = from; i < local_coordenates_faces.size(); i++) {
-      for (unsigned j = 0; j < 3; j++) {
-        if (!vertex_normals[i * 3 + j] && local_coordenates_faces[i][j] == p) {
-          adjacents.push_back(&local_coordenates_faces[i].get_normal(j));
-          vertex_normals[i * 3 + j] = true;
-        }
-      }
-    }
-    return adjacents;
-  }
-
-  void generate_data () {
-    generate_normals();    
-
-    std::vector<bool> vertex_normals (local_coordenates_faces.size() * 3, false);
-
-    std::vector<Point3>  current_point_per_thread (N_THREADS);
-    std::mutex mtx;
-    unsigned last_index = 0;
-
-    auto lambda = [&](unsigned i_thread) {
-      unsigned init = last_index;
-      unsigned j = 0;
-      unsigned k = 0;
-      bool end = false;
-
-      // find next point not used by another thread
-      do {
-        mtx.lock();
-        init = last_index;
-        do {
-          for (j = 0; j < 3; j++) {
-            for (k = 0; k < current_point_per_thread.size(); k++) {
-              end = true;
-              if (vertex_normals[init * 3 + j] || current_point_per_thread[k] == local_coordenates_faces[init][j]) {
-                end = false;
-                break;
-              }
-            }
-            if (end) {
-              vertex_normals[init * 3 + j] = true;
-              current_point_per_thread[i_thread] = local_coordenates_faces[init][j];
-              break;
-            }
-          }
-          if (!end)
-            init++;
-        } while (!end && init < local_coordenates_faces.size());
-
-        last_index = init;
-        std::cout << '\r' << 100 * double(init) / double(local_coordenates_faces.size()) << " % " << std::flush;
-        mtx.unlock();
-
-        Point3 point = local_coordenates_faces[init][j];
-        Vector3& p_normal = local_coordenates_faces[init].get_normal(j);
-        auto adjacents = get_adjacent_vertices(point, ++init, vertex_normals);
-
-        Vector3 ac = p_normal;
-        for (Vector3* aux_p : adjacents)
-          ac += *aux_p;
-
-        ac /= (adjacents.size() + 1);
-
-        for (Vector3* aux_p : adjacents)
-          (*aux_p) = ac;
-
-        p_normal = ac;
-      } while (init < local_coordenates_faces.size());
-    };
-
-    std::vector<std::future<void>> promises (N_THREADS);
-    for (unsigned i = 0; i < N_THREADS; i++)
-      promises[i] = std::async(lambda, i);
-
-    for (auto& promise : promises)
-      promise.get();
-
-
-    global_coordenates_faces       = local_coordenates_faces;
-    local_coordenates_faces.shrink_to_fit();
-    global_coordenates_faces.shrink_to_fit();
-  }  
+  void generate_data ();
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
                                              const Point3& camera_translation,

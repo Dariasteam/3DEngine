@@ -1,23 +1,5 @@
 #include "objparser.h"
 
-bool ObjParser::parse_vertex(const std::string &line) {
-  double v_x, v_y, v_z;
-
-  try {
-//    line >> v_x;
-//    line >> v_y;
-//    line >> v_z;
-    vertex_list.push_back(Point3{v_x, v_y, v_z});
-  } catch (...) {
-
-//    delete aux_mesh;
-    return false;
-  }
-}
-
-bool ObjParser::parse_face(const std::string &line, Mesh *aux_mesh) {
-
-}
 
 ObjParser::ObjParser() {
 
@@ -72,9 +54,6 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         i1 = (i1 < 0 ? vertex_list.size() - i1 : i1 - 1);
         i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
         i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
-
-        if (i1 < 0 || i2 < 0 || i3 < 0)
-          std::cout << "ARHC" << std::endl;
 
         aux_mesh->local_coordenates_faces.push_back(Face3 {
                               vertex_list[i1],

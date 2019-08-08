@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 
+// Generic 2D Matrix
 struct Matrix {
 
   unsigned n_rows;

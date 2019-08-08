@@ -26,23 +26,15 @@ private:
     0.5 //1.2
   };
 
-
 public:
   World (Camera* cm);
-
-  const Basis3 basis {
-    {1, 0, 0},
-    {0, 1, 0},
-    {0, 0, 1},
-  };  
 
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
   inline const DirectionalLight get_light () { return sunlight; }
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
-
-  inline void rotate_meshes () const;  
+  inline Camera* get_camera () { return camera; }
 
   void calculate_next_frame () const;
 

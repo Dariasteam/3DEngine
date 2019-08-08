@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-#include "../../../engine/rasteriser.h"
+#include "../../../engine/projector.h"
 #include "../../../engine/camera.h"
 #include "../../../engine/world.h"
+#include "../../../engine/rasteriserinterpolatedvertex.h"
 #include "src/renderengine.h"
 
 int main(int argc, char *argv[])
@@ -14,8 +15,9 @@ int main(int argc, char *argv[])
 
   Camera camera;
   World world (&camera);
-  Rasteriser rasteriser (w.get_canvas(), &camera, &world);
-  RenderEngine engine (&rasteriser, w.get_canvas(), &world);
+  Projector projector (&camera, &world);
+  RasteriserInterpolatedVertex rasteriser (&world, w.get_canvas());
+  RenderEngine engine (&projector, &rasteriser, w.get_canvas(), &world);
 
   return a.exec();
 }

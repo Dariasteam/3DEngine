@@ -9,9 +9,10 @@
 #include <QTimer>
 
 #include "../../../engine/point3d.h"
-#include "../../../engine/rasteriser.h"
+#include "../../../engine/projector.h"
 #include "../../../engine/world.h"
 #include "../../../engine/camera.h"
+#include "../../../engine/rasteriser.h"
 #include "../canvas.h"
 
 class FPSControl {
@@ -39,14 +40,14 @@ public:
       frame_counter = 0;
       last_time = std::chrono::system_clock::now();
     }
-
   }
 };
 
 class RenderEngine : public QObject{
   Q_OBJECT
 private:
-  Rasteriser* rasteriser;  
+  Projector* projector;
+  Rasteriser* rasteriser;
   Canvas* canvas;
   World* world;
 
@@ -57,7 +58,7 @@ private:
 
   void render_loop ();
 public:
-  RenderEngine(Rasteriser* r, Canvas* c, World* w);
+  RenderEngine(Projector* p, Rasteriser* r, Canvas* c, World* w);
 public slots:  
   void painting_loop ();
 };

@@ -1,80 +1,44 @@
-#ifndef RASTERISER_H
-#define RASTERISER_H
+#ifndef PROJECTOR_H
+#define PROJECTOR_H
 
 #include "camera.h"
 #include "world.h"
-#include "canvas.h"
-#include "list"
 #include "multithreadmanager.h"
+#include "canvas.h"
 
-#include <future>
-#include <mutex>
-#include <fstream>
-#include <chrono>
-#include <ctime>
+#include <vector>
 #include <algorithm>
 
 class Rasteriser {
-private:
-  std::mutex mtx;
+protected:
+  unsigned screen_size = SCREEN_SIZE;
 
   World* world;
   Camera* camera;
   Canvas* canvas;
-  bool double_faces = false;
-  unsigned screen_size = SCREEN_SIZE;
 
   std::vector<std::vector<Color888>> screen_buffer_a;
   std::vector<std::vector<Color888>> screen_buffer_b;
-
   std::vector<std::vector<double>> z_buffer;
 
-  std::vector<Triangle2> elements_to_render;
-
-  bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
-  bool inline is_point_between_camera_bounds (const Point2F&) const;
-
-  std::vector <Mesh*> meshes_vector;
-
-  inline Color calculate_lights (const Color& m_color, const Vector3& normal) const;
-  void set_rasterization_data ();
-  inline bool calculate_mesh_projection (const Face3& face,                                         
-                                         std::vector<Triangle2>& triangles,
-                                         const Color& color);
-
-  void generate_mesh_list (const std::vector<Mesh*>& meshes);
-
-  void generate_frame ();
-  void paint_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
-
-  inline void raster_triangle (const Triangle2& triangle, std::vector<std::vector<Color888>>* screen_buffer);
-  inline double get_y (const Point2F& u, const Vector2& v, double x);
-  inline double get_x (const Point2F& u, const Vector2& v, double y);
-
-
-  inline void multithreaded_rasterize_mesh_list (unsigned init,
-                                                 unsigned end);
-
-  inline void multithreaded_rasterize_single_mesh (unsigned init,
-                                                   unsigned end,
-                                                   const Mesh* aux_mesh);
-
-  inline void fillTopFlatTriangle(const Triangle2& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
-
-  inline void fillBottomFlatTriangle(const Triangle2& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
-
-  inline void rasterize_triangle (Triangle2& triangle,
-                     std::vector<std::vector<Color888>>* screen_buffer);
-
-  inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);
   inline bool triangle_inside_screen (const Triangle2& triangle);
+  inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);
 
 public:
-  Rasteriser(Canvas* canvas, Camera* camera, World* world);
-  void rasterise();
+  Rasteriser(World* w, Canvas* cv) :
+    world (w),
+    camera (w->get_camera()),
+    canvas (cv),
+
+    screen_buffer_a (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
+    screen_buffer_b (screen_size, std::vector<Color888>(screen_size, {0,0,0})),
+    z_buffer (screen_size, std::vector<double>(screen_size, 10000))
+  {
+    canvas->set_screen_buffers(&screen_buffer_a, &screen_buffer_b);
+  }
+
+  virtual void rasterise (std::vector<Triangle2>& triangles) = 0;
 
 };
 
-#endif // RASTERISER_H
+#endif // PROJECTOR_H

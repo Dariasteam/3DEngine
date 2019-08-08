@@ -4,8 +4,8 @@
 #include <thread>
 #include <functional>
 #include <vector>
-#include <mutex>              // std::mutex, std::unique_lock
-#include <condition_variable> // std::condition_variable
+#include <mutex>
+#include <condition_variable>
 #include <iostream>
 #include <future>
 

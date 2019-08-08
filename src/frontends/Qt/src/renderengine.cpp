@@ -1,7 +1,8 @@
 #include "renderengine.h"
 
 
-RenderEngine::RenderEngine(Rasteriser *r, Canvas* c, World* w) :
+RenderEngine::RenderEngine(Projector* p, Rasteriser *r, Canvas* c, World* w) :
+    projector (p),
     rasteriser (r),
     canvas (c),
     world (w),
@@ -14,7 +15,7 @@ RenderEngine::RenderEngine(Rasteriser *r, Canvas* c, World* w) :
 
   auto timer = new QTimer(this);
   connect(timer, &QTimer::timeout, this, &RenderEngine::painting_loop);
-  std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(120));
+//  std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(120));
   timer->start(2);
 }
 
@@ -26,8 +27,9 @@ void RenderEngine::painting_loop() {
 
 void RenderEngine::render_loop () {
   while (true) {    
-    world->calculate_next_frame();    
-    rasteriser->rasterise();    
+    world->calculate_next_frame();
+    auto triangles = projector->project();
+    rasteriser->rasterise(triangles);
     fps_render.update();
 
 //    std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(12));

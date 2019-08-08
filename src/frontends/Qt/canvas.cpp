@@ -6,53 +6,11 @@ Canvas::Canvas(QWidget *parent) :
   QLabel(parent),
   image (SCREEN_SIZE, SCREEN_SIZE, QImage::Format_RGB888)
 {}
-/*
-void Canvas::paintEvent(QPaintEvent *event) {
-  QPainter p(this);
 
-  const std::vector<Triangle2>* triangles;
-
-  lock_buffer_mutex();
-  if (reading_from_buffer_a())
-    triangles = triangles_buffer_b;
-  else
-    triangles = triangles_buffer_a;
-  reading_buffer_a = !reading_buffer_a;
-  unlock_buffer_mutex();
-
-  for (const auto& triangle : *triangles) {
-    const QPointF a = adjust_coordinates(triangle.a);
-    const QPointF b = adjust_coordinates(triangle.b);
-    const QPointF c = adjust_coordinates(triangle.c);
-
-    QPointF points[3] = {a, b, c};
-    #ifndef WIREFRAME
-      p.setPen(Qt::NoPen);
-      p.setBrush(QColor(
-        static_cast<int>(triangle.color.x()),
-        static_cast<int>(triangle.color.y()),
-        static_cast<int>(triangle.color.z())
-      ));
-    #endif
-    p.drawConvexPolygon(points, 3);
-  }
-}
-*/
 void Canvas::update_frame(RectF b) {
   v_factor = size().height() / b.size_y();
   h_factor = size().width()  / b.size_x();
   new_frame_redered = true;
-
-//  paint();
-}
-
-// Translates the coordinates to the canvas size and
-// the non centered coordinate system
-QPointF Canvas::adjust_coordinates(const Point2F& p) {
-  return {
-          (p.x() * h_factor + x_offset),
-          (p.y() * v_factor + y_offset)
-         };
 }
 
 void Canvas::resizeEvent(QResizeEvent *event) {
@@ -66,17 +24,6 @@ void Canvas::set_screen_buffers(const std::vector<std::vector<Color888>>* buff_a
   screen_buffer_b = buff_b;
 }
 
-/*
-void Canvas::set_triangles_buffer(const std::vector<Triangle2> *buff_a,
-                                  const std::vector<Triangle2> *buff_b) {
-  triangles_buffer_a = buff_a;
-  triangles_buffer_b = buff_b;
-}
-
-void Canvas::set_screen_buffer(const std::vector<std::vector<ImagePixel> >* buff) {
-  screen_buffer = buff;
-}
-*/
 bool Canvas::paint() {  
   if (!new_frame_redered)
     return false;
@@ -93,38 +40,27 @@ bool Canvas::paint() {
     screen_buffer = screen_buffer_a;
   reading_buffer_a = !reading_buffer_a;
 
-
   unsigned char* buffer_;
   buffer_ = new unsigned char[3 * screen_size * screen_size];
 
   // FIXME: This copy does not make sense
+  auto lambda = [&](unsigned i) {
+    for (unsigned j = 0; j < screen_size; j++) {
+      const Color888& aux_color = (*screen_buffer)[j][i];
 
-  auto lambda = [&](unsigned init_x, unsigned end_x) {
-    for (unsigned i = init_x; i < end_x; i++) {
-      for (unsigned j = 0; j < screen_size; j++) {
-        const Color888& aux_color = (*screen_buffer)[j][i];
-
-        buffer_[3 * (j * screen_size + i)    ] = aux_color.r;
-        buffer_[3 * (j * screen_size + i) + 1] = aux_color.g;
-        buffer_[3 * (j * screen_size + i) + 2] = aux_color.b;
-      }
+      buffer_[3 * (j * screen_size + i)    ] = aux_color.r;
+      buffer_[3 * (j * screen_size + i) + 1] = aux_color.g;
+      buffer_[3 * (j * screen_size + i) + 2] = aux_color.b;
     }
   };
 
-  unsigned segments = (screen_size / N_THREADS);
-  std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i < N_THREADS  - 1; i++)
-    promises[i] = std::async(lambda, i * segments, (i + 1) * segments);
-
-  promises[N_THREADS - 1] = std::async(lambda, (N_THREADS - 1) * segments,
-                                                screen_size);
-  for (auto& promise : promises)
-    promise.get();
+  auto& m = MultithreadManager::get_instance();
+  m.calculate_threaded(1000, lambda);
 
   QImage image(buffer_, screen_size, screen_size, QImage::Format_RGB888);
-  setPixmap(QPixmap::fromImage(image));  
-
   unlock_buffer_mutex();
+
+  setPixmap(QPixmap::fromImage(image));
 
   delete[] buffer_;
   return true;
