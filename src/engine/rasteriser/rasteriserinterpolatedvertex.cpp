@@ -39,7 +39,7 @@ inline Color get_color_in_gradient (const Color& color1,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2& triangle,
+void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
@@ -113,7 +113,7 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2& trian
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2& triangle,
+void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
@@ -176,12 +176,12 @@ inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
+void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle,
                                 std::vector<std::vector<Color888>>* screen_buffer) {
 
   // Sort vertices by Y
-  std::vector<Vertex2> aux_vec = {triangle.a, triangle.b, triangle.c};
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Vertex2& a, const Vertex2& b) {
+  std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2i& a, const Point2i& b) {
     return std::isless(a.y(), b.y());
   });
 
@@ -189,9 +189,9 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
   triangle.b = aux_vec[1];
   triangle.c = aux_vec[2];
 
-  const Vertex2& v1 = aux_vec[0];
-  const Vertex2& v2 = aux_vec[1];
-  const Vertex2& v3 = aux_vec[2];
+  const Point2i& v1 = aux_vec[0];
+  const Point2i& v2 = aux_vec[1];
+  const Point2i& v3 = aux_vec[2];
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
@@ -206,7 +206,7 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
     double ratio = b / a;
     double x = v1.x() + (ratio * (v2.y() - v1.y()));
 
-    Vertex2 v4 (static_cast<int>(std::round(x)), v2.y());
+    Point2i v4 (static_cast<int>(std::round(x)), v2.y());
     Color gradient = get_gradient(v1.color,
                                   v3.color,
                                   v1.y(),
@@ -217,8 +217,8 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
 
     v4.color = aux;
 
-    Triangle2 aux_t1 {triangle};
-    Triangle2 aux_t2 {triangle};
+    Triangle2i aux_t1 {triangle};
+    Triangle2i aux_t2 {triangle};
 
     aux_t1.c = v4;
 

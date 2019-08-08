@@ -6,7 +6,9 @@
 #include <vector>
 #include <string>
 
-#include "point3d.h"
+#include "../engine/math/point3.h"
+#include "../engine/math/vector3.h"
+#include "../engine/spatial/mesh.h"
 
 class ObjParser {
 private:

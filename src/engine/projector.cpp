@@ -12,33 +12,6 @@ void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   }
 }
 
-void write_file(const std::vector<std::vector<Color888>>& canvas) {
-  std::ofstream file;
-  file.open("test_picture.ppm");
-
-  if (file.is_open()) {
-    file << "P3\n" << canvas[0].size() << " " << canvas.size() << " " << 255 << "\n";
-    for (const auto &row : canvas) {
-      for (const auto &pixel : row) {
-        file << pixel.r << " "
-             << pixel.g << " "
-             << pixel.b << "\n";
-      }
-    }
-    file.close();
-  } else {
-    std::cerr << "Could not create picture" << std::endl;
-  }
-}
-
-double Projector::get_y (const Point2F& u, const Vector2& v, double x) {
-  return u.y() + (x - u.x()) * (v.y() / v.x());
-}
-
-double Projector::get_x (const Point2F& u, const Vector2& v, double y) {
-  return u.x() + (y - u.y()) * (v.x() / v.y());
-}
-
 void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
@@ -59,7 +32,7 @@ void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
 
 void Projector::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,
                                                      const Mesh* aux_mesh) {
-  std::vector <Triangle2> tmp_triangles;
+  std::vector <Triangle2i> tmp_triangles;
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
@@ -117,10 +90,10 @@ Color Projector::calculate_lights (const Color& m_color,
   return color;
 }
 
-bool Projector::calculate_mesh_projection(const Face3& face,
-                                           std::vector<Triangle2>& triangles,
+bool Projector::calculate_mesh_projection(const Face& face,
+                                           std::vector<Triangle2i>& triangles,
                                            const Color& color) {
-  Triangle2F tmp_triangle;
+  Triangle2 tmp_triangle;
 
   // 1. Check face is not behind camera. Since we are using camera basis
   // we only need z value of the plane. Also each point coordinate is also
@@ -178,7 +151,7 @@ bool Projector::calculate_mesh_projection(const Face3& face,
   // FIXME: THIS
 
   // 8. Convert triangle to screen space
-  const Triangle2 final_triangle = triangle_to_screen_space(tmp_triangle);
+  const Triangle2i final_triangle = triangle_to_screen_space(tmp_triangle);
 
   // 9. Check triangle inside screen area
   if (!triangle_inside_screen(final_triangle)) return false;
@@ -190,7 +163,7 @@ bool Projector::calculate_mesh_projection(const Face3& face,
   return true;
 }
 
-std::vector<Triangle2>& Projector::project() {
+std::vector<Triangle2i>& Projector::project() {
   set_projection_data();
 
   // Prepare threads
@@ -219,7 +192,7 @@ std::vector<Triangle2>& Projector::project() {
 //  generate_frame();
 }
 
-bool Projector::is_point_between_camera_bounds(const Point2F& p) const {
+bool Projector::is_point_between_camera_bounds(const Point2& p) const {
   return p.x() > camera->get_bounds().x       &&
          p.x() < camera->get_bounds().width   &&
          p.y() > camera->get_bounds().y       &&
@@ -284,7 +257,7 @@ bool Projector::calculate_cut_point(const Point3& vertex,
 
 unsigned screen_size = 1000;
 
-bool Projector::triangle_inside_screen(const Triangle2 &triangle) {
+bool Projector::triangle_inside_screen(const Triangle2i &triangle) {
   // Check all points inside render area
   if (triangle.a.x() < 0.0 || triangle.a.x() > screen_size) return false;
   if (triangle.a.y() < 0.0 || triangle.a.y() > screen_size) return false;
@@ -296,7 +269,7 @@ bool Projector::triangle_inside_screen(const Triangle2 &triangle) {
   return true;
 }
 
-Triangle2 Projector::triangle_to_screen_space (const Triangle2F& triangle) {
+Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle) {
 
   unsigned height = screen_size;
   unsigned width = screen_size;
@@ -307,16 +280,16 @@ Triangle2 Projector::triangle_to_screen_space (const Triangle2F& triangle) {
   unsigned x_offset = width  / 2;
   unsigned y_offset = height / 2;
 
-  Point2F a = {triangle.a.x() * h_factor + x_offset,
-               triangle.a.y() * v_factor + y_offset};
+  Point2 a = {triangle.a.x() * h_factor + x_offset,
+              triangle.a.y() * v_factor + y_offset};
 
-  Point2F b = {triangle.b.x() * h_factor + x_offset,
-               triangle.b.y() * v_factor + y_offset};
+  Point2 b = {triangle.b.x() * h_factor + x_offset,
+              triangle.b.y() * v_factor + y_offset};
 
-  Point2F c = {triangle.c.x() * h_factor + x_offset,
+  Point2 c = {triangle.c.x() * h_factor + x_offset,
                triangle.c.y() * v_factor + y_offset};
 
-  Triangle2 t {triangle};
+  Triangle2i t {triangle};
   t.a = a;
   t.b = b;
   t.c = c;

@@ -1,8 +1,8 @@
 #include "rasteriserwireframe.h"
 
-void drawLine (Vertex2 v1, Vertex2 v2, std::vector<std::vector<Color888> >* screen_buffer) {
+void drawLine (Point2i v1, Point2i v2, std::vector<std::vector<Color888> >* screen_buffer) {
 
-  if (v1.y() == v2.y()) {// horizontal line
+  if (v1.y() == v2.y()) {      // horizontal line
     if (v1.x() > v1.x())
       std::swap(v1, v2);
 
@@ -14,7 +14,7 @@ void drawLine (Vertex2 v1, Vertex2 v2, std::vector<std::vector<Color888> >* scre
   if (v1.y() > v1.y())
     std::swap(v1, v2);
 
-  if (v1.x() == v2.x()) { // vertical line
+  if (v1.x() == v2.x()) {      // vertical line
     for (unsigned y = v1.x(); y < v2.x(); y++)
        (*screen_buffer)[y][v1.x()] = Color888{255, 255, 255};
     return;
@@ -30,7 +30,7 @@ void drawLine (Vertex2 v1, Vertex2 v2, std::vector<std::vector<Color888> >* scre
   }
 }
 
-void RasteriserWireframe::rasterize_triangle(Triangle2& triangle, std::vector<std::vector<Color888> >* screen_buffer) {
+void RasteriserWireframe::rasterize_triangle(Triangle2i& triangle, std::vector<std::vector<Color888> >* screen_buffer) {
   drawLine(triangle.a, triangle.b, screen_buffer);
   drawLine(triangle.a, triangle.c, screen_buffer);
   drawLine(triangle.c, triangle.b, screen_buffer);

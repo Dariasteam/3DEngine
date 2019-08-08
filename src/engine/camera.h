@@ -1,8 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "point3d.h"
-#include "point2d.h"
+#include "math/point3d.h"
+#include "math/point2d.h"
+#include "planar/rect.h"
+#include "spatial/spatial.h"
 
 class Camera : public Spatial {
 private:

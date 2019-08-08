@@ -7,12 +7,14 @@
 #include <string>
 
 #include <QTimer>
+#include <utility>
 
-#include "../../../engine/point3d.h"
+#include "../../../engine/math/point3.h"
+#include "../../../engine/math/point3.h"
 #include "../../../engine/projector.h"
 #include "../../../engine/world.h"
 #include "../../../engine/camera.h"
-#include "../../../engine/rasteriser.h"
+#include "../../../engine/rasteriser/rasteriser.h"
 #include "../canvas.h"
 
 class FPSControl {
@@ -24,7 +26,7 @@ private:
 
 public:
 
-  FPSControl (const std::string& t) : text (t) {}
+  FPSControl (std::string  t) : text (std::move(t)) {}
 
   inline void update () {
     frame_counter++;

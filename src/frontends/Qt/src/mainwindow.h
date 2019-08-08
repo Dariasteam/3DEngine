@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
 
 public:
   explicit MainWindow(QWidget *parent = nullptr);
-  ~MainWindow();
+  ~MainWindow() override;
 
   inline Canvas* get_canvas () { return canvas; }
 private:

@@ -1,8 +1,4 @@
-#include "point3d.h"
-
-#include <future>
-#include <functional>
-
+#include "mesh.h"
 
 void Mesh::change_basis_part (const Matrix3& basis_changer,
                               const Vector3& translation,
@@ -118,13 +114,13 @@ void Mesh::change_basis(const std::list<Mesh *> mesh_list,
 
     for (const auto& mesh : mesh_list) {
       mesh->change_basis_part(basis_changer_1, aux_pos, 0,
-                              mesh->local_coordenates_faces.size());      
+                              mesh->local_coordenates_faces.size());
     }
-  } else if (update_translation) {      
+  } else if (update_translation) {
     for (const auto& mesh : mesh_list) {
       mesh->apply_translation_part(aux_pos, 0,
                                    mesh->local_coordenates_faces.size());
-    }        
+    }
   }
 
   basis_changed = false;
@@ -154,6 +150,7 @@ void Mesh::generate_data() {
   std::mutex mtx;
   unsigned last_index = 0;
 
+  // Calculate interploted normals of the Vertices
   auto lambda = [&](unsigned i_thread) {
     unsigned init = last_index;
     unsigned j = 0;
@@ -236,39 +233,3 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
   return mesh_list;
 }
 
-void Face3::generate_normal() {
-  const Vector3& u = Vector3::create_vector(b, a);
-  const Vector3& v = Vector3::create_vector(a, c);
-
-  double X = (v.y() * u.z() - v.z() * u.y());
-  double Y = (v.z() * u.x() - v.x() * u.z());
-  double Z = (v.x() * u.y() - v.y() * u.x());
-  /*
-  double D = a.z() * v.y() * u.x() +
-             a.x() * v.z() * u.y() +
-             a.y() * v.x() * u.z() -
-             a.x() * v.y() * u.z() -
-             a.y() * v.z() * u.x() -
-             a.z() * v.x() * u.y();
-*/
-
-  normal = {X, Y, Z};
-  normal.normalize();
-
-  normal_a = normal;
-  normal_b = normal;
-  normal_c = normal;
-}
-
-
-void Point3Ops::change_basis(const Basis3 &basis,
-                             const Point3 &element,
-                             Point3 &result) {
-  double a = (basis[0][0] * element.x() + basis[0][1] * element.y() + basis[0][2] * element.z());
-  double b = (basis[1][0] * element.x() + basis[1][1] * element.y() + basis[1][2] * element.z());
-  double c = (basis[2][0] * element.x() + basis[2][1] * element.y() + basis[2][2] * element.z());
-
-  result.set_x(a);
-  result.set_y(b);
-  result.set_z(c);
-}

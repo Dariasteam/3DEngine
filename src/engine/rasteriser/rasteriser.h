@@ -1,10 +1,10 @@
 #ifndef PROJECTOR_H
 #define PROJECTOR_H
 
-#include "camera.h"
-#include "world.h"
-#include "multithreadmanager.h"
-#include "canvas.h"
+#include "../camera.h"
+#include "../world.h"
+#include "../../auxiliar/multithreadmanager.h"
+#include "../../frontends/Qt/canvas.h"
 
 #include <vector>
 #include <algorithm>
@@ -21,10 +21,10 @@ protected:
   std::vector<std::vector<Color888>> screen_buffer_b;
   std::vector<std::vector<double>> z_buffer;
 
-  inline bool triangle_inside_screen (const Triangle2& triangle);
-  inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);
+  inline bool triangle_inside_screen (const Triangle2i& triangle);
+  inline Triangle2i triangle_to_screen_space (const Triangle2& triangle);
 
-  virtual void rasterize_triangle (Triangle2& triangle,
+  virtual void rasterize_triangle (Triangle2i& triangle,
                                    std::vector<std::vector<Color888>>* screen_buffer) = 0;
 
 public:
@@ -40,7 +40,7 @@ public:
     canvas->set_screen_buffers(&screen_buffer_a, &screen_buffer_b);
   }
 
-  void rasterise (std::vector<Triangle2>& triangles);
+  void rasterise (std::vector<Triangle2i>& triangles);
 };
 
 #endif // PROJECTOR_H

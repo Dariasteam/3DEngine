@@ -1,6 +1,6 @@
 #include "rasteriser.h"
 
-void Rasteriser::rasterise(std::vector<Triangle2>& triangles) {
+void Rasteriser::rasterise(std::vector<Triangle2i>& triangles) {
   std::vector<std::vector<Color888>>* buff;
 
   // 1. Select unused buffer

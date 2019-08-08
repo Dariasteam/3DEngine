@@ -1,9 +1,11 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include "point3d.h"
+#include "math/point3.h"
+#include "math/vector3.h"
+#include "spatial/mesh.h"
 #include "camera.h"
-#include "objparser.h"
+#include "../auxiliar/objparser.h"
 
 #include <vector>
 #include <algorithm>

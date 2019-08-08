@@ -25,41 +25,47 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-  ../../engine/objparser.cpp \
-  ../../engine/multithreadmanager.cpp \
+  ../../auxiliar/objparser.cpp \
+  ../../auxiliar/multithreadmanager.cpp \
   ../../engine/projector.cpp \
-  ../../engine/rasteriser.cpp \
-  ../../engine/rasteriserwireframe.cpp \
+  ../../engine/rasteriser/rasteriser.cpp \
+  ../../engine/rasteriser/rasteriserwireframe.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
-  ../../engine/rasteriserinterpolatedvertex.cpp \
-  ../../engine/rasteriserflat.cpp \
+  ../../engine/rasteriser/rasteriserinterpolatedvertex.cpp \
+  ../../engine/rasteriser/rasteriserflat.cpp \
         src/renderengine.cpp \
-	../../engine/point3d.cpp \	
 	../../engine/world.cpp \
 	../../engine/camera.cpp \
-	../../engine/point2d.cpp \
-	../../engine/triangle.cpp \
-	../../engine/matrix.cpp
+    ../../engine/math/matrix.cpp \
+    ../../engine/spatial/mesh.cpp \
 
 HEADERS += \
-  ../../engine/objparser.h \
-  ../../engine/multithreadmanager.h \
+  ../../auxiliar/objparser.h \
+  ../../auxiliar/multithreadmanager.h \
   ../../engine/projector.h \
-  ../../engine/rasteriser.h \
-  ../../engine/rasteriserwireframe.h \
+  ../../engine/rasteriser/rasteriser.h \
+  ../../engine/rasteriser/rasteriserwireframe.h \
         src/mainwindow.h \
         canvas.h \
-  ../../engine/rasteriserinterpolatedvertex.h \
-  ../../engine/rasteriserflat.h \
+  ../../engine/rasteriser/rasteriserinterpolatedvertex.h \
+  ../../engine/rasteriser/rasteriserflat.h \
         src/renderengine.h \
-	../../engine/point3d.h \
 	../../engine/world.h \
 	../../engine/camera.h \
-	../../engine/point2d.h \
-	../../engine/triangle.h \
-	../../engine/matrix.h
+    ../../engine/math/matrix.h \
+    ../../engine/math/point3.h \
+    ../../engine/math/vector3.h \
+    ../../engine/math/matrix3.h \
+    ../../engine/spatial/face3.h \
+    ../../engine/spatial/spatial.h \
+    ../../engine/spatial/mesh.h \
+    ../../engine/math/point2.h \
+    ../../engine/math/matrix2.h \
+    ../../engine/planar/rect.h \
+    ../../engine/planar/triangle.h \
+    ../../engine/planar/vertex.h \
 
 FORMS += \
         mainwindow.ui

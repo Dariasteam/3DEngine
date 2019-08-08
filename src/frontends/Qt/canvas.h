@@ -1,7 +1,9 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include "../../engine/point2d.h"
+#include "../../engine/math/point2d.h"
+#include "../../engine/planar/rect.h"
+#include "../../engine/planar/triangle.h"
 
 #include <QWidget>
 #include <QPainter>
@@ -35,8 +37,8 @@ private:
 
   unsigned n_triangles {0};
 
-  const std::vector<Triangle2F>* triangles_buffer_a {nullptr};
-  const std::vector<Triangle2F>* triangles_buffer_b {nullptr};
+  const std::vector<Triangle2>* triangles_buffer_a {nullptr};
+  const std::vector<Triangle2>* triangles_buffer_b {nullptr};
 
   const std::vector<std::vector<Color888>>* screen_buffer_a {nullptr};
   const std::vector<std::vector<Color888>>* screen_buffer_b {nullptr};
@@ -44,7 +46,7 @@ private:
   std::mutex mtx;
   bool reading_buffer_a = false;
 
-  inline QPointF adjust_coordinates (const Point2F& p);
+  inline QPointF adjust_coordinates (const Point2& p);
 public:
   explicit Canvas(QWidget *parent = nullptr);
   void update_frame (RectF bounds);

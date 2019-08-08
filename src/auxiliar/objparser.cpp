@@ -55,7 +55,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
         i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
 
-        aux_mesh->local_coordenates_faces.push_back(Face3 {
+        aux_mesh->local_coordenates_faces.push_back(Face {
                               vertex_list[i1],
                               vertex_list[i2],
                               vertex_list[i3],
