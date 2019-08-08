@@ -33,7 +33,7 @@ struct Point3 {
     set_z(p.z());
   }
 
-  inline bool operator== (const Point3& p) {
+  inline bool operator== (const Point3& p) const {
     return (x() == p.x() &&
             y() == p.y() &&
             z() == p.z());
@@ -335,8 +335,8 @@ struct Mesh : public Spatial {
   }  
 
   inline std::vector<Vector3*> get_adjacent_vertices (Point3& p,
-                                                   unsigned from,
-                                                   std::vector<bool>& vertex_normals) {
+                                                      unsigned from,
+                                                      std::vector<bool>& vertex_normals) {
     std::vector<Vector3*> adjacents;
 
     for (unsigned i = from; i < local_coordenates_faces.size(); i++) {
@@ -356,30 +356,63 @@ struct Mesh : public Spatial {
 
     std::vector<bool> vertex_normals (local_coordenates_faces.size() * 3, false);
 
-    // Interpolate vertex normals
-    for (unsigned i = 0; i < local_coordenates_faces.size(); i++) {
-      std::cout << i << " of " << local_coordenates_faces.size() << std::endl;
-      for (unsigned j = 0; j < 3; j++) {
+    std::vector<Point3>  current_point_per_thread (N_THREADS);
+    std::mutex mtx;
 
-        if (!vertex_normals[i * 3 + j]) {
-          vertex_normals[i * 3 + j] = true;
-          Point3 point = local_coordenates_faces[i][j];
-          Vector3& p_normal = local_coordenates_faces[i].get_normal(j);
-          auto adjacents = get_adjacent_vertices(point, i + 1, vertex_normals);
+    auto lambda = [&](unsigned i_thread) {
+      unsigned init = i_thread;
+      unsigned j = 0;
+      unsigned k = 0;
+      bool end = false;
 
-          Vector3 ac = p_normal;
-          for (Vector3* aux_p : adjacents)
-            ac += *aux_p;
+      // find next point not used by another thread
+      do {
+        mtx.lock();
+        do {
+          for (j = 0; j < 3; j++) {
+            for (k = 0; k < current_point_per_thread.size(); k++) {
+              end = true;
+              if (vertex_normals[init * 3 + j] || current_point_per_thread[k] == local_coordenates_faces[init][j]) {
+                end = false;
+                break;
+              }
+            }
+            if (end) {
+              vertex_normals[init * 3 + j] = true;
+              current_point_per_thread[i_thread] = local_coordenates_faces[init][j];
+              break;
+            }
+            init++;
+          }
+        } while (!end && init < local_coordenates_faces.size());
+        mtx.unlock();
 
-          ac /= (adjacents.size() + 1);
+        std::cout << init << " of " << local_coordenates_faces.size() << std::endl;
 
-          for (Vector3* aux_p : adjacents)
-            (*aux_p) = ac;
+        Point3 point = local_coordenates_faces[init][j];
+        Vector3& p_normal = local_coordenates_faces[init].get_normal(j);
+        auto adjacents = get_adjacent_vertices(point, ++init, vertex_normals);
 
-          p_normal = ac;
-        }
-      }
-    }
+        Vector3 ac = p_normal;
+        for (Vector3* aux_p : adjacents)
+          ac += *aux_p;
+
+        ac /= (adjacents.size() + 1);
+
+        for (Vector3* aux_p : adjacents)
+          (*aux_p) = ac;
+
+        p_normal = ac;
+      } while (init < local_coordenates_faces.size());
+    };
+
+    std::vector<std::future<void>> promises (N_THREADS);
+    for (unsigned i = 0; i < N_THREADS; i++)
+      promises[i] = std::async(lambda, i);
+
+    for (auto& promise : promises)
+      promise.get();
+
 
     global_coordenates_faces       = local_coordenates_faces;
 

@@ -25,9 +25,9 @@ void RenderEngine::painting_loop() {
 }
 
 void RenderEngine::render_loop () {
-  while (true) {
-    world->calculate_next_frame();
-    rasteriser->rasterise();
+  while (true) {    
+    world->calculate_next_frame();    
+    rasteriser->rasterise();    
     fps_render.update();
 
 //    std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(12));

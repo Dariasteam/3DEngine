@@ -122,7 +122,7 @@ bool Canvas::paint() {
     promise.get();
 
   QImage image(buffer_, screen_size, screen_size, QImage::Format_RGB888);
-  setPixmap(QPixmap::fromImage(image));
+  setPixmap(QPixmap::fromImage(image));  
 
   unlock_buffer_mutex();
 
