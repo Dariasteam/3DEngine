@@ -128,7 +128,7 @@ World::World(Camera* cm) :
   add_mesh(parsed_mesh);
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 50});
+  parsed_mesh->translate_global({0, -1.5, 20});
 }
 
 bool World::add_mesh(Mesh* mesh) {
@@ -159,7 +159,7 @@ void World::calculate_next_frame() const {
   for (auto& mesh : meshes)
     mesh->rotate_y(-0.03);
 */
-  meshes.back()->rotate_y(-0.03);
+  meshes.back()->rotate_y(-0.003);
 
 //  meshes.back()->color += {1, -1, 1};
 //  meshes.back()->rotate_x(-0.03);

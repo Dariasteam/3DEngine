@@ -24,6 +24,9 @@ protected:
   inline bool triangle_inside_screen (const Triangle2& triangle);
   inline Triangle2 triangle_to_screen_space (const Triangle2F& triangle);
 
+  virtual void rasterize_triangle (Triangle2& triangle,
+                                   std::vector<std::vector<Color888>>* screen_buffer) = 0;
+
 public:
   Rasteriser(World* w, Canvas* cv) :
     world (w),
@@ -37,8 +40,7 @@ public:
     canvas->set_screen_buffers(&screen_buffer_a, &screen_buffer_b);
   }
 
-  virtual void rasterise (std::vector<Triangle2>& triangles) = 0;
-
+  void rasterise (std::vector<Triangle2>& triangles);
 };
 
 #endif // PROJECTOR_H

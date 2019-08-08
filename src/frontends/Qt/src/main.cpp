@@ -5,6 +5,8 @@
 #include "../../../engine/camera.h"
 #include "../../../engine/world.h"
 #include "../../../engine/rasteriserinterpolatedvertex.h"
+#include "../../../engine/rasteriserflat.h"
+#include "../../../engine/rasteriserwireframe.h"
 #include "src/renderengine.h"
 
 int main(int argc, char *argv[])
@@ -16,7 +18,7 @@ int main(int argc, char *argv[])
   Camera camera;
   World world (&camera);
   Projector projector (&camera, &world);
-  RasteriserInterpolatedVertex rasteriser (&world, w.get_canvas());
+  RasteriserWireframe rasteriser (&world, w.get_canvas());
   RenderEngine engine (&projector, &rasteriser, w.get_canvas(), &world);
 
   return a.exec();

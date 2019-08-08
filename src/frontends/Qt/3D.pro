@@ -29,10 +29,12 @@ SOURCES += \
   ../../engine/multithreadmanager.cpp \
   ../../engine/projector.cpp \
   ../../engine/rasteriser.cpp \
+  ../../engine/rasteriserwireframe.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
   ../../engine/rasteriserinterpolatedvertex.cpp \
+  ../../engine/rasteriserflat.cpp \
         src/renderengine.cpp \
 	../../engine/point3d.cpp \	
 	../../engine/world.cpp \
@@ -46,9 +48,11 @@ HEADERS += \
   ../../engine/multithreadmanager.h \
   ../../engine/projector.h \
   ../../engine/rasteriser.h \
+  ../../engine/rasteriserwireframe.h \
         src/mainwindow.h \
         canvas.h \
   ../../engine/rasteriserinterpolatedvertex.h \
+  ../../engine/rasteriserflat.h \
         src/renderengine.h \
 	../../engine/point3d.h \
 	../../engine/world.h \

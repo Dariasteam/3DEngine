@@ -1,28 +1,6 @@
+#include "rasteriserflat.h"
+
 #include "rasteriserinterpolatedvertex.h"
-
-inline Color get_gradient (const Color& color1,
-                                    const Color& color2,
-                                    double p1,
-                                    double p2) {
-
-  double r_ratio = double(color2.x() - color1.x()) / double(p2 - p1);
-  double g_ratio = double(color2.y() - color1.y()) / double(p2 - p1);
-  double b_ratio = double(color2.z() - color1.z()) / double(p2 - p1);
-
-  return Color (r_ratio, g_ratio, b_ratio);
-}
-
-inline Color get_color_in_gradient (const Color& color1,
-                                    const Color& gradient_ratio,
-                                    double p1,
-                                    double pos) {
-
-  double new_r = color1.x() + (gradient_ratio.x() * (pos - p1));
-  double new_g = color1.y() + (gradient_ratio.y() * (pos - p1));
-  double new_b = color1.z() + (gradient_ratio.z() * (pos - p1));
-
-  return Color (new_r, new_g, new_b);
-}
 
 /* Considering a triangle with the form
  *      v1
@@ -39,7 +17,7 @@ inline Color get_color_in_gradient (const Color& color1,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2& triangle,
+void RasteriserFlat::fillBottomFlatTriangle(const Triangle2& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
@@ -59,36 +37,14 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2& trian
   int y1 = v1.y();
   int y2 = v2.y();
 
-  // grading between v1 and v2
-  Color gradient_1 = get_gradient(v1.color,
-                                  v2.color,
-                                  v1.y(),
-                                  v2.y());
-
-  // grading between v1 and v3
-  Color gradient_2 = get_gradient(v1.color,
-                                  v3.color,
-                                  v1.y(),
-                                  v3.y());
 
   for (int y = y1; y <= y2; y++) {
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
 
-    Color color1 = get_color_in_gradient(v2.color, gradient_1, v2.y(), y);
-    Color color2 = get_color_in_gradient(v3.color, gradient_2, v3.y(), y);
-
-    Color gradient_3 = get_gradient(color1,
-                                    color2,
-                                    min_x,
-                                    max_x);
-
     for (int x = min_x; x <= max_x; x++) {
       if (triangle.z_value < z_buffer[y][x]) {
-        Color aux = get_color_in_gradient(color1, gradient_3, min_x, x);
-        clamp_color(aux);
-
-        (*screen_buffer)[y][x] = Color888(aux);
+        (*screen_buffer)[y][x] = triangle.color;
                 z_buffer[y][x] = triangle.z_value;
       }
     }
@@ -113,7 +69,7 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2& trian
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2& triangle,
+void RasteriserFlat::fillTopFlatTriangle(const Triangle2& triangle,
                             std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
@@ -133,37 +89,13 @@ void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2& triangle
   int y3 = v3.y();
   int y1 = v1.y();
 
-  // grading between v3 and v1
-  Color gradient_1 = get_gradient(v1.color,
-                                  v3.color,
-                                  v1.y(),
-                                  v3.y());
-
-  // grading between v3 and v1
-  Color gradient_2 = get_gradient(v2.color,
-                                  v3.color,
-                                  v2.y(),
-                                  v3.y());
-
   for (int y = y3; y >= y1; y--) {
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
 
-    Color color1 = get_color_in_gradient(v1.color, gradient_1, v1.y(), y);
-    Color color2 = get_color_in_gradient(v2.color, gradient_2, v2.y(), y);
-
-    Color gradient_3 = get_gradient(color1,
-                                    color2,
-                                    min_x,
-                                    max_x);
-
-
     for (int x = min_x; x <= max_x; x++) {
       if (triangle.z_value < z_buffer[y][x]) {
-        Color aux = get_color_in_gradient(color1, gradient_3, min_x, x);
-        clamp_color(aux);
-
-        (*screen_buffer)[y][x] = Color888(aux);
+        (*screen_buffer)[y][x] = triangle.color;
                 z_buffer[y][x] = triangle.z_value;
       }
     }
@@ -176,7 +108,7 @@ inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
+void RasteriserFlat::rasterize_triangle (Triangle2& triangle,
                                 std::vector<std::vector<Color888>>* screen_buffer) {
 
   // Sort vertices by Y
@@ -207,15 +139,6 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2& triangle,
     double x = v1.x() + (ratio * (v2.y() - v1.y()));
 
     Vertex2 v4 (static_cast<int>(std::round(x)), v2.y());
-    Color gradient = get_gradient(v1.color,
-                                  v3.color,
-                                  v1.y(),
-                                  v3.y());
-
-    Color aux = get_color_in_gradient(v1.color, gradient, v1.y(), v4.y());
-    clamp_color(aux);
-
-    v4.color = aux;
 
     Triangle2 aux_t1 {triangle};
     Triangle2 aux_t2 {triangle};

@@ -1,12 +1,11 @@
-#ifndef RASTERISERINTERPOLATEDVERTEX_H
-#define RASTERISERINTERPOLATEDVERTEX_H
+#ifndef RASTERISERFLAT_H
+#define RASTERISERFLAT_H
 
 #include "rasteriser.h"
 #include "canvas.h"
 
-class RasteriserInterpolatedVertex : public Rasteriser{
+class RasteriserFlat : public Rasteriser {
 private:
-
   inline void fillTopFlatTriangle(const Triangle2& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
 
@@ -15,9 +14,8 @@ private:
 
   void rasterize_triangle (Triangle2& triangle,
                            std::vector<std::vector<Color888>>* screen_buffer);
-
 public:
-  RasteriserInterpolatedVertex(World* w, Canvas* cv) : Rasteriser (w, cv) {}
+  RasteriserFlat(World* w, Canvas* cv) : Rasteriser (w, cv) {}
 };
 
-#endif // RASTERISERINTERPOLATEDVERTEX_H
+#endif // RASTERISERFLAT_H

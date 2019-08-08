@@ -20,8 +20,7 @@ private:
   World* world;
   Camera* camera;
 
-  bool double_faces = false;
-
+  bool double_faces = true;
   std::vector<Triangle2> elements_to_render;
 
   bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
