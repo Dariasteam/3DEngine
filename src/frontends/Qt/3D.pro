@@ -33,13 +33,13 @@ SOURCES += \
   ../../engine/rasteriser/abstractrasteriser.cpp \
   ../../engine/rasteriser/abstractrasteriserCPU.cpp \
   ../../engine/rasteriser/abstractrasteriserGPU.cpp \
-  ../../engine/rasteriser/rasteriseropencl.cpp \
-  ../../engine/rasteriser/rasteriserwireframe.cpp \
+  #../../engine/rasteriser/rasteriseropencl.cpp \
+  #../../engine/rasteriser/rasteriserwireframe.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
   ../../engine/rasteriser/rasteriserinterpolatedvertex.cpp \
-  ../../engine/rasteriser/rasteriserflat.cpp \
+  #../../engine/rasteriser/rasteriserflat.cpp \
   src/openclhandler.cpp \
         src/renderengine.cpp \
 	../../engine/world.cpp \
@@ -54,12 +54,12 @@ HEADERS += \
   ../../engine/rasteriser/abstractrasteriser.h \
   ../../engine/rasteriser/abstractrasteriserCPU.h \
   ../../engine/rasteriser/abstractrasteriserGPU.h \
-  ../../engine/rasteriser/rasteriseropencl.h \
-  ../../engine/rasteriser/rasteriserwireframe.h \
+  #../../engine/rasteriser/rasteriseropencl.h \
+  #../../engine/rasteriser/rasteriserwireframe.h \
         src/mainwindow.h \
         canvas.h \
   ../../engine/rasteriser/rasteriserinterpolatedvertex.h \
-  ../../engine/rasteriser/rasteriserflat.h \
+  #../../engine/rasteriser/rasteriserflat.h \
   src/openclhandler.h \
         src/renderengine.h \
 	../../engine/world.h \

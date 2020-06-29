@@ -6,9 +6,9 @@
 #include "../../../engine/camera.h"
 #include "../../../engine/world.h"
 #include "../../../engine/rasteriser/rasteriserinterpolatedvertex.h"
-#include "../../../engine/rasteriser/rasteriseropencl.h"
-#include "../../../engine/rasteriser/rasteriserflat.h"
-#include "../../../engine/rasteriser/rasteriserwireframe.h"
+//#include "../../../engine/rasteriser/rasteriseropencl.h"
+//#include "../../../engine/rasteriser/rasteriserflat.h"
+//#include "../../../engine/rasteriser/rasteriserwireframe.h"
 #include "src/renderengine.h"
 
 int main(int argc, char *argv[]) {

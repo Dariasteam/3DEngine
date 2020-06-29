@@ -35,12 +35,6 @@ private:
 
   unsigned n_triangles {0};
 
-  const std::vector<Triangle2>* triangles_buffer_a {nullptr};
-  const std::vector<Triangle2>* triangles_buffer_b {nullptr};
-
-  const std::vector<std::vector<Color888>>* screen_buffer_a {nullptr};
-  const std::vector<std::vector<Color888>>* screen_buffer_b {nullptr};
-
   const unsigned char* b_a {nullptr};
   const unsigned char* b_b {nullptr};
 
@@ -53,9 +47,7 @@ public:
   void update_frame (RectF bounds);
   void resizeEvent(QResizeEvent *event) override;
 
-  void set_screen_buffers (const std::vector<std::vector<Color888>>* buff_a,
-                           const std::vector<std::vector<Color888>>* buff_b,
-                           const unsigned char* b_a,
+  void set_screen_buffers (const unsigned char* b_a,
                            const unsigned char* b_b);
 
   inline bool reading_from_buffer_a () {

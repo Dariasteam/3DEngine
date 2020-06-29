@@ -18,13 +18,8 @@ void Canvas::resizeEvent(QResizeEvent *event) {
   y_offset = static_cast<double>(event->size().height()) / 2;
 }
 
-void Canvas::set_screen_buffers(const std::vector<std::vector<Color888>>* buff_a,
-                                const std::vector<std::vector<Color888>>* buff_b,
-                                const unsigned char* b_aa,
+void Canvas::set_screen_buffers(const unsigned char* b_aa,
                                 const unsigned char* b_bb) {
-  screen_buffer_a = buff_a;
-  screen_buffer_b = buff_b;
-
   b_a = b_aa;
   b_b = b_bb;
 }
@@ -40,13 +35,10 @@ bool Canvas::paint() {
 
   // Select unused buffer and mark it as used
   lock_buffer_mutex();
-  if (reading_from_buffer_a()) {
-    screen_buffer = screen_buffer_b;
+  if (reading_from_buffer_a())
     buffer_ = b_a;
-  } else {
-    screen_buffer = screen_buffer_a;
+  else
     buffer_ = b_b;
-  }
   reading_buffer_a = !reading_buffer_a;
 
   //buffer_ = new unsigned char[3 * screen_size * screen_size];

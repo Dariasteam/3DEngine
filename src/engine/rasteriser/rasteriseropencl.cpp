@@ -1,22 +1,22 @@
 #include "rasteriseropencl.h"
 
 void RasteriserOpencl::rasterise(std::vector<Triangle2i>& triangles) {
-  std::vector<std::vector<Color888>>* buff;
+  /*
+  unsigned char* buff;
+  canvas->update_frame(camera->get_bounds());
 
   // 1. Select unused buffer
   canvas->lock_buffer_mutex();
   if (canvas->reading_from_buffer_a())
-    buff = &screen_buffer_b;
+    buff = screen_buff_b;
   else
-    buff = &screen_buffer_a;
+    buff = screen_buff_a;
 
   // 2. Clear buffers
-  std::fill(buff->begin(), buff->end(),
-            std::vector<Color888>(screen_size, {0,0,0}));
-/*
-  std::fill(z_buff.begin(), z_buff.end(),
-            std::vector<double>(screen_size, 100000));
-*/
+  std::fill(z_buff, z_buff + SCREEN_SIZE * SCREEN_SIZE, 100000);
+  std::fill(buff, buff + SCREEN_SIZE * SCREEN_SIZE * 3, 0);
+
+
   // 3. Transform data to opencl
   cl::CommandQueue queue(context, device);  
 
@@ -77,8 +77,7 @@ void RasteriserOpencl::rasterise(std::vector<Triangle2i>& triangles) {
 
   queue.finish();
 
-  /*
-  */
+
   // 6. Enqueue kernel
   int error_hdl = queue.enqueueNDRangeKernel(kernel, cl::NullRange,
                                                      cl::NDRange(n_triangles));
@@ -108,5 +107,6 @@ void RasteriserOpencl::rasterise(std::vector<Triangle2i>& triangles) {
   canvas->unlock_buffer_mutex();                 // Acts like Vsync
   canvas->update_frame(camera->get_bounds());
   //
+  */
 }
 

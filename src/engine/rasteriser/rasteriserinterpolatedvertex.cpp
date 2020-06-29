@@ -29,18 +29,12 @@ inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
                                                      const int max_x,
                                                      const int y,
                                                      const Color& gradient,
-                                                     const Color& color,
-                                                     std::vector<std::vector<Color888>>* screen_buffer) {
+                                                     const Color& color) {
 
   for (int x = min_x; x <= max_x; x++) {
     if (triangle.z_value < z_buff[toDepthIndex(x, y)]) {
       Color aux = get_color_in_gradient(color, gradient, min_x, x);
       clamp_color(aux);
-
-
-      (*screen_buffer)[y][x] = Color888(aux);
-              //z_buffer[y][x] = triangle.z_value;
-
 
       writeColorToCurrentBuffer(x, y, aux);
       writeDepthBuffer(x, y, triangle.z_value);
@@ -63,8 +57,7 @@ inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& triangle,
-                            std::vector<std::vector<Color888>>* screen_buffer) {
+void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& triangle) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -107,7 +100,7 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& tria
                                     min_x,
                                     max_x);
 
-    paintLine(triangle, min_x, max_x, y, gradient_3, color1, screen_buffer);
+    paintLine(triangle, min_x, max_x, y, gradient_3, color1);
 
     curx1 += invslope1;
     curx2 += invslope2;
@@ -130,8 +123,7 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& tria
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangle,
-                            std::vector<std::vector<Color888>>* screen_buffer) {
+void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangle) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -175,7 +167,7 @@ void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangl
                                     max_x);
 
 
-    paintLine(triangle, min_x, max_x, y, gradient_3, color1, screen_buffer);
+    paintLine(triangle, min_x, max_x, y, gradient_3, color1);
 
     curx1 -= invslope1;
     curx2 -= invslope2;
@@ -186,8 +178,7 @@ inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle,
-                                std::vector<std::vector<Color888>>* screen_buffer) {
+void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle) {
 
   // Sort vertices by Y
   std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
@@ -205,9 +196,9 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle,
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
-    fillBottomFlatTriangle(triangle, screen_buffer);
+    fillBottomFlatTriangle(triangle);
   } else if (v1.y() == v2.y()) {
-    fillTopFlatTriangle(triangle, screen_buffer);
+    fillTopFlatTriangle(triangle);
   } else {
 
     double a = v3.y() - v1.y();
@@ -235,7 +226,7 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle,
     aux_t2.a = v2;
     aux_t2.b = v4;
 
-    fillBottomFlatTriangle (aux_t1, screen_buffer);
-    fillTopFlatTriangle    (aux_t2, screen_buffer);
+    fillBottomFlatTriangle (aux_t1);
+    fillTopFlatTriangle    (aux_t2);
   }
 }

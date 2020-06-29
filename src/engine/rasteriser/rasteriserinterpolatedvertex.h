@@ -7,22 +7,18 @@
 class RasteriserInterpolatedVertex : public AbstractRasteriserCPU{
 private:
 
-  inline void fillTopFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
+  inline void fillTopFlatTriangle(const Triangle2i& triangle);
 
-  inline void fillBottomFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
+  inline void fillBottomFlatTriangle(const Triangle2i& triangle);
 
   inline void paintLine (const Triangle2i& triangle,
                          const int min_x,
                          const int max_x,
                          const int y,
                          const Color& gradient,
-                         const Color& color,
-                         std::vector<std::vector<Color888>>* screen_buffer);
+                         const Color& color);
 
-  void rasterize_triangle (Triangle2i& triangle,
-                           std::vector<std::vector<Color888>>* screen_buffer);
+  void rasterize_triangle (Triangle2i& triangle);
 
 public:
   RasteriserInterpolatedVertex(World* w, Canvas* cv) : AbstractRasteriserCPU (w, cv) {}
