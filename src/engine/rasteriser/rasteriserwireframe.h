@@ -1,10 +1,10 @@
 #ifndef RASTERISERWIREFRAME_H
 #define RASTERISERWIREFRAME_H
 
-#include "rasteriser.h"
+#include "abstractrasteriserCPU.h"
 #include "canvas.h"
 
-class RasteriserWireframe : public Rasteriser {
+class RasteriserWireframe : public AbstractRasteriserCPU {
 private:
   inline void fillTopFlatTriangle(const Triangle2i& triangle,
                               std::vector<std::vector<Color888>>* screen_buffer);
@@ -16,7 +16,7 @@ private:
                            std::vector<std::vector<Color888>>* screen_buffer);
 
 public:
-  RasteriserWireframe(World* w, Canvas* cv) : Rasteriser (w, cv) {}
+  RasteriserWireframe(World* w, Canvas* cv) : AbstractRasteriserCPU (w, cv) {}
 };
 
 #endif // RASTERISERWIREFRAME_H

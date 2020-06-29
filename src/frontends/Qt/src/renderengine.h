@@ -14,7 +14,7 @@
 #include "../../../engine/projector.h"
 #include "../../../engine/world.h"
 #include "../../../engine/camera.h"
-#include "../../../engine/rasteriser/rasteriser.h"
+#include "../../../engine/rasteriser/abstractrasteriserCPU.h"
 #include "../canvas.h"
 
 class FPSControl {
@@ -49,7 +49,7 @@ class RenderEngine : public QObject{
   Q_OBJECT
 private:
   Projector* projector;
-  Rasteriser* rasteriser;
+  AbstractRasteriser* rasteriser;
   Canvas* canvas;
   World* world;
 
@@ -60,7 +60,7 @@ private:
 
   void render_loop ();
 public:
-  RenderEngine(Projector* p, Rasteriser* r, Canvas* c, World* w);
+  RenderEngine(Projector* p, AbstractRasteriser* r, Canvas* c, World* w);
 public slots:  
   void painting_loop ();
 };

@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = 3D
 TEMPLATE = app
 CONFIG += c++1z
+LIBS += -lOpenCL
+
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -28,13 +30,17 @@ SOURCES += \
   ../../auxiliar/objparser.cpp \
   ../../auxiliar/multithreadmanager.cpp \
   ../../engine/projector.cpp \
-  ../../engine/rasteriser/rasteriser.cpp \
+  ../../engine/rasteriser/abstractrasteriser.cpp \
+  ../../engine/rasteriser/abstractrasteriserCPU.cpp \
+  ../../engine/rasteriser/abstractrasteriserGPU.cpp \
+  ../../engine/rasteriser/rasteriseropencl.cpp \
   ../../engine/rasteriser/rasteriserwireframe.cpp \
         src/main.cpp \
         src/mainwindow.cpp \
         canvas.cpp \
   ../../engine/rasteriser/rasteriserinterpolatedvertex.cpp \
   ../../engine/rasteriser/rasteriserflat.cpp \
+  src/openclhandler.cpp \
         src/renderengine.cpp \
 	../../engine/world.cpp \
 	../../engine/camera.cpp \
@@ -45,12 +51,16 @@ HEADERS += \
   ../../auxiliar/objparser.h \
   ../../auxiliar/multithreadmanager.h \
   ../../engine/projector.h \
-  ../../engine/rasteriser/rasteriser.h \
+  ../../engine/rasteriser/abstractrasteriser.h \
+  ../../engine/rasteriser/abstractrasteriserCPU.h \
+  ../../engine/rasteriser/abstractrasteriserGPU.h \
+  ../../engine/rasteriser/rasteriseropencl.h \
   ../../engine/rasteriser/rasteriserwireframe.h \
         src/mainwindow.h \
         canvas.h \
   ../../engine/rasteriser/rasteriserinterpolatedvertex.h \
   ../../engine/rasteriser/rasteriserflat.h \
+  src/openclhandler.h \
         src/renderengine.h \
 	../../engine/world.h \
 	../../engine/camera.h \

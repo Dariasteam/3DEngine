@@ -1,8 +1,9 @@
-#include "rasteriser.h"
+#include "abstractrasteriserCPU.h"
 
-void Rasteriser::rasterise(std::vector<Triangle2i>& triangles) {
+void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>& triangles) {
   std::vector<std::vector<Color888>>* buff;
-
+  canvas->update_frame(camera->get_bounds());
+  return;
   // 1. Select unused buffer
   canvas->lock_buffer_mutex();
   if (canvas->reading_from_buffer_a())
@@ -19,11 +20,19 @@ void Rasteriser::rasterise(std::vector<Triangle2i>& triangles) {
 
   // 3. Rasterize
   auto& m = MultithreadManager::get_instance();
+
+  int t_size = triangles.size();
+  int offset = (t_size / N_THREADS);
+
   m.calculate_threaded(triangles.size(), [&](unsigned i) {
-    rasterize_triangle(triangles[i], buff);
+    //FIXME: This is because we are pre ordering triangles
+    // in base of z value
+    int processing_block = floor(double(i) / offset);
+    int iteration = i - (processing_block * offset);
+    int pos = iteration * N_THREADS + processing_block;
+    rasterize_triangle(triangles[pos], buff);
   });
 
   canvas->unlock_buffer_mutex();                 // Acts like Vsync
   canvas->update_frame(camera->get_bounds());
-//  write_file(screen_buffer);
 }

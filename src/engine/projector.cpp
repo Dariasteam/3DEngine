@@ -148,8 +148,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
   tmp_triangle.b.color = calculate_lights(color, face.normal_b);
   tmp_triangle.c.color = calculate_lights(color, face.normal_c);
 
-  // FIXME: THIS
-
+  // FIXME: This should be managed by the rasteriser
   // 8. Convert triangle to screen space
   const Triangle2i final_triangle = triangle_to_screen_space(tmp_triangle);
 

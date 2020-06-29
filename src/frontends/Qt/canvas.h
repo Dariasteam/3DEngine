@@ -6,9 +6,7 @@
 #include "../../engine/planar/triangle.h"
 
 #include <QWidget>
-#include <QPainter>
 #include <QResizeEvent>
-#include <QPolygonF>
 #include <QImage>
 #include <QPixmap>
 #include <QBoxLayout>
@@ -53,7 +51,7 @@ public:
   void resizeEvent(QResizeEvent *event) override;
 
   void set_screen_buffers (const std::vector<std::vector<Color888>>* buff_a,
-                          const std::vector<std::vector<Color888>>* buff_b);
+                           const std::vector<std::vector<Color888>>* buff_b);
 
   inline bool reading_from_buffer_a () {
     return reading_buffer_a;

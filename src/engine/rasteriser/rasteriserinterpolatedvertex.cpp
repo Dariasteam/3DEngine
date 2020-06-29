@@ -24,6 +24,25 @@ inline Color get_color_in_gradient (const Color& color1,
   return Color (new_r, new_g, new_b);
 }
 
+inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
+                                                     const int min_x,
+                                                     const int max_x,
+                                                     const int y,
+                                                     const Color& gradient,
+                                                     const Color& color,
+                                                     std::vector<std::vector<Color888>>* screen_buffer) {
+
+  for (int x = min_x; x <= max_x; x++) {
+    if (triangle.z_value < z_buffer[y][x]) {
+      Color aux = get_color_in_gradient(color, gradient, min_x, x);
+      clamp_color(aux);
+
+      (*screen_buffer)[y][x] = Color888(aux);
+              z_buffer[y][x] = triangle.z_value;
+    }
+  }
+}
+
 /* Considering a triangle with the form
  *      v1
  *    /   \
@@ -83,15 +102,8 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& tria
                                     min_x,
                                     max_x);
 
-    for (int x = min_x; x <= max_x; x++) {
-      if (triangle.z_value < z_buffer[y][x]) {
-        Color aux = get_color_in_gradient(color1, gradient_3, min_x, x);
-        clamp_color(aux);
+    paintLine(triangle, min_x, max_x, y, gradient_3, color1, screen_buffer);
 
-        (*screen_buffer)[y][x] = Color888(aux);
-                z_buffer[y][x] = triangle.z_value;
-      }
-    }
     curx1 += invslope1;
     curx2 += invslope2;
   }
@@ -158,15 +170,8 @@ void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangl
                                     max_x);
 
 
-    for (int x = min_x; x <= max_x; x++) {
-      if (triangle.z_value < z_buffer[y][x]) {
-        Color aux = get_color_in_gradient(color1, gradient_3, min_x, x);
-        clamp_color(aux);
+    paintLine(triangle, min_x, max_x, y, gradient_3, color1, screen_buffer);
 
-        (*screen_buffer)[y][x] = Color888(aux);
-                z_buffer[y][x] = triangle.z_value;
-      }
-    }
     curx1 -= invslope1;
     curx2 -= invslope2;
   }

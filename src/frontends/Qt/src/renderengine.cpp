@@ -1,7 +1,7 @@
 #include "renderengine.h"
 
 
-RenderEngine::RenderEngine(Projector* p, Rasteriser *r, Canvas* c, World* w) :
+RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, Canvas* c, World* w) :
     projector (p),
     rasteriser (r),
     canvas (c),
@@ -13,10 +13,10 @@ RenderEngine::RenderEngine(Projector* p, Rasteriser *r, Canvas* c, World* w) :
   std::thread t (&RenderEngine::render_loop, this);
   t.detach();
 
-  auto timer = new QTimer(this);
-  connect(timer, &QTimer::timeout, this, &RenderEngine::painting_loop);
+  //auto timer = new QTimer(this);
+  //connect(timer, &QTimer::timeout, this, &RenderEngine::painting_loop);
 //  std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(120));
-  timer->start(2);
+  //timer->start(2000);  
 }
 
 void RenderEngine::painting_loop() {
@@ -26,12 +26,28 @@ void RenderEngine::painting_loop() {
 }
 
 void RenderEngine::render_loop () {
-  while (true) {    
+  //while (true) {
+  for (unsigned i = 0; i < 30000; i++) {
     world->calculate_next_frame();
     auto triangles = projector->project();
+
+    std::sort(triangles.begin(), triangles.end(), [](const Triangle2i& t1, const Triangle2i& t2){
+      return t1.z_value < t2.z_value;
+    });
+
     rasteriser->rasterise(triangles);
+
+    fps_render.update();
+    painting_loop ();
+
+    world->calculate_next_frame();
+    triangles = projector->project();
+    //rasteriser->rasterise(triangles);
+
     fps_render.update();
 
-//    std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(12));
   }
+    //painting_loop ();
+//    std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(12));
+  //}
 }

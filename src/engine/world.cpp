@@ -124,11 +124,11 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("../../mesh_examples/file.obj");
+  Mesh* parsed_mesh = parser ("../../mesh_examples/car.obj");
   add_mesh(parsed_mesh);
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 20});
+  parsed_mesh->translate_global({0, -1.5, 50});
 }
 
 bool World::add_mesh(Mesh* mesh) {

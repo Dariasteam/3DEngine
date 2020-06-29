@@ -180,7 +180,7 @@ void Mesh::generate_data() {
           init++;
       } while (!end && init < local_coordenates_faces.size());
 
-      last_index = init;
+      last_index = init;      
       std::cout << '\r' << 100 * double(init) / double(local_coordenates_faces.size()) << " % " << std::flush;
       mtx.unlock();
 
