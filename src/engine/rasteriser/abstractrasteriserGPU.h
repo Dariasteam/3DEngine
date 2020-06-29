@@ -41,7 +41,7 @@ public:
     initialize_opencl ();
   }
 
-  void rasterise (std::vector<Triangle2i>& triangles) = 0;
+  void rasterise (std::vector<Triangle2i>* triangles, unsigned sz) = 0;
 };
 
 

@@ -124,12 +124,21 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("../../mesh_examples/file.obj");
+  Mesh* parsed_mesh = parser ("../../mesh_examples/bitxo.obj");
+  //Mesh* mesh_2 = new Mesh(*parsed_mesh);
   add_mesh(parsed_mesh);
+  //add_mesh(mesh_2);
+
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
   parsed_mesh->translate_global({0, -1.5, 50});
+/*
+  mesh_2->color = {0, 150, 100};
+  mesh_2->rotate_y(10);
+  mesh_2->translate_global({10, -1.5, 100});
+  */
 }
+
 
 bool World::add_mesh(Mesh* mesh) {
   if (mesh == nullptr)
@@ -159,7 +168,8 @@ void World::calculate_next_frame() const {
   for (auto& mesh : meshes)
     mesh->rotate_y(-0.03);
 */
-  meshes.back()->rotate_y(-0.003);
+  meshes.front()->rotate_y(-0.08);
+  //meshes.back()->rotate_x(-0.003);
 
 //  meshes.back()->color += {1, -1, 1};
 //  meshes.back()->rotate_x(-0.03);

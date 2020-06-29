@@ -39,7 +39,7 @@ public:
     canvas->set_screen_buffers(screen_buff_a, screen_buff_b);
   }
 
-  virtual void rasterise (std::vector<Triangle2i>& triangles) = 0;
+  virtual void rasterise (std::vector<Triangle2i>* triangles, unsigned sz) = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

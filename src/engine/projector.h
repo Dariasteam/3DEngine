@@ -17,11 +17,16 @@ class Projector {
 private:
   std::mutex mtx;
 
+  unsigned c {0};
+  unsigned u [N_THREADS];
+
   World* world;
   Camera* camera;
 
   bool double_faces = false;
+
   std::vector<Triangle2i> elements_to_render;
+  unsigned n_elements_to_render;
 
   bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
   bool inline is_point_between_camera_bounds (const Point2&) const;
@@ -41,14 +46,22 @@ private:
 
   inline void multithreaded_rasterize_single_mesh (unsigned init,
                                                    unsigned end,
+                                                   unsigned index,
                                                    const Mesh* aux_mesh);
 
   inline bool triangle_inside_screen (const Triangle2i& triangle);
   inline Triangle2i triangle_to_screen_space (const Triangle2& triangle);
 public:
   Projector(Camera* camera, World* world);
-  std::vector<Triangle2i>& project();
+  void project();
 
+  inline unsigned getNElementsToRender() {
+    return n_elements_to_render;
+  }
+
+  inline std::vector<Triangle2i>* getElementsToRender () {
+    return &elements_to_render;
+  }
 
 };
 

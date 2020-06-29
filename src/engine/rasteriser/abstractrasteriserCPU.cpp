@@ -1,7 +1,7 @@
 #include "abstractrasteriserCPU.h"
 
-void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>& triangles) {  
-  unsigned char* buff;
+void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>* triangles,
+                                      unsigned sz) {
   canvas->update_frame(camera->get_bounds());
 
   // 1. Select unused buffer
@@ -18,16 +18,17 @@ void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>& triangles) {
   // 3. Rasterize
   auto& m = MultithreadManager::get_instance();
 
-  int t_size = triangles.size();
+  int t_size = sz;
   int offset = (t_size / N_THREADS);
 
-  m.calculate_threaded(triangles.size(), [&](unsigned i) {
+  m.calculate_threaded(t_size, [&](unsigned i) {
+
     //FIXME: This is because we are pre ordering triangles
     // in base of z value
-    int processing_block = floor(double(i) / offset);
-    int iteration = i - (processing_block * offset);
-    int pos = iteration * N_THREADS + processing_block;
-    rasterize_triangle(triangles[i]);
+    //int processing_block = floor(double(i) / offset);
+    //int iteration = i - (processing_block * offset);
+    //int pos = iteration * N_THREADS + processing_block;
+    rasterize_triangle(triangles->operator[](i));
   });
 
   canvas->unlock_buffer_mutex();                 // Acts like Vsync

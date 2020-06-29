@@ -10,9 +10,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 3D
 TEMPLATE = app
-CONFIG += c++1z
+CONFIG += c++1z -O2
 LIBS += -lOpenCL
 
+QMAKE_CXXFLAGS += -ffast-math -fno-math-errno
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings

@@ -8,20 +8,16 @@
 #include <algorithm>
 
 class AbstractRasteriserCPU : public AbstractRasteriser {
+private:
+  unsigned char* buff;
 protected:
 
   inline void writeColorToCurrentBuffer(const int x, const int y, const Color& c) {
     unsigned index = toScreenIndex(x, y);
     Color888 color (c);
-    if (!canvas->reading_from_buffer_a()) {
-      screen_buff_a[index] = color.r;
-      screen_buff_a[index + 1] = color.g;
-      screen_buff_a[index + 2] = color.b;
-    } else {
-      screen_buff_b[index] = color.r;
-      screen_buff_b[index + 1] = color.g;
-      screen_buff_b[index + 2] = color.b;
-    }
+    buff[index] = color.r;
+    buff[index + 1] = color.g;
+    buff[index + 2] = color.b;
   }
 
   inline void writeDepthBuffer(const int x, const int y, double z) {
@@ -37,7 +33,7 @@ protected:
 public:
   AbstractRasteriserCPU(World* w, Canvas* cv) : AbstractRasteriser (w, cv) {}
 
-  void rasterise (std::vector<Triangle2i>& triangles);
+  void rasterise (std::vector<Triangle2i>* triangles, unsigned sz);
 };
 
 #endif // PROJECTOR_H

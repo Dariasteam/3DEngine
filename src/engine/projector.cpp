@@ -2,7 +2,8 @@
 
 Projector::Projector(Camera* cm, World* wd) :
   world (wd),
-  camera (cm)
+  camera (cm),
+  elements_to_render(100000)
 {}
 
 void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
@@ -18,19 +19,25 @@ void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
     unsigned segments = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
     std::vector<std::future<void>> promises_2 (N_THREADS);
 
+    n_elements_to_render = 0;
+    c = 0;
+
     for (unsigned j = 0; j < N_THREADS  - 1; j++)
       promises_2[j] = std::async(&Projector::multithreaded_rasterize_single_mesh,
-                                 this, j * segments, (j + 1) * segments, aux_mesh);
+                                 this, j * segments, (j + 1) * segments, j, aux_mesh);
 
     promises_2[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_single_mesh,
                                            this, (N_THREADS - 1) * segments,
-                                           meshes_vector.size(), aux_mesh);
+                                           meshes_vector.size(), N_THREADS - 1, aux_mesh);
+
     for (auto& promise : promises_2)
-      promise.get();
+      promise.get();    
   }
 }
 
-void Projector::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,
+void Projector::multithreaded_rasterize_single_mesh(unsigned init,
+                                                    unsigned end,
+                                                    unsigned index,
                                                      const Mesh* aux_mesh) {
   std::vector <Triangle2i> tmp_triangles;
 
@@ -39,9 +46,35 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init, unsigned end,
     calculate_mesh_projection(face, tmp_triangles, aux_mesh->color);
   }
 
+  u[index] = tmp_triangles.size();
+
   mtx.lock();
-  elements_to_render.insert(std::end(elements_to_render), std::begin(tmp_triangles), std::end(tmp_triangles));
+  c++;  
+/*
+  elements_to_render.insert(std::begin(elements_to_render),
+                            std::begin(tmp_triangles),
+                            std::end(tmp_triangles));
+*/
+  n_elements_to_render += tmp_triangles.size();
+
   mtx.unlock();
+
+  while (c < N_THREADS) {}
+
+  unsigned prev_offset = 0;
+
+  for (unsigned i = 0; i < index; i++) {
+    prev_offset +=u[i];
+  }
+/*
+  for (unsigned i = 0; i < u[index]; i++) {
+    elements_to_render[prev_offset + i] = tmp_triangles[i];
+  }*/
+
+  std::copy(std::begin(tmp_triangles),
+            std::end(tmp_triangles),
+            std::begin(elements_to_render) + prev_offset);
+
 }
 
 void Projector::set_projection_data() {
@@ -67,7 +100,7 @@ void Projector::set_projection_data() {
   // Generate iterable list of meshes
   meshes_vector.clear();
   generate_mesh_list(world->get_elements());
-  elements_to_render.clear();
+  //elements_to_render.clear();
 }
 
 Color Projector::calculate_lights (const Color& m_color,
@@ -162,7 +195,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
   return true;
 }
 
-std::vector<Triangle2i>& Projector::project() {
+void Projector::project() {
   set_projection_data();
 
   // Prepare threads
@@ -173,7 +206,7 @@ std::vector<Triangle2i>& Projector::project() {
     multithreaded_rasterize_single_mesh(aux_mesh);
   });
 */
-
+/*
   unsigned segments = (meshes_vector.size() / N_THREADS);
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS  - 1; i++)
@@ -182,13 +215,12 @@ std::vector<Triangle2i>& Projector::project() {
 
   promises[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_mesh_list, this,
                                        (N_THREADS - 1) * segments, meshes_vector.size());
-
+*/
+  multithreaded_rasterize_mesh_list(0, meshes_vector.size());
   // Trigger calculations
-  for (auto& promise : promises)
-    promise.get();
+  //for (auto& promise : promises)
+//    promise.get();
 
-  return elements_to_render;
-//  generate_frame();
 }
 
 bool Projector::is_point_between_camera_bounds(const Point2& p) const {

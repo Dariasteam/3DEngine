@@ -15,6 +15,7 @@
 #include "../../../engine/world.h"
 #include "../../../engine/camera.h"
 #include "../../../engine/rasteriser/abstractrasteriserCPU.h"
+#include "../../../engine/rasteriser/abstractrasteriserCPU.h"
 #include "../canvas.h"
 
 class FPSControl {
