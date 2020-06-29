@@ -33,12 +33,17 @@ inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
                                                      std::vector<std::vector<Color888>>* screen_buffer) {
 
   for (int x = min_x; x <= max_x; x++) {
-    if (triangle.z_value < z_buffer[y][x]) {
+    if (triangle.z_value < z_buff[toDepthIndex(x, y)]) {
       Color aux = get_color_in_gradient(color, gradient, min_x, x);
       clamp_color(aux);
 
+
       (*screen_buffer)[y][x] = Color888(aux);
-              z_buffer[y][x] = triangle.z_value;
+              //z_buffer[y][x] = triangle.z_value;
+
+
+      writeColorToCurrentBuffer(x, y, aux);
+      writeDepthBuffer(x, y, triangle.z_value);
     }
   }
 }

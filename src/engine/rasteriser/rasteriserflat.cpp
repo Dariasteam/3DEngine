@@ -43,10 +43,12 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
     int max_x = static_cast<int>(std::round(curx2));
 
     for (int x = min_x; x <= max_x; x++) {
+      /*
       if (triangle.z_value < z_buffer[y][x]) {
         (*screen_buffer)[y][x] = triangle.color;
                 z_buffer[y][x] = triangle.z_value;
       }
+      */
     }
     curx1 += invslope1;
     curx2 += invslope2;
@@ -94,10 +96,11 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
     int max_x = static_cast<int>(std::round(curx2));
 
     for (int x = min_x; x <= max_x; x++) {
+      /*
       if (triangle.z_value < z_buffer[y][x]) {
         (*screen_buffer)[y][x] = triangle.color;
                 z_buffer[y][x] = triangle.z_value;
-      }
+      }*/
     }
     curx1 -= invslope1;
     curx2 -= invslope2;

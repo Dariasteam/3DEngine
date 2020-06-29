@@ -10,12 +10,10 @@
 class AbstractRasteriserCPU : public AbstractRasteriser {
 protected:
 
-  bool isCurrentBufferA;
-
-  inline void writeToCurrentBuffer(const int x, const int y, const Color& c) {
-    unsigned index = toLinearIndex(x, y);
+  inline void writeColorToCurrentBuffer(const int x, const int y, const Color& c) {
+    unsigned index = toScreenIndex(x, y);
     Color888 color (c);
-    if (isCurrentBufferA) {
+    if (!canvas->reading_from_buffer_a()) {
       screen_buff_a[index] = color.r;
       screen_buff_a[index] = color.g;
       screen_buff_a[index] = color.b;
@@ -24,6 +22,11 @@ protected:
       screen_buff_b[index] = color.g;
       screen_buff_b[index] = color.b;
     }
+  }
+
+  inline void writeDepthBuffer(const int x, const int y, double z) {
+    unsigned index = toDepthIndex(x, y);
+   //z_buff[index] = z;
   }
 
   inline bool triangle_inside_screen (const Triangle2i& triangle);

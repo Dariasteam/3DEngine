@@ -19,9 +19,14 @@ void Canvas::resizeEvent(QResizeEvent *event) {
 }
 
 void Canvas::set_screen_buffers(const std::vector<std::vector<Color888>>* buff_a,
-                               const std::vector<std::vector<Color888>>* buff_b) {
+                                const std::vector<std::vector<Color888>>* buff_b,
+                                const unsigned char* b_aa,
+                                const unsigned char* b_bb) {
   screen_buffer_a = buff_a;
   screen_buffer_b = buff_b;
+
+  b_a = b_aa;
+  b_b = b_bb;
 }
 
 bool Canvas::paint() {  
@@ -31,18 +36,21 @@ bool Canvas::paint() {
   new_frame_redered = false;
   unsigned screen_size = SCREEN_SIZE;
   const std::vector<std::vector<Color888>>* screen_buffer;
+  const unsigned char* buffer_;
 
   // Select unused buffer and mark it as used
   lock_buffer_mutex();
-  if (reading_from_buffer_a())
+  if (reading_from_buffer_a()) {
     screen_buffer = screen_buffer_b;
-  else
+    buffer_ = b_a;
+  } else {
     screen_buffer = screen_buffer_a;
+    buffer_ = b_b;
+  }
   reading_buffer_a = !reading_buffer_a;
 
-  unsigned char* buffer_;
-  buffer_ = new unsigned char[3 * screen_size * screen_size];
-
+  //buffer_ = new unsigned char[3 * screen_size * screen_size];
+/*
   // FIXME: This copy does not make sense
   auto lambda = [&](unsigned i) {
     for (unsigned j = 0; j < screen_size; j++) {
@@ -54,15 +62,16 @@ bool Canvas::paint() {
     }
   };
 
-  auto& m = MultithreadManager::get_instance();
+  auto& m = MultithreadManager::get_instance();  
   m.calculate_threaded(1000, lambda);
+*/
 
   QImage image(buffer_, screen_size, screen_size, QImage::Format_RGB888);
   unlock_buffer_mutex();
 
   setPixmap(QPixmap::fromImage(image));
 
-  delete[] buffer_;
+  //delete[] buffer_;
   return true;
 }
 

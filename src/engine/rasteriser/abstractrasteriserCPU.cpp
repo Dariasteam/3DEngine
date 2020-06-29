@@ -2,21 +2,26 @@
 
 void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>& triangles) {
   std::vector<std::vector<Color888>>* buff;
+  unsigned char* buff2;
   canvas->update_frame(camera->get_bounds());
-  return;
+
   // 1. Select unused buffer
   canvas->lock_buffer_mutex();
-  if (canvas->reading_from_buffer_a())
+  if (canvas->reading_from_buffer_a()) {
     buff = &screen_buffer_b;
-  else
+    buff2 = screen_buff_b;
+  } else {
     buff = &screen_buffer_a;
+    buff2 = screen_buff_a;
+  }
 
   // 2. Clear buffers
   std::fill(buff->begin(), buff->end(),
             std::vector<Color888>(screen_size, {0,0,0}));
 
-  std::fill(z_buffer.begin(), z_buffer.end(),
-            std::vector<double>(screen_size, 100000));
+  unsigned char a;
+  std::fill(z_buff, z_buff + SCREEN_SIZE * SCREEN_SIZE, 100000);
+  std::fill(buff2, buff2 + SCREEN_SIZE * SCREEN_SIZE * 3, 0);
 
   // 3. Rasterize
   auto& m = MultithreadManager::get_instance();

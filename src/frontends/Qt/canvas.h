@@ -41,6 +41,9 @@ private:
   const std::vector<std::vector<Color888>>* screen_buffer_a {nullptr};
   const std::vector<std::vector<Color888>>* screen_buffer_b {nullptr};
 
+  const unsigned char* b_a {nullptr};
+  const unsigned char* b_b {nullptr};
+
   std::mutex mtx;
   bool reading_buffer_a = false;
 
@@ -51,7 +54,9 @@ public:
   void resizeEvent(QResizeEvent *event) override;
 
   void set_screen_buffers (const std::vector<std::vector<Color888>>* buff_a,
-                           const std::vector<std::vector<Color888>>* buff_b);
+                           const std::vector<std::vector<Color888>>* buff_b,
+                           const unsigned char* b_a,
+                           const unsigned char* b_b);
 
   inline bool reading_from_buffer_a () {
     return reading_buffer_a;

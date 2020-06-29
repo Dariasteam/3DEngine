@@ -13,10 +13,10 @@ void RasteriserOpencl::rasterise(std::vector<Triangle2i>& triangles) {
   // 2. Clear buffers
   std::fill(buff->begin(), buff->end(),
             std::vector<Color888>(screen_size, {0,0,0}));
-
-  std::fill(z_buffer.begin(), z_buffer.end(),
+/*
+  std::fill(z_buff.begin(), z_buff.end(),
             std::vector<double>(screen_size, 100000));
-
+*/
   // 3. Transform data to opencl
   cl::CommandQueue queue(context, device);  
 
