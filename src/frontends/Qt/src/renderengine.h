@@ -27,7 +27,9 @@ private:
 
 public:
 
-  FPSControl (std::string  t) : text (std::move(t)) {}
+  FPSControl (std::string  t) : text (std::move(t)) {
+    last_time = std::chrono::system_clock::now();
+  }
 
   inline void update () {
     frame_counter++;
@@ -37,7 +39,7 @@ public:
 
     float elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>
                                  (start - last_time).count();
-    if (elapsed_seconds > 1000) {
+    if (elapsed_seconds > 1000.0) {
       double calc = double(frame_counter) / (double(elapsed_seconds) / 1000);
       std::cout << "FPS " << text << ": " << calc << std::endl;
       frame_counter = 0;

@@ -17,8 +17,12 @@ class Projector {
 private:
   std::mutex mtx;
 
+  std::mutex mtx2;
+  std::condition_variable cv2;
+  bool cv_bool = false;
+
   unsigned c {0};
-  unsigned u [N_THREADS];
+
 
   World* world;
   Camera* camera;
@@ -28,7 +32,11 @@ private:
   std::vector<Triangle2i> elements_to_render;
   unsigned n_elements_to_render;
 
-  bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point3&) const;
+  Triangle2i* tmp_triangles_i[N_THREADS];
+  Triangle2* tmp_triangles_f[N_THREADS];
+  unsigned tmp_triangles_sizes[N_THREADS];
+
+  bool inline calculate_cut_point (const Point3&, const Vector3& dir_v, Point2&) ;
   bool inline is_point_between_camera_bounds (const Point2&) const;
 
   std::vector <Mesh*> meshes_vector;
@@ -36,7 +44,7 @@ private:
   inline Color calculate_lights (const Color& m_color, const Vector3& normal) const;
   void set_projection_data ();
   inline bool calculate_mesh_projection (const Face& face,
-                                         std::vector<Triangle2i>& triangles,
+                                         unsigned index,
                                          const Color& color);
 
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
@@ -50,7 +58,8 @@ private:
                                                    const Mesh* aux_mesh);
 
   inline bool triangle_inside_screen (const Triangle2i& triangle);
-  inline Triangle2i triangle_to_screen_space (const Triangle2& triangle);
+  bool triangle_inside_camera(const Triangle2 &triangle);
+  inline Triangle2i triangle_to_screen_space (const Triangle2& triangle, Triangle2i& t);
 public:
   Projector(Camera* camera, World* world);
   void project();

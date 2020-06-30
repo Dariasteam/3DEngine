@@ -6,6 +6,7 @@ Camera::Camera() :
   point_plane ({0, 0, 8}) // controls fovy
   {
 
+  // FIXME USE 1
   double b = 3;    // angle
   bounds = {-b, -b, b, b};
 }

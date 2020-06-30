@@ -69,13 +69,11 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
   for (const auto& mesh : mesh_list) {
     unsigned size = mesh->global_coordenates_faces.size();
     unsigned segment = size / N_THREADS;
-    std::vector<std::future<void>> promises (N_THREADS);
-    for (unsigned i = 0; i < N_THREADS - 1; i++)
-      promises[i] = std::async(lambda, mesh, i * segment, (i + 1) * segment);
-    promises[N_THREADS - 1] = std::async(lambda, mesh, (N_THREADS - 1) * segment, size);
 
-    for (auto& promise : promises)
-      promise.get();
+    auto& m = MultithreadManager::get_instance();
+    m.calculate_threaded(N_THREADS, [&](unsigned i) {
+      lambda (mesh, i * segment, (i + 1) * segment);
+    });
   }
 
   basis_changed = false;
@@ -225,9 +223,14 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
   for (auto& nested_mesh : nested_meshes)
     mesh_list.splice(mesh_list.end(),
                      nested_mesh->express_in_parents_basis(new_basis,
-                                                           camera_translation, camera_rotated, camera_translated));
+                                                           camera_translation,
+                                                           camera_rotated,
+                                                           camera_translated));
 
-  change_basis_multithreaded (mesh_list, new_basis, camera_translation, camera_rotated,
+  change_basis_multithreaded (mesh_list,
+                              new_basis,
+                              camera_translation,
+                              camera_rotated,
                               camera_translated);
 
   return mesh_list;

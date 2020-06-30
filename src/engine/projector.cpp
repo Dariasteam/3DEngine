@@ -3,8 +3,14 @@
 Projector::Projector(Camera* cm, World* wd) :
   world (wd),
   camera (cm),
-  elements_to_render(100000)
-{}
+  elements_to_render(200000)
+{
+  for (unsigned i = 0; i < N_THREADS; i++) {
+    tmp_triangles_sizes[i] = 0;
+    tmp_triangles_i[i] = new Triangle2i[50000];
+    tmp_triangles_f[i] = new Triangle2[50000];
+  }
+}
 
 void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   for (const auto& mesh : meshes) {
@@ -13,22 +19,44 @@ void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
   }
 }
 
+
 void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
+  n_elements_to_render = 0;
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
     unsigned segment_length = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
+/*
+    std::vector<std::future<void>> promises_2 (N_THREADS);
 
-    n_elements_to_render = 0;
+    for (unsigned j = 0; j < N_THREADS  - 1; j++)
+      promises_2[j] = std::async(&Projector::multithreaded_rasterize_single_mesh,
+                                 this, j * segment_length, (j + 1) * segment_length, j, aux_mesh);
+
+    promises_2[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_single_mesh,
+                                           this, (N_THREADS - 1) * segment_length,
+                                           meshes_vector.size(), N_THREADS - 1, aux_mesh);
+    for (auto& promise : promises_2)
+      promise.get();
+*/
     c = 0;
+    cv_bool = false;
+    unsigned tmp_n_elements_to_render[N_THREADS];
 
     auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(N_THREADS, [&](unsigned i) {
-      long unsigned l = (i + 1) * segment_length;
-      multithreaded_rasterize_single_mesh( i * segment_length,
-                                           l,
-                                           i,
-                                           aux_mesh);
+      long unsigned from = i * segment_length;
+      long unsigned to = (i + 1) * segment_length;
+
+      multithreaded_rasterize_single_mesh(from,
+                                          to,
+                                          i,
+                                          aux_mesh);
+
+      tmp_n_elements_to_render[i] = tmp_triangles_sizes[i];
     });
+
+    for (unsigned j = 0; j < N_THREADS; j++)
+      n_elements_to_render += tmp_n_elements_to_render[j];
   }
 }
 
@@ -36,34 +64,38 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
                                                     unsigned end,
                                                     unsigned index,
                                                     const Mesh* aux_mesh) {
-  std::vector <Triangle2i> tmp_triangles;
+  tmp_triangles_sizes[index] = 0;
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
-    calculate_mesh_projection(face, tmp_triangles, aux_mesh->color);
-  }
-
-  u[index] = tmp_triangles.size();
+    calculate_mesh_projection(face, index, aux_mesh->color);
+  }  
 
   mtx.lock();
-  c++;  
-
-  n_elements_to_render += tmp_triangles.size();
-
+  c++;
   mtx.unlock();
 
-  while (c < N_THREADS) {}
+  if (c == N_THREADS) {
+    cv_bool = true;
+    cv2.notify_all();
+  } else {
+    mtx.lock();
+    std::unique_lock<std::mutex> lk(mtx2);
+    mtx.unlock();
+
+    cv2.wait(lk, [&]{return cv_bool;});
+  }
 
   unsigned prev_offset = 0;
 
-  for (unsigned i = 0; i < index; i++) {
-    prev_offset +=u[i];
-  }
+  for (unsigned i = 0; i < index; i++)
+    prev_offset += tmp_triangles_sizes[i];
 
-  std::copy(std::begin(tmp_triangles),
-            std::end(tmp_triangles),
-            std::begin(elements_to_render) + prev_offset);
-
+  std::copy(tmp_triangles_i[index],
+            tmp_triangles_i[index] + tmp_triangles_sizes[index],
+            std::begin(elements_to_render) +
+                 prev_offset +
+                 n_elements_to_render); // append if it's not the first element
 }
 
 void Projector::set_projection_data() {
@@ -75,13 +107,12 @@ void Projector::set_projection_data() {
   else
     camera_t = camera->translation;
 
-  auto& m = MultithreadManager::get_instance();
-  m.calculate_threaded(meshes_vector.size(), [&](unsigned i) {
+  for (unsigned i = 0; i < meshes.size(); i++) {
     meshes[i]->express_in_parents_basis(camera->basis,
                                         camera_t,
                                         camera->basis_changed,
                                         camera->position_changed);
-  });
+  }
 
   camera->basis_changed    = false;
   camera->position_changed = false;
@@ -113,17 +144,32 @@ Color Projector::calculate_lights (const Color& m_color,
 }
 
 bool Projector::calculate_mesh_projection(const Face& face,
-                                           std::vector<Triangle2i>& triangles,
-                                           const Color& color) {
-  Triangle2 tmp_triangle;
+                                          unsigned index,
+                                          const Color& color) {
 
+  auto& tmp_triangle = tmp_triangles_f[index][tmp_triangles_sizes[index]];
+
+  //Triangle2 tmp_triangle;
+
+  // ONLY USEFUL IF USING DOUBLE FACES
   // 1. Check face is not behind camera. Since we are using camera basis
   // we only need z value of the plane. Also each point coordinate is also
   // it's vector
-  auto plane_distance = camera->get_plane_point().z();
+
+  // FIXME: this should not exist
+  /*
+  auto plane_distance = camera->get_plane_point().z();  
   if (face.a.z() < plane_distance &&
       face.b.z() < plane_distance &&
       face.c.z() < plane_distance) return false;
+      */
+
+  // 2. Check normal of the face is towards camera, do not check angle,
+  // only if it's bigger than 90º instead
+  bool angle_normal = (face.normal * face.a) < 0
+                    | (face.normal * face.b) < 0
+                    | (face.normal * face.c) < 0;
+  if (!angle_normal) return false;
 
   // 2. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(face.a);
@@ -131,55 +177,33 @@ bool Projector::calculate_mesh_projection(const Face& face,
   double mod_v3 = Vector3::vector_module(face.c);
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
-  double z_max = std::max({mod_v1, mod_v2, mod_v3});
+  //double z_max = std::max({mod_v1, mod_v2, mod_v3});
   if (z_min > 10000) return false;
 
-  Point3 pa, pb, pc;
-
   // 3. Calculate intersection points with the plane
-  bool visible  = calculate_cut_point(face.a, face.a, pa)
-                | calculate_cut_point(face.b, face.b, pb)
-                | calculate_cut_point(face.c, face.c, pc);
+  bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)
+                | calculate_cut_point(face.b, face.b, tmp_triangle.b)
+                | calculate_cut_point(face.c, face.c, tmp_triangle.c);
   if (!visible) return false;
 
-  // Set values
-  tmp_triangle.a.set_values(pa.x(), pa.y());
-  tmp_triangle.b.set_values(pb.x(), pb.y());
-  tmp_triangle.c.set_values(pc.x(), pc.y());
-  tmp_triangle.z_value = z_max;
+  tmp_triangle.z_value = z_min;
 
-  // 5. Check any point in camera bounds
-  bool point_in_camera = is_point_between_camera_bounds(tmp_triangle.a)
-                       | is_point_between_camera_bounds(tmp_triangle.b)
-                       | is_point_between_camera_bounds(tmp_triangle.c);
-  if (!point_in_camera) return false;
+  if (!triangle_inside_camera(tmp_triangle)) return false;
 
-  // 6. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º instead
-  if (!double_faces) {
-    bool angle_normal = (face.normal * face.a) < 0
-                      | (face.normal * face.b) < 0
-                      | (face.normal * face.c) < 0;
-    if (!angle_normal) return false;
-  }
-
-  // 7. Calculate light contribution for each vertices
+  // 7. Calculate light contribution for each vertex
+/*
   Color aux_color = calculate_lights(color, face.normal);
   tmp_triangle.color   = Color888(aux_color);
+*/
   tmp_triangle.a.color = calculate_lights(color, face.normal_a);
   tmp_triangle.b.color = calculate_lights(color, face.normal_b);
   tmp_triangle.c.color = calculate_lights(color, face.normal_c);
 
   // FIXME: This should be managed by the rasteriser
   // 8. Convert triangle to screen space
-  const Triangle2i final_triangle = triangle_to_screen_space(tmp_triangle);
-
-  // 9. Check triangle inside screen area
-  if (!triangle_inside_screen(final_triangle)) return false;
-
-  // 10. Insert triangle
-  // FIXME: Changed form "final_triangle"
-  triangles.push_back(final_triangle);
+  auto& e = tmp_triangles_i[index][tmp_triangles_sizes[index]];
+  triangle_to_screen_space(tmp_triangle, e);
+  tmp_triangles_sizes[index]++;
 
   return true;
 }
@@ -213,10 +237,10 @@ void Projector::project() {
 }
 
 bool Projector::is_point_between_camera_bounds(const Point2& p) const {
-  return p.x() > camera->get_bounds().x       &&
-         p.x() < camera->get_bounds().width   &&
-         p.y() > camera->get_bounds().y       &&
-         p.y() < camera->get_bounds().height;
+  return p.x() < camera->get_bounds().x       |
+         p.x() > camera->get_bounds().width   |
+         p.y() < camera->get_bounds().y       |
+         p.y() > camera->get_bounds().height;
 }
 
 // Calculate the intersection point between the camera plane and the
@@ -234,8 +258,8 @@ bool Projector::is_point_between_camera_bounds(const Point2& p) const {
  *
  * */
 bool Projector::calculate_cut_point(const Point3& vertex,
-                                     const Vector3& dir_v,
-                                           Point3& point) const {  
+                                    const Vector3& dir_v,
+                                          Point2& point) {
   // Calc cut point line - plane
   const double A = camera->get_plane_vector().x();
   const double B = camera->get_plane_vector().y();
@@ -270,7 +294,7 @@ bool Projector::calculate_cut_point(const Point3& vertex,
   // Intersection in global coordiantes
   point.set_x(a + b * parameter);  
   point.set_y(-(c + d * parameter));
-  point.set_z(e + f * parameter);
+  //point.set_z(e + f * parameter);
 
   return return_value;
 }
@@ -289,7 +313,20 @@ bool Projector::triangle_inside_screen(const Triangle2i &triangle) {
   return true;
 }
 
-Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle) {
+bool Projector::triangle_inside_camera(const Triangle2 &triangle) {
+  // Check all points inside render area
+  if (triangle.a.x() < camera->get_bounds().x || triangle.a.x() > camera->get_bounds().width) return false;
+  if (triangle.a.y() < camera->get_bounds().y || triangle.a.y() > camera->get_bounds().height) return false;
+  if (triangle.b.x() < camera->get_bounds().x || triangle.b.x() > camera->get_bounds().width) return false;
+  if (triangle.b.y() < camera->get_bounds().y || triangle.b.y() > camera->get_bounds().height) return false;
+  if (triangle.c.x() < camera->get_bounds().x || triangle.c.x() > camera->get_bounds().width) return false;
+  if (triangle.c.y() < camera->get_bounds().y || triangle.c.y() > camera->get_bounds().height) return false;
+
+  return true;
+}
+
+
+Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle, Triangle2i& t) {
 
   unsigned height = screen_size;
   unsigned width = screen_size;
@@ -300,23 +337,20 @@ Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle) {
   unsigned x_offset = width  / 2;
   unsigned y_offset = height / 2;
 
-  Point2 a = {triangle.a.x() * h_factor + x_offset,
-              triangle.a.y() * v_factor + y_offset};
+  t.a.set_x(triangle.a.x() * h_factor + x_offset);
+  t.a.set_y(triangle.a.y() * v_factor + y_offset);
 
-  Point2 b = {triangle.b.x() * h_factor + x_offset,
-              triangle.b.y() * v_factor + y_offset};
+  t.b.set_x(triangle.b.x() * h_factor + x_offset);
+  t.b.set_y(triangle.b.y() * v_factor + y_offset);
 
-  Point2 c = {triangle.c.x() * h_factor + x_offset,
-               triangle.c.y() * v_factor + y_offset};
-
-  Triangle2i t {triangle};
-  t.a = a;
-  t.b = b;
-  t.c = c;
+  t.c.set_x(triangle.c.x() * h_factor + x_offset);
+  t.c.set_y(triangle.c.y() * v_factor + y_offset);
 
   t.a.color = triangle.a.color;
   t.b.color = triangle.b.color;
   t.c.color = triangle.c.color;
+
+  t.z_value = triangle.z_value;
 
   return t;
 }

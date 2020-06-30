@@ -24,11 +24,7 @@ void Canvas::set_screen_buffers(const unsigned char* b_aa,
   b_b = b_bb;
 }
 
-bool Canvas::paint() {  
-  if (!new_frame_redered)
-    return false;
-
-  new_frame_redered = false;
+bool Canvas::paint() {      
   unsigned screen_size = SCREEN_SIZE;  
   const unsigned char* buffer_;
 

@@ -175,8 +175,8 @@ void World::calculate_next_frame() const {
   //meshes.front()->rotate_x(-0.02);
   //meshes.front()->rotate_z(+0.02);
 
-  auto currentPos = meshes.front()->translation;
-  Vector3 newPos (currentPos.x(), currentPos.y(), currentPos.z());
+  //auto currentPos = meshes.front()->translation;
+  //Vector3 newPos (currentPos.x(), currentPos.y(), currentPos.z());
 /*
   if (movingLeft) {
     newPos.set_x(newPos.x() - 0.05);
