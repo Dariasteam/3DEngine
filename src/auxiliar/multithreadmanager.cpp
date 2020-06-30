@@ -1,7 +1,6 @@
 #include "multithreadmanager.h"
 
 void MultithreadManager::calculate_threaded(unsigned size, std::function<void (unsigned)> f) {
-
   auto lambda = [&](unsigned from, unsigned to) {
     for (unsigned i = from; i < to; i++)
       f(i);
@@ -9,8 +8,9 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
 
   unsigned segment = size / N_THREADS;
 
-  // Old method, creating new threads each time is called
 
+  // Old method, creating new threads each time is called
+/*
   std::vector<std::future<void>> promises (N_THREADS);
   for (unsigned i = 0; i < N_THREADS - 1; i++)
     promises[i] = std::async(lambda, i * segment, (i + 1) * segment);
@@ -18,9 +18,9 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
 
   for (auto& promise : promises)
     promise.get();
+*/
 
   // New method, thread pool
-  /*
   unsigned counter = 0;
   active = false;
   std::mutex mtx;
@@ -41,5 +41,5 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
 
   std::unique_lock<std::mutex> lck(mtx); // wake up thread
   cv.wait(lck, [&]{return active;});
-  */
+
 }

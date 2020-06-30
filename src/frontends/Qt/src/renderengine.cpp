@@ -38,8 +38,7 @@ void RenderEngine::painting_loop() {
 }
 
 void RenderEngine::render_loop () {
-  //while (true) {
-  for (unsigned i = 0; i < 30000; i++) {
+  while (true) {
 /*
     std::sort(triangles.begin(), triangles.end(), [](const Triangle2i& t1, const Triangle2i& t2){
       return t1.z_value < t2.z_value;
@@ -49,13 +48,14 @@ void RenderEngine::render_loop () {
     world->calculate_next_frame();    
     projector->project();
 
+
     auto triangles = projector->getElementsToRender();
     auto sz = projector->getNElementsToRender();
 
     rasteriser->rasterise(triangles, sz);
     fps_render.update();
     a = true;
-    cv.notify_one();
+    cv.notify_one();  
   }
     //painting_loop ();
 //    std::this_thread::sleep_for (std::chrono::duration<double, std::milli>(12));

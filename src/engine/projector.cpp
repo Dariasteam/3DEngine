@@ -16,29 +16,26 @@ void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
 void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
-    unsigned segments = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
-    std::vector<std::future<void>> promises_2 (N_THREADS);
+    unsigned segment_length = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
 
     n_elements_to_render = 0;
     c = 0;
 
-    for (unsigned j = 0; j < N_THREADS  - 1; j++)
-      promises_2[j] = std::async(&Projector::multithreaded_rasterize_single_mesh,
-                                 this, j * segments, (j + 1) * segments, j, aux_mesh);
-
-    promises_2[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_single_mesh,
-                                           this, (N_THREADS - 1) * segments,
-                                           meshes_vector.size(), N_THREADS - 1, aux_mesh);
-
-    for (auto& promise : promises_2)
-      promise.get();    
+    auto& m = MultithreadManager::get_instance();
+    m.calculate_threaded(N_THREADS, [&](unsigned i) {
+      long unsigned l = (i + 1) * segment_length;
+      multithreaded_rasterize_single_mesh( i * segment_length,
+                                           l,
+                                           i,
+                                           aux_mesh);
+    });
   }
 }
 
 void Projector::multithreaded_rasterize_single_mesh(unsigned init,
                                                     unsigned end,
                                                     unsigned index,
-                                                     const Mesh* aux_mesh) {
+                                                    const Mesh* aux_mesh) {
   std::vector <Triangle2i> tmp_triangles;
 
   for (unsigned k = init; k < end; k++) {
@@ -50,11 +47,7 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
 
   mtx.lock();
   c++;  
-/*
-  elements_to_render.insert(std::begin(elements_to_render),
-                            std::begin(tmp_triangles),
-                            std::end(tmp_triangles));
-*/
+
   n_elements_to_render += tmp_triangles.size();
 
   mtx.unlock();
@@ -66,10 +59,6 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
   for (unsigned i = 0; i < index; i++) {
     prev_offset +=u[i];
   }
-/*
-  for (unsigned i = 0; i < u[index]; i++) {
-    elements_to_render[prev_offset + i] = tmp_triangles[i];
-  }*/
 
   std::copy(std::begin(tmp_triangles),
             std::end(tmp_triangles),

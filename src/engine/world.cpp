@@ -124,7 +124,8 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("../../mesh_examples/bitxo.obj");
+  Mesh* parsed_mesh = parser ("../../mesh_examples/file.obj");
+
   //Mesh* mesh_2 = new Mesh(*parsed_mesh);
   add_mesh(parsed_mesh);
   //add_mesh(mesh_2);
@@ -153,6 +154,8 @@ void World::delete_mesh(Mesh* mesh) {
   meshes.erase(std::remove(meshes.begin(), meshes.end(), mesh), meshes.end());
 }
 
+bool movingLeft = false;
+
 void World::calculate_next_frame() const {
 
   //auto* front = meshes.front();
@@ -169,8 +172,24 @@ void World::calculate_next_frame() const {
     mesh->rotate_y(-0.03);
 */
   meshes.front()->rotate_y(-0.08);
-  //meshes.back()->rotate_x(-0.003);
+  //meshes.front()->rotate_x(-0.02);
+  //meshes.front()->rotate_z(+0.02);
 
+  auto currentPos = meshes.front()->translation;
+  Vector3 newPos (currentPos.x(), currentPos.y(), currentPos.z());
+/*
+  if (movingLeft) {
+    newPos.set_x(newPos.x() - 0.05);
+    if (meshes.front()->translation.x() < -10)
+      movingLeft = false;
+  } else {
+    newPos.set_x(newPos.x() + 0.05);
+    if (meshes.front()->translation.x() > 10)
+      movingLeft = true;
+  }
+
+  meshes.front()->translate_global(newPos);  
+*/
 //  meshes.back()->color += {1, -1, 1};
 //  meshes.back()->rotate_x(-0.03);
 //  meshes.back()->rotate_z(-0.01);
@@ -179,7 +198,6 @@ void World::calculate_next_frame() const {
 
   //rotate_meshes();
 
-// camera->translate_global({0, 0.0, 1});
 //   camera->rotate_z(-0.1);
 }
 
