@@ -3,7 +3,12 @@
 
 #include "../camera.h"
 #include "../world.h"
-#include "../../frontends/Qt/canvas.h"
+#include "../../frontends/framebufferhandler.h"
+
+#include "../math/point2.h"
+#include "../math/point2d.h"
+#include "../math/point3.h"
+#include "../math/point3d.h"
 
 #include <vector>
 #include <algorithm>
@@ -15,12 +20,11 @@ protected:
 
   World* world;
   Camera* camera;
-  Canvas* canvas;
+  FrameBufferHandler* canvas;
 
-  double* z_buff = new double[SCREEN_SIZE * SCREEN_SIZE];
-
-  unsigned char* screen_buff_a = new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3];
-  unsigned char* screen_buff_b = new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3];
+  double* z_buff = {new double[SCREEN_SIZE * SCREEN_SIZE]};
+  unsigned char* screen_buff_a {new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3]};
+  unsigned char* screen_buff_b {new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3]};
 
   inline unsigned toScreenIndex (int x, int y) {
     return y * (SCREEN_SIZE * 3) + (x * 3);
@@ -31,13 +35,7 @@ protected:
   }
 public:  
 
-  AbstractRasteriser(World* w, Canvas* cv) :
-    world (w),
-    camera (w->get_camera()),
-    canvas (cv)
-  {    
-    canvas->set_screen_buffers(screen_buff_a, screen_buff_b);
-  }
+  AbstractRasteriser(World* w, FrameBufferHandler* cv);
 
   virtual void rasterise (std::vector<Triangle2i>* triangles, unsigned sz) = 0;
 };

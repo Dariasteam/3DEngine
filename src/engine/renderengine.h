@@ -6,17 +6,15 @@
 #include <thread>
 #include <string>
 
-#include <QTimer>
 #include <utility>
 
-#include "../../../engine/math/point3.h"
-#include "../../../engine/math/point3.h"
-#include "../../../engine/projector.h"
-#include "../../../engine/world.h"
-#include "../../../engine/camera.h"
-#include "../../../engine/rasteriser/abstractrasteriserCPU.h"
-#include "../../../engine/rasteriser/abstractrasteriserCPU.h"
-#include "../canvas.h"
+#include "math/point3.h"
+#include "math/point3.h"
+#include "projector.h"
+#include "world.h"
+#include "camera.h"
+#include "rasteriser/abstractrasteriserCPU.h"
+#include "../frontends/framebufferhandler.h"
 
 class FPSControl {
 private:
@@ -48,12 +46,11 @@ public:
   }
 };
 
-class RenderEngine : public QObject{
-  Q_OBJECT
+class RenderEngine {
 private:
   Projector* projector;
   AbstractRasteriser* rasteriser;
-  Canvas* canvas;
+  FrameBufferHandler* canvas;
   World* world;
 
   std::thread t;
@@ -63,8 +60,7 @@ private:
 
   void render_loop ();
 public:
-  RenderEngine(Projector* p, AbstractRasteriser* r, Canvas* c, World* w);
-public slots:  
+  RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandler* c, World* w);
   void painting_loop ();
 };
 

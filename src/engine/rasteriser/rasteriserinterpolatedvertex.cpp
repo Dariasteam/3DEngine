@@ -34,7 +34,7 @@ inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
   for (int x = min_x; x <= max_x; x++) {
     if (triangle.z_value < z_buff[toDepthIndex(x, y)]) {
       Color aux = get_color_in_gradient(color, gradient, min_x, x);
-      clamp_color(aux);
+      clamp_color(aux);      
 
       writeColorToCurrentBuffer(x, y, aux);
       writeDepthBuffer(x, y, triangle.z_value);
@@ -178,8 +178,7 @@ inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle) {
-
+void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle) {  
   // Sort vertices by Y
   std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
   std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2i& a, const Point2i& b) {
@@ -192,7 +191,7 @@ void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle) {
 
   const Point2i& v1 = aux_vec[0];
   const Point2i& v2 = aux_vec[1];
-  const Point2i& v3 = aux_vec[2];
+  const Point2i& v3 = aux_vec[2];  
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {

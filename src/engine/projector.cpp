@@ -25,19 +25,7 @@ void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
     unsigned segment_length = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
-/*
-    std::vector<std::future<void>> promises_2 (N_THREADS);
 
-    for (unsigned j = 0; j < N_THREADS  - 1; j++)
-      promises_2[j] = std::async(&Projector::multithreaded_rasterize_single_mesh,
-                                 this, j * segment_length, (j + 1) * segment_length, j, aux_mesh);
-
-    promises_2[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_single_mesh,
-                                           this, (N_THREADS - 1) * segment_length,
-                                           meshes_vector.size(), N_THREADS - 1, aux_mesh);
-    for (auto& promise : promises_2)
-      promise.get();
-*/
     c = 0;
     cv_bool = false;
     unsigned tmp_n_elements_to_render[N_THREADS];
@@ -210,30 +198,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
 
 void Projector::project() {
   set_projection_data();
-
-  // Prepare threads
-/*
-  auto& m = MultithreadManager::get_instance();
-  m.calculate_threaded(meshes_vector.size(), [&](unsigned i) {
-    Mesh* aux_mesh = meshes_vector[i];
-    multithreaded_rasterize_single_mesh(aux_mesh);
-  });
-*/
-/*
-  unsigned segments = (meshes_vector.size() / N_THREADS);
-  std::vector<std::future<void>> promises (N_THREADS);
-  for (unsigned i = 0; i < N_THREADS  - 1; i++)
-    promises[i] = std::async(&Projector::multithreaded_rasterize_mesh_list, this,
-                             i * segments, (i + 1) * segments);
-
-  promises[N_THREADS - 1] = std::async(&Projector::multithreaded_rasterize_mesh_list, this,
-                                       (N_THREADS - 1) * segments, meshes_vector.size());
-*/
   multithreaded_rasterize_mesh_list(0, meshes_vector.size());
-  // Trigger calculations
-  //for (auto& promise : promises)
-//    promise.get();
-
 }
 
 bool Projector::is_point_between_camera_bounds(const Point2& p) const {

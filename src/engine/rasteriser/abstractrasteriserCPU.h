@@ -9,10 +9,12 @@
 
 class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
-  unsigned char* buff;
 protected:
+  unsigned char* buff;
 
-  inline void writeColorToCurrentBuffer(const int x, const int y, const Color& c) {
+  inline void writeColorToCurrentBuffer(const int x,
+                                        const int y,
+                                        const Color& c) {
     unsigned index = toScreenIndex(x, y);
     Color888 color (c);
     buff[index] = color.r;
@@ -31,7 +33,7 @@ protected:
   virtual void rasterize_triangle (Triangle2i& triangle) = 0;
 
 public:
-  AbstractRasteriserCPU(World* w, Canvas* cv) : AbstractRasteriser (w, cv) {}
+  AbstractRasteriserCPU(World* w, FrameBufferHandler* cv) : AbstractRasteriser (w, cv) {}
 
   void rasterise (std::vector<Triangle2i>* triangles, unsigned sz);
 };

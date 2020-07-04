@@ -3,7 +3,7 @@
 
 #include "camera.h"
 #include "world.h"
-#include "canvas.h"
+#include "planar/triangle.h"
 #include "../auxiliar/multithreadmanager.h"
 
 #include <future>

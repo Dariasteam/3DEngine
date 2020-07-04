@@ -1,31 +1,35 @@
-#ifndef CANVAS_H
-#define CANVAS_H
+#ifndef FRAMEBUFFERHANDLER_H
+#define FRAMEBUFFERHANDLER_H
 
-#include "../../engine/math/point2d.h"
-#include "../../engine/planar/rect.h"
-#include "../../engine/planar/triangle.h"
-
-#include <QWidget>
-#include <QResizeEvent>
-#include <QImage>
-#include <QPixmap>
-#include <QBoxLayout>
-#include <QLabel>
+#include "../engine/math/point2d.h"
+#include "../engine/planar/rect.h"
+#include "../engine/planar/triangle.h"
 
 #include <vector>
 #include <algorithm>
 #include <mutex>
 #include <future>
 
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <linux/fb.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+
 #define SCREEN_SIZE 1000
 
-struct ImagePixel;
-
-class Canvas : public QLabel {
-  Q_OBJECT
+class FrameBufferHandler {
 private:
-  QImage image;
-  bool new_frame_redered {false};
+  int fbfd = 0;
+  struct fb_var_screeninfo vinfo;
+  struct fb_fix_screeninfo finfo;
+  long int screensize = 0;
+  char *fbp = 0;  
+  long int location = 0;
+
+  bool initialized {false};
 
   double x_offset {0}; // adjust x = 0 point to the center of screen
   double y_offset {0}; // adjust y = 0 point to the center of screen
@@ -41,12 +45,13 @@ private:
   std::mutex mtx;
   bool reading_buffer_a = false;
 
-  inline QPointF adjust_coordinates (const Point2& p);
+  inline Point2 adjust_coordinates (const Point2& p);
 public:
-  explicit Canvas(QWidget *parent = nullptr);
-  void update_frame (RectF bounds);
-  void resizeEvent(QResizeEvent *event) override;
-
+  FrameBufferHandler();
+  ~FrameBufferHandler() {
+    munmap(fbp, screensize);
+    close(fbfd);
+  }  
   void set_screen_buffers (const unsigned char* b_a,
                            const unsigned char* b_b);
 
@@ -65,4 +70,4 @@ public:
   bool paint();
 };
 
-#endif // CANVAS_H
+#endif // FRAMEBUFFERHANDLER_H

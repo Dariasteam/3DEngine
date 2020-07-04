@@ -124,7 +124,7 @@ World::World(Camera* cm) :
 //  a_mesh->position = {0, 10, 50};
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("../../mesh_examples/file.obj");
+  Mesh* parsed_mesh = parser ("Desarrollo/3D/mesh_examples/bitxo.obj");
 
   //Mesh* mesh_2 = new Mesh(*parsed_mesh);
   add_mesh(parsed_mesh);

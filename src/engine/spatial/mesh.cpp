@@ -71,7 +71,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
     unsigned segment = size / N_THREADS;
 
     auto& m = MultithreadManager::get_instance();
-    m.calculate_threaded(N_THREADS, [&](unsigned i) {
+    m.calculate_threaded(N_THREADS, [&](unsigned i) {      
       lambda (mesh, i * segment, (i + 1) * segment);
     });
   }
