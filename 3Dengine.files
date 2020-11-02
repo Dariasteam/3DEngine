@@ -17,7 +17,13 @@ src/engine/math/point3.h
 src/engine/math/point3d.cpp
 src/engine/math/point3d.h
 src/engine/math/vector3.h
+src/engine/planar/material.cpp
+src/engine/planar/material.h
 src/engine/planar/rect.h
+src/engine/planar/texture.cpp
+src/engine/planar/texture.h
+src/engine/planar/textureprojector.cpp
+src/engine/planar/textureprojector.h
 src/engine/planar/triangle.h
 src/engine/planar/vertex.h
 src/engine/projector.cpp

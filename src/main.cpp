@@ -8,11 +8,13 @@
 #include "engine/renderengine.h"
 #include "frontends/framebufferhandler.h"
 
+#include "engine/planar/textureprojector.h"
+
 int main(int argc, char *argv[]) {
   //QApplication a(argc, argv);
   //MainWindow w;
   //w.show();
-
+/*
   FrameBufferHandler framebuffer;
   Camera camera;
   World world (&camera);
@@ -23,7 +25,20 @@ int main(int argc, char *argv[]) {
 
   //RasteriserFlat rasteriser(&world, w.get_canvas());
   RenderEngine engine (&projector, &rasteriser, &framebuffer, &world);
+*/
 
+
+  Texture tex;
+  tex.load ("pic.ppm");
+
+  TextureProjector p;
+  p.project(tex,
+            Point2i{0, 0},
+            Point2i{0,   300},
+            Point2i{600, 300});
+
+
+  //tex.write("pic_2.ppm");
 
   //return a.exec();
 }

@@ -31,7 +31,7 @@ void RenderEngine::painting_loop() {
 }
 
 void RenderEngine::render_loop () {
-  for (unsigned i = 0; i < 1000000000; i++) {
+  while (1) {
     world->calculate_next_frame();
     projector->project();
 
@@ -43,5 +43,5 @@ void RenderEngine::render_loop () {
     fps_render.update();
     a = true;
     cv.notify_one();
-  }
+  }  
 }

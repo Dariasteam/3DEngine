@@ -61,7 +61,7 @@ bool FrameBufferHandler::paint() {
   }  
   unlock_buffer_mutex();
 
-  if (initialized) {    
+  if (initialized) {
     for (unsigned y = 0; y < SCREEN_SIZE; y++) {
       for (unsigned x = 0; x < SCREEN_SIZE; x++) {
         location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
@@ -70,10 +70,9 @@ bool FrameBufferHandler::paint() {
         *(fbp + location + 0) = buffer_[y * SCREEN_SIZE * 3 + x * 3 + 2]; // B
         *(fbp + location + 1) = buffer_[y * SCREEN_SIZE * 3 + x * 3 + 1]; // G
         *(fbp + location + 2) = buffer_[y * SCREEN_SIZE * 3 + x * 3 + 0]; // R
-        *(fbp + location + 3) = 0;      // No transparency
       }
     }
-  }  
+  }
 
   return true;
 }
