@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   //QApplication a(argc, argv);
   //MainWindow w;
   //w.show();
-/*
+
   FrameBufferHandler framebuffer;
   Camera camera;
   World world (&camera);
@@ -25,29 +25,30 @@ int main(int argc, char *argv[]) {
 
   //RasteriserFlat rasteriser(&world, w.get_canvas());
   RenderEngine engine (&projector, &rasteriser, &framebuffer, &world);
-*/
 
+  /*
   Texture tex;
   tex.load ("pic.ppm");
 
   TextureProjector p;
 
 
-  Triangle2i triangle ({1,  1},
-                       {0,   300},
+  Triangle2i triangle ({0,  0},
+                       {0, 300},
                        {600, 300},
              100, Color());
 
   UV uv {
     {0.0, 0.0}, // Point
 
-    {0.0, 1.0}, // Vec U
-    {1.0, 1.0}  // Vec V
+    {0.0, .5}, // Vec U
+    {1, .5}  // Vec V
   };
 
   p.project(tex,
             triangle,
             uv);
+  */
 
   //tex.write("pic_2.ppm");
   //return a.exec();

@@ -44,6 +44,7 @@ private:
   inline Color calculate_lights (const Color& m_color, const Vector3& normal) const;
   void set_projection_data ();
   inline bool calculate_mesh_projection (const Face& face,
+                                         const UV& uv,
                                          unsigned index,
                                          const Color& color);
 

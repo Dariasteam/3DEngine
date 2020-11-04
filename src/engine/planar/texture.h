@@ -6,8 +6,15 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include "../math/point2.h"
 
 #define COLOR_DEPTH 3
+
+struct UV {
+  Point2 p;
+  Vector2 u;
+  Vector2 v;
+};
 
 class Texture {
 private:
@@ -25,6 +32,15 @@ public:
                             const unsigned i) const {
 
     return content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i];
+  }
+
+  inline Color888 get_color (const unsigned x,
+                                  const unsigned y) const {
+    return Color888 {
+      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 1],
+      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 2],
+      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 3]
+    };
   }
 
   inline void set (const unsigned x,

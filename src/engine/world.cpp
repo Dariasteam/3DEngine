@@ -7,66 +7,36 @@ World::World(Camera* cm) :
   Mesh* a_mesh = new Mesh;
   a_mesh->local_coordenates_faces = { // face list
     // UPER FACES
-    Face3({          // RIGHT FACE
-      {-5, 0, -5},   // vertex a
-      {-5, 0,  5},   // vertex c
-      { 0,15,  0},   // vertex b
-      {0,  0,  0}    // fake_normal
-    }),
+    Face({          // RIGHT FACE
+      {0 , 0,  0},   // vertex a
+      {0 ,50,  0},   // vertex c
+      {50,50,  0},   // vertex b
+      {0 , 0, -1},    // fake_normal
 
-
-    Face3({          // LEFT FACE
-      { 5, 0, -5},   // vertex a
-      { 0,15,  0},   // vertex c
-      { 5, 0,  5},   // vertex b
-      {0,  0,  0}    // fake_normal
-    }),
-
-
-    Face3({          // FRONT FACE
-      { 5, 0, -5},   // vertex b
-      {-5, 0, -5},   // vertex a
-      { 0,15,  0},   // vertex c
-      {0,  0,  0}    // fake_normal
-    }),
-
-    Face3({          // BACK FACE
-      { 5, 0, 5},    // vertex a
-      { 0, 15, 0},   // vertex c
-      {-5, 0, 5},    // vertex b
-      {0, 0,  0}     // fake_normal
-    }),
-
-    // BOTTOM FACES
-    Face3({          // RIGHT FACE
-      {-5, 0, -5},   // vertex a
-      { 0,-15,  0},  // vertex b
-      {-5, 0,  5},   // vertex c
-      {0,  0,  0}    // fake_normal
-    }),
-
-    Face3({          // LEFT FACE
-      { 5, 0, -5},   // vertex a
-      { 5, 0,  5},   // vertex b
-      { 0,-15,  0},  // vertex c
-      {0,  0,  0}    // fake_normal
-    }),
-
-    Face3({          // FRONT FACE
-      {-5, 0, -5},   // vertex a
-      { 5, 0, -5},   // vertex b
-      { 0,-15,  0},  // vertex c
-      {0,  0,  0}    // fake_normal
-    }),
-
-    Face3({          // BACK FACE
-      { 5, 0, 5},    // vertex a
-      {-5, 0, 5},    // vertex b
-      { 0,-15, 0},   // vertex c
-      {0, 0,  0}     // fake_normal
+      {0,  0,  0},    // fake_normal_a
+      {0,  0,  0},    // fake_normal_b
+      {0,  0,  0},    // fake_normal_c
     }),
   };
+
+  Texture tex;
+  tex.load ("pic.ppm");
+  a_mesh->texture = tex;
+
+  a_mesh->uv_per_face = {
+    {
+      {0, 0},
+      {0, 1},
+      {1, 1}
+    }
+  };
+
+  a_mesh->color = {250, 150, 100};
+  a_mesh->rotate_y(10);
+  a_mesh->translate_global({0, -1.5, 50});
+  add_mesh(a_mesh);
 */
+
 //  add_mesh(a_mesh);
 //  a_mesh->color = {0, 200, 200};
 //  a_mesh->generate_data();
@@ -123,8 +93,9 @@ World::World(Camera* cm) :
 //  b_mesh->position = {0, 0, 100};
 //  a_mesh->position = {0, 10, 50};
 
+
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/bitxo.obj");
+  Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
 
   //Mesh* mesh_2 = new Mesh(*parsed_mesh);
   add_mesh(parsed_mesh);
@@ -133,6 +104,7 @@ World::World(Camera* cm) :
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
   parsed_mesh->translate_global({0, -1.5, 50});
+
 /*
   mesh_2->color = {0, 150, 100};
   mesh_2->rotate_y(10);

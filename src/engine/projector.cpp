@@ -56,7 +56,9 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
-    calculate_mesh_projection(face, index, aux_mesh->color);
+    const auto& uv   = aux_mesh->uv_per_face[k];
+
+    calculate_mesh_projection(face, uv, index, aux_mesh->color);
   }  
 
   mtx.lock();
@@ -132,6 +134,7 @@ Color Projector::calculate_lights (const Color& m_color,
 }
 
 bool Projector::calculate_mesh_projection(const Face& face,
+                                          const UV& uv,
                                           unsigned index,
                                           const Color& color) {
 
@@ -191,6 +194,9 @@ bool Projector::calculate_mesh_projection(const Face& face,
   // 8. Convert triangle to screen space
   auto& e = tmp_triangles_i[index][tmp_triangles_sizes[index]];
   triangle_to_screen_space(tmp_triangle, e);
+
+  // Set uv
+  e.uv = uv;
   tmp_triangles_sizes[index]++;
 
   return true;
@@ -290,7 +296,7 @@ bool Projector::triangle_inside_camera(const Triangle2 &triangle) {
   return true;
 }
 
-
+// FIXME: Don not return anything
 Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle, Triangle2i& t) {
 
   unsigned height = screen_size;

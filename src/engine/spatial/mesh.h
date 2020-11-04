@@ -2,6 +2,7 @@
 #define MESH_H
 
 #include "../../auxiliar/multithreadmanager.h"
+#include "../planar/texture.h"
 #include "../math/point3.h"
 #include "../math/vector3.h"
 #include "../math/matrix3.h"
@@ -19,6 +20,9 @@ struct Mesh : public Spatial {
   std::vector<Mesh*> nested_meshes;
   Color color{0, 0, 0};
   Point3 p{1,1,1};
+
+  std::vector<UV> uv_per_face;
+  Texture texture;
 
   Mesh () {}
   ~Mesh () {}

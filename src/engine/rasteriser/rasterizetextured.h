@@ -2,17 +2,18 @@
 #define RASTERIZETEXTURED_H
 
 #include "abstractrasteriserCPU.h"
+#include "../planar/textureprojector.h"
 
 class RasterizeTextured: public AbstractRasteriserCPU {
 private:
-  inline void fillTopFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
+  TextureProjector projector;
 
-  inline void fillBottomFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
+  inline void fillTopFlatTriangle(const Triangle2i& triangle);
+
+  inline void fillBottomFlatTriangle(const Triangle2i& triangle);
 
   void rasterize_triangle (Triangle2i& triangle,
-                           std::vector<std::vector<Color888>>* screen_buffer);
+                           const Texture& tex);
 public:
   RasterizeTextured(World* w, FrameBufferHandler* cv) : AbstractRasteriserCPU (w, cv) {}
 };

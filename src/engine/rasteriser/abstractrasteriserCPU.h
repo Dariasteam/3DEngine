@@ -15,11 +15,18 @@ protected:
   inline void writeColorToCurrentBuffer(const int x,
                                         const int y,
                                         const Color& c) {
-    unsigned index = toScreenIndex(x, y);
+
     Color888 color (c);
-    buff[index] = color.r;
-    buff[index + 1] = color.g;
-    buff[index + 2] = color.b;
+    writeColorToCurrentBuffer(x, y, color);
+  }
+
+  inline void writeColorToCurrentBuffer(const int x,
+                                        const int y,
+                                        const Color888& c) {
+    unsigned index = toScreenIndex(x, y);
+    buff[index] = c.r;
+    buff[index + 1] = c.g;
+    buff[index + 2] = c.b;
   }
 
   inline void writeDepthBuffer(const int x, const int y, double z) {

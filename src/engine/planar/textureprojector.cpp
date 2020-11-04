@@ -114,16 +114,18 @@ void TextureProjector::paint_to_screen(unsigned x,
 
   int x_tex = std::round(m2[0][0]);
   int y_tex = std::round(m2[0][1]);
-
+/*
   if (x >= 0 && x <= screen.get_width() &&
       y >= 0 && y <= screen.get_height()) {
-
+*/
     screen.set(x, y, 0, tex.get(x_tex, y_tex, 0));
     screen.set(x, y, 1, tex.get(x_tex, y_tex, 1));
     screen.set(x, y, 2, tex.get(x_tex, y_tex, 2));
+/*
   } else {
     std::cout << "Error: " << x << " " << y << std::endl;
   }
+  */
 }
 
 void TextureProjector::rasterize_triangle (Triangle2i& triangle, const Texture& tex) {
@@ -198,14 +200,33 @@ void TextureProjector::project(const Texture& tex,
                           << basis_changer[0][1] << "\n"
                           << basis_changer[1][0] << " "
                           << basis_changer[1][1] << "\n";
-
-  //return;
   // Populate screen
   rasterize_triangle (projected_triangle, tex);
 
   screen.write("screen.ppm");
 }
 
-void TextureProjector::write() const {
-  //screen.write("screen.ppm");
+void TextureProjector::generate_uv_projector(const Texture& tex,
+                                             const Triangle2i& projected_triangle,
+                                             const UV& uv) {
+  t_origin = projected_triangle.a;
+  texture = &tex;
+
+  // UV of the triangle as Texture basis (destination)
+  Basis2 texture_basis {
+    {(uv.u.X - uv.p.X) * tex.get_width(), (uv.u.Y - uv.p.Y) * tex.get_height()},
+    {(uv.v.X - uv.p.X) * tex.get_width(), (uv.v.Y - uv.p.Y) * tex.get_height()}
+  };
+
+  // Screen basis in base of projected triangle points (origin)
+  Basis2 screen_basis ({
+               {double(projected_triangle.b.X - projected_triangle.a.X),
+                  double(projected_triangle.b.Y - projected_triangle.a.Y)},
+
+               {double(projected_triangle.c.X - projected_triangle.a.X),
+                  double(projected_triangle.c.Y - projected_triangle.a.Y)},
+             });
+
+  // Generate matrix to change between basis
+  MatrixOps::generate_basis_change_matrix(texture_basis, screen_basis, basis_changer);
 }

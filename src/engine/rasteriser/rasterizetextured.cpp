@@ -11,8 +11,7 @@
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasterizeTextured::fillBottomFlatTriangle(const Triangle2i& triangle,
-                            std::vector<std::vector<Color888>>* screen_buffer) {
+void RasterizeTextured::fillBottomFlatTriangle(const Triangle2i& triangle) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -37,12 +36,10 @@ void RasterizeTextured::fillBottomFlatTriangle(const Triangle2i& triangle,
     int max_x = static_cast<int>(std::round(curx2));
 
     for (int x = min_x; x <= max_x; x++) {
-      /*
-      if (triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = triangle.color;
-                z_buffer[y][x] = triangle.z_value;
+      if (triangle.z_value < z_buff[toDepthIndex(x, y)]) {
+        writeColorToCurrentBuffer(x, y, projector.get_color_on_uv(x, y));
+        writeDepthBuffer(x, y, triangle.z_value);
       }
-      */
     }
     curx1 += invslope1;
     curx2 += invslope2;
@@ -60,8 +57,7 @@ void RasterizeTextured::fillBottomFlatTriangle(const Triangle2i& triangle,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasterizeTextured::fillTopFlatTriangle(const Triangle2i& triangle,
-                            std::vector<std::vector<Color888>>* screen_buffer) {
+void RasterizeTextured::fillTopFlatTriangle(const Triangle2i& triangle) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -85,11 +81,10 @@ void RasterizeTextured::fillTopFlatTriangle(const Triangle2i& triangle,
     int max_x = static_cast<int>(std::round(curx2));
 
     for (int x = min_x; x <= max_x; x++) {
-      /*
-      if (triangle.z_value < z_buffer[y][x]) {
-        (*screen_buffer)[y][x] = triangle.color;
-                z_buffer[y][x] = triangle.z_value;
-      }*/
+      if (triangle.z_value < z_buff[toDepthIndex(x, y)]) {
+        writeColorToCurrentBuffer(x, y, projector.get_color_on_uv(x, y));
+        writeDepthBuffer(x, y, triangle.z_value);
+      }
     }
     curx1 -= invslope1;
     curx2 -= invslope2;
@@ -101,7 +96,9 @@ inline bool is_equal (double a, double b) {
 }
 
 void RasterizeTextured::rasterize_triangle (Triangle2i& triangle,
-                                std::vector<std::vector<Color888>>* screen_buffer) {
+                                            const Texture& tex) {
+
+  projector.generate_uv_projector(tex, triangle, triangle.uv);
 
   // Sort vertices by Y
   std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
@@ -119,9 +116,9 @@ void RasterizeTextured::rasterize_triangle (Triangle2i& triangle,
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
-    fillBottomFlatTriangle(triangle, screen_buffer);
+    fillBottomFlatTriangle(triangle);
   } else if (v1.y() == v2.y()) {
-    fillTopFlatTriangle(triangle, screen_buffer);
+    fillTopFlatTriangle(triangle);
   } else {
 
     double a = v3.y() - v1.y();
@@ -140,7 +137,7 @@ void RasterizeTextured::rasterize_triangle (Triangle2i& triangle,
     aux_t2.a = v2;
     aux_t2.b = v4;
 
-    fillBottomFlatTriangle (aux_t1, screen_buffer);
-    fillTopFlatTriangle    (aux_t2, screen_buffer);
+    fillBottomFlatTriangle (aux_t1);
+    fillTopFlatTriangle    (aux_t2);
   }
 }
