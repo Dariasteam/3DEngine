@@ -42,6 +42,8 @@ src/engine/rasteriser/rasteriseropencl.cpp
 src/engine/rasteriser/rasteriseropencl.h
 src/engine/rasteriser/rasteriserwireframe.cpp
 src/engine/rasteriser/rasteriserwireframe.h
+src/engine/rasteriser/rasterizetextured.cpp
+src/engine/rasteriser/rasterizetextured.h
 src/engine/renderengine.cpp
 src/engine/renderengine.h
 src/engine/spatial/face3.h

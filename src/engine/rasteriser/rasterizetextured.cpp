@@ -1,8 +1,5 @@
-#include "textureprojector.h"
+#include "rasterizetextured.h"
 
-TextureProjector::TextureProjector() :
-  screen(1200, 600)
-{}
 
 /* Considering a triangle with the form
  *      v1
@@ -14,8 +11,8 @@ TextureProjector::TextureProjector() :
  * Finally, we find the color of l3[y][x]
  *
  * */
-void TextureProjector::fillBottomFlatTriangle(const Triangle2i& triangle,
-                                              const Texture& tex) {
+void RasterizeTextured::fillBottomFlatTriangle(const Triangle2i& triangle,
+                            std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -34,6 +31,7 @@ void TextureProjector::fillBottomFlatTriangle(const Triangle2i& triangle,
   int y1 = v1.y();
   int y2 = v2.y();
 
+
   for (int y = y1; y <= y2; y++) {
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
@@ -45,7 +43,6 @@ void TextureProjector::fillBottomFlatTriangle(const Triangle2i& triangle,
                 z_buffer[y][x] = triangle.z_value;
       }
       */
-      paint_to_screen(x, y, tex);
     }
     curx1 += invslope1;
     curx2 += invslope2;
@@ -63,9 +60,8 @@ void TextureProjector::fillBottomFlatTriangle(const Triangle2i& triangle,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void TextureProjector::fillTopFlatTriangle(const Triangle2i& triangle,
-                                           const Texture& tex) {
-
+void RasterizeTextured::fillTopFlatTriangle(const Triangle2i& triangle,
+                            std::vector<std::vector<Color888>>* screen_buffer) {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -94,41 +90,18 @@ void TextureProjector::fillTopFlatTriangle(const Triangle2i& triangle,
         (*screen_buffer)[y][x] = triangle.color;
                 z_buffer[y][x] = triangle.z_value;
       }*/
-
-      paint_to_screen(x, y, tex);
     }
     curx1 -= invslope1;
     curx2 -= invslope2;
   }
 }
 
-void TextureProjector::paint_to_screen(unsigned x,
-                                       unsigned y,
-                                       const Texture& tex) {
-  Matrix m ({
-              {double(x - t_origin.X),
-               double(y - t_origin.Y)}
-            });
-
-  auto m2 = m * basis_changer;
-
-  int x_tex = std::round(m2[0][0]);
-  int y_tex = std::round(m2[0][1]);
-
-  if (x >= 0 && x <= screen.get_width() &&
-      y >= 0 && y <= screen.get_height()) {
-
-    screen.set(x, y, 0, tex.get(x_tex, y_tex, 0));
-    screen.set(x, y, 1, tex.get(x_tex, y_tex, 1));
-    screen.set(x, y, 2, tex.get(x_tex, y_tex, 2));
-  } else {
-    std::cout << "Error: " << x << " " << y << std::endl;
-  }
+inline bool is_equal (double a, double b) {
+  return std::isless(std::abs(a - b), 0.00001);
 }
 
-void TextureProjector::rasterize_triangle (Triangle2i& triangle, const Texture& tex) {
-
-  t_origin = triangle.a;
+void RasterizeTextured::rasterize_triangle (Triangle2i& triangle,
+                                std::vector<std::vector<Color888>>* screen_buffer) {
 
   // Sort vertices by Y
   std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
@@ -146,9 +119,9 @@ void TextureProjector::rasterize_triangle (Triangle2i& triangle, const Texture& 
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
-    fillBottomFlatTriangle(triangle, tex);
+    fillBottomFlatTriangle(triangle, screen_buffer);
   } else if (v1.y() == v2.y()) {
-    fillTopFlatTriangle(triangle, tex);
+    fillTopFlatTriangle(triangle, screen_buffer);
   } else {
 
     double a = v3.y() - v1.y();
@@ -167,45 +140,7 @@ void TextureProjector::rasterize_triangle (Triangle2i& triangle, const Texture& 
     aux_t2.a = v2;
     aux_t2.b = v4;
 
-    fillBottomFlatTriangle (aux_t1, tex);
-    fillTopFlatTriangle    (aux_t2, tex);
+    fillBottomFlatTriangle (aux_t1, screen_buffer);
+    fillTopFlatTriangle    (aux_t2, screen_buffer);
   }
-}
-
-void TextureProjector::project(const Texture& tex,
-                               Triangle2i& projected_triangle,
-                               const UV& uv) {
-
-  // UV of the triangle as Texture basis (destination)
-  Basis2 texture_basis {
-    {(uv.u.X - uv.p.X) * tex.get_width(), (uv.u.Y - uv.p.Y) * tex.get_height()},
-    {(uv.v.X - uv.p.X) * tex.get_width(), (uv.v.Y - uv.p.Y) * tex.get_height()}
-  };
-
-  // Screen basis in base of projected triangle points (origin)
-  Basis2 screen_basis ({
-               {double(projected_triangle.b.X - projected_triangle.a.X),
-                  double(projected_triangle.b.Y - projected_triangle.a.Y)},
-
-               {double(projected_triangle.c.X - projected_triangle.a.X),
-                  double(projected_triangle.c.Y - projected_triangle.a.Y)},
-             });
-
-  // Generate matrix to change between basis  
-  MatrixOps::generate_basis_change_matrix(texture_basis, screen_basis, basis_changer);
-
-  std::cout << "Matrix\n" << basis_changer[0][0] << " "
-                          << basis_changer[0][1] << "\n"
-                          << basis_changer[1][0] << " "
-                          << basis_changer[1][1] << "\n";
-
-  //return;
-  // Populate screen
-  rasterize_triangle (projected_triangle, tex);
-
-  screen.write("screen.ppm");
-}
-
-void TextureProjector::write() const {
-  //screen.write("screen.ppm");
 }

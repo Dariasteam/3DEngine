@@ -1,7 +1,5 @@
 #include "rasteriserflat.h"
 
-#include "rasteriserinterpolatedvertex.h"
-
 /* Considering a triangle with the form
  *      v1
  *    /   \
