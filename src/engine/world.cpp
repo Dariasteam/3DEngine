@@ -98,7 +98,7 @@ World::World(Camera* cm) :
 
 
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
+  Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
 
   //Mesh* mesh_2 = new Mesh(*parsed_mesh);
   add_mesh(parsed_mesh);
@@ -106,7 +106,7 @@ World::World(Camera* cm) :
 
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 50});
+  parsed_mesh->translate_global({0, -1.5, 20});
 
   // temporary since we don't have real uvs
   parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
@@ -159,7 +159,8 @@ void World::calculate_next_frame() const {
   for (auto& mesh : meshes)
     mesh->rotate_y(-0.03);
 */
-  meshes.front()->rotate_y(-0.08);
+  meshes.front()->rotate_y(-0.008);
+  meshes.front()->rotate_x(-0.002);
   //meshes.front()->rotate_x(-0.02);
   //meshes.front()->rotate_z(+0.02);
 

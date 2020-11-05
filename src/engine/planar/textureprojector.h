@@ -26,22 +26,22 @@ public:
                               const Triangle2i& projected_triangle,
                               const UV& uv);
 
-  Color888 get_color_on_uv (unsigned x, unsigned y) {
-    Matrix m ({x - t_origin.X, y - t_origin.Y});
-    auto m2 = m * basis_changer;
-
-    int x_tex = std::round(m2[0][0]);
-    int y_tex = std::round(m2[0][1]);
-
-    return texture->get_color(x_tex, y_tex);
+  inline Color888 get_color_on_uv (int x, int y) {
+    const auto& point = get_point_on_uv(x, y);
+    return texture->get_color(point.X, point.Y);
   }
 
-  Point2i get_point_on_uv (unsigned x, unsigned y) {
-    Matrix m ({x - t_origin.X, y - t_origin.Y});
+  inline Point2i get_point_on_uv (int x, int y) {
+    Matrix m ({{double(x - t_origin.X), double(y - t_origin.Y)}});
+
     auto m2 = m * basis_changer;
 
     int x_tex = std::round(m2[0][0]);
     int y_tex = std::round(m2[0][1]);
+
+    if (x_tex < 0 || x_tex > 600 || y_tex < 0 || y_tex > 300) {
+      return {0, 0};
+    }
 
     return {x_tex, y_tex};
   }

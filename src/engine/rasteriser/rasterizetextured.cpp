@@ -93,7 +93,7 @@ void RasterizeTextured::fillTopFlatTriangle(const Triangle2i& triangle) {
 
 void RasterizeTextured::rasterize_triangle (Triangle2i& triangle) {
 
-  //projector.generate_uv_projector(tex, triangle, triangle.uv);
+  projector.generate_uv_projector(tex, triangle, triangle.uv);
 
   // Sort vertices by Y
   std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
