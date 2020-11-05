@@ -113,17 +113,18 @@ World::World(Camera* cm) :
 
   // temporary since we don't have real uvs
   parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
-  for (unsigned i = 0; i < parsed_mesh->uv_per_face.size() ; i++) {
+  unsigned size = parsed_mesh->uv_per_face.size();
+  for (unsigned i = 0; i < size; i++) {
 
     parsed_mesh->uv_per_face[i] = {
-      {0, 1},
       {0, 0},
-      {1, 1}
+      {0, .5},
+      {.5, .5}
     };
   }
 
   Texture tex;
-  tex.load ("pic.ppm");
+  tex.load ("line_texture.ppm");
   parsed_mesh->texture = tex;
 
   add_mesh(parsed_mesh);
@@ -167,7 +168,7 @@ void World::calculate_next_frame() const {
 */
   meshes.front()->rotate_y(-0.008);
   meshes.front()->rotate_x(-0.013);
-  meshes.front()->rotate_x(-0.02);
+  meshes.front()->rotate_z(-0.02);
   //meshes.front()->rotate_x(-0.02);
   //meshes.front()->rotate_z(+0.02);
 

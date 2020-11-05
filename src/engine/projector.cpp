@@ -262,7 +262,7 @@ bool Projector::calculate_cut_point(const Point3& vertex,
   double parameter = T1 / T2;
 
   // Intersection in global coordiantes FIXME: Should be in camera
-  point.set_x(a + b * parameter);  
+  point.set_x(a + b * parameter);
   point.set_y(-(c + d * parameter));
   //point.set_z(e + f * parameter);
 

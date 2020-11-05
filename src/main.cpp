@@ -1,7 +1,7 @@
 #include "engine/projector.h"
 #include "engine/camera.h"
 #include "engine/world.h"
-//#include "engine/rasteriser/rasteriserinterpolatedvertex.h"
+#include "engine/rasteriser/rasteriserinterpolatedvertex.h"
 #include "engine/rasteriser/rasterizetextured.h"
 //#include "../../../engine/rasteriser/rasteriseropencl.h"
 //#include "../../../engine/rasteriser/rasteriserflat.h"

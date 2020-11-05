@@ -136,3 +136,9 @@ void RasterizeTextured::rasterize_triangle (Triangle2i& triangle) {
     fillTopFlatTriangle    (aux_t2);
   }
 }
+
+RasterizeTextured::RasterizeTextured(World* w, FrameBufferHandler* cv) :
+  AbstractRasteriserCPU (w, cv)
+{
+  tex.load ("line_texture.ppm");
+}

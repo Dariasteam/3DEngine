@@ -14,11 +14,7 @@ private:
 
   void rasterize_triangle (Triangle2i& triangle);
 public:
-  RasterizeTextured(World* w, FrameBufferHandler* cv) :
-    AbstractRasteriserCPU (w, cv)
-  {
-    tex.load ("texture.ppm");
-  }
+  RasterizeTextured(World* w, FrameBufferHandler* cv);
 };
 
 #endif // RASTERIZETEXTURED_H
