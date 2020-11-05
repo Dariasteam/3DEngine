@@ -210,12 +210,13 @@ void TextureProjector::generate_uv_projector(const Texture& tex,
                                              const Triangle2i& projected_triangle,
                                              const UV& uv) {
   t_origin = projected_triangle.a;
+  v_origin = uv.p;
   texture = &tex;
 
   // UV of the triangle as Texture basis (destination)
   Basis2 texture_basis {
-    {(uv.u.X - uv.p.X) * tex.get_width(), (uv.u.Y - uv.p.Y) * tex.get_height()},
-    {(uv.v.X - uv.p.X) * tex.get_width(), (uv.v.Y - uv.p.Y) * tex.get_height()}
+    {(uv.u.X - uv.p.X), (uv.u.Y - uv.p.Y)},
+    {(uv.v.X - uv.p.X), (uv.v.Y - uv.p.Y)}
   };
 
   // Screen basis in base of projected triangle points (origin)

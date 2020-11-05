@@ -21,11 +21,11 @@ int main(int argc, char *argv[]) {
   World world (&camera);
   Projector projector (&camera, &world);
 
-  RasterizeTextured rasteriser3 (&world, &framebuffer);
+  RasterizeTextured rasteriser (&world, &framebuffer);
   //RasteriserInterpolatedVertex rasteriser (&world, &framebuffer);
 
   //RasteriserFlat rasteriser(&world, w.get_canvas());
-  RenderEngine engine (&projector, &rasteriser3, &framebuffer, &world);
+  RenderEngine engine (&projector, &rasteriser, &framebuffer, &world);
 
   /*
   Texture tex;

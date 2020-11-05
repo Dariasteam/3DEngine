@@ -36,7 +36,7 @@ void Texture::load(const std::string& filename) {
       file >> token;
       b = std::stoi(token);
 
-      content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 0] = r;
+      content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 0] = r;  // b r g
       content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 1] = g;
       content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 2] = b;
     }

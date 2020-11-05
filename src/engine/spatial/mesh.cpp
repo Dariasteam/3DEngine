@@ -206,7 +206,6 @@ void Mesh::generate_data() {
   for (auto& promise : promises)
     promise.get();
 
-
   global_coordenates_faces       = local_coordenates_faces;
   local_coordenates_faces.shrink_to_fit();
   global_coordenates_faces.shrink_to_fit();

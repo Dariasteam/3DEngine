@@ -17,7 +17,7 @@ public:
   RasterizeTextured(World* w, FrameBufferHandler* cv) :
     AbstractRasteriserCPU (w, cv)
   {
-    tex.load ("pic.ppm");
+    tex.load ("texture.ppm");
   }
 };
 

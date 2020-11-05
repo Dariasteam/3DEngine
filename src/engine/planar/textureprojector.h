@@ -13,7 +13,10 @@ class TextureProjector {
   Texture screen;
 
   Matrix2 basis_changer;
+
   Point2i t_origin;
+  Point2i v_origin;
+
   Texture const* texture;
 public:
   TextureProjector();
@@ -36,11 +39,14 @@ public:
 
     auto m2 = m * basis_changer;
 
-    int x_tex = std::round(m2[0][0]);
-    int y_tex = std::round(m2[0][1]);
+    // FIXME: Precalculate this
+    int x_tex = (v_origin.X + m2[0][0]) * texture->get_width();
+    int y_tex = (v_origin.Y + m2[0][1]) * texture->get_height();
 
-    if (x_tex < 0 || x_tex > 600 || y_tex < 0 || y_tex > 300) {
-      return {0, 0};
+    if (x_tex < 0 || x_tex > texture->get_width() ||
+        y_tex < 0 || y_tex > texture->get_height()) {
+      //std::cout << "ERROR" << std::endl;
+      return {150, 150};
     }
 
     return {x_tex, y_tex};
