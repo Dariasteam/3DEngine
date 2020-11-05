@@ -99,27 +99,34 @@ World::World(Camera* cm) :
 
   ObjParser parser;
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
-  add_mesh(parsed_mesh);
+/*
+  for (const auto& face : parsed_mesh->local_coordenates_faces) {
+    std::cout << "t " << face.a.X << " " << face.a.Y << " " << face.a.Z << " | "
+                      << face.b.X << " " << face.b.Y << " " << face.b.Z << " |"
+                      << face.a.X << " " << face.c.Y << " " << face.c.Z << " ""\n";
 
-
+  }
+*/
   parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, -1.5, 20});
+  parsed_mesh->translate_global({0, 0, 20});
 
   // temporary since we don't have real uvs
   parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
   for (unsigned i = 0; i < parsed_mesh->uv_per_face.size() ; i++) {
 
     parsed_mesh->uv_per_face[i] = {
-      {1, 1},
       {0, 1},
-      {0, 0}
+      {0, 0},
+      {1, 1}
     };
   }
 
   Texture tex;
   tex.load ("pic.ppm");
   parsed_mesh->texture = tex;
+
+  add_mesh(parsed_mesh);
 /*
   mesh_2->color = {0, 150, 100};
   mesh_2->rotate_y(10);
@@ -159,7 +166,8 @@ void World::calculate_next_frame() const {
     mesh->rotate_y(-0.03);
 */
   meshes.front()->rotate_y(-0.008);
-  meshes.front()->rotate_x(-0.002);
+  meshes.front()->rotate_x(-0.013);
+  meshes.front()->rotate_x(-0.02);
   //meshes.front()->rotate_x(-0.02);
   //meshes.front()->rotate_z(+0.02);
 

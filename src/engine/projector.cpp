@@ -24,16 +24,16 @@ void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
   n_elements_to_render = 0;
   for (unsigned i = init; i < end; i++) {
     Mesh* aux_mesh = meshes_vector[i];
-    unsigned segment_length = (aux_mesh->global_coordenates_faces.size() / N_THREADS);
+    double segment_length = (double(aux_mesh->global_coordenates_faces.size()) / N_THREADS);
 
     c = 0;
     cv_bool = false;
-    unsigned tmp_n_elements_to_render[N_THREADS];
+    unsigned tmp_n_elements_to_render[N_THREADS];    
 
     auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(N_THREADS, [&](unsigned i) {
       long unsigned from = i * segment_length;
-      long unsigned to = (i + 1) * segment_length;
+      long unsigned to = (i + 1) * segment_length;                  
 
       multithreaded_rasterize_single_mesh(from,
                                           to,
@@ -52,12 +52,12 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
                                                     unsigned end,
                                                     unsigned index,
                                                     const Mesh* aux_mesh) {
+
   tmp_triangles_sizes[index] = 0;
 
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
     const auto& uv   = aux_mesh->uv_per_face[k];
-
     calculate_mesh_projection(face, uv, index, aux_mesh->color);
   }  
 
@@ -160,7 +160,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
   bool angle_normal = (face.normal * face.a) < 0
                     | (face.normal * face.b) < 0
                     | (face.normal * face.c) < 0;
-  if (!angle_normal) return false;
+  if (!angle_normal) { return false; }
 
   // 2. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(face.a);
@@ -169,18 +169,17 @@ bool Projector::calculate_mesh_projection(const Face& face,
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
   //double z_max = std::max({mod_v1, mod_v2, mod_v3});
-  if (z_min > 10000) return false;
+  if (z_min > 10000) { return false; }
 
   // 3. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)
                 | calculate_cut_point(face.b, face.b, tmp_triangle.b)
                 | calculate_cut_point(face.c, face.c, tmp_triangle.c);
-  if (!visible) return false;
+  if (!visible) { return false; }
 
-  tmp_triangle.z_value = z_min;
+  tmp_triangle.z_value = z_min;  
 
-  if (!triangle_inside_camera(tmp_triangle)) return false;
-
+  if (!triangle_inside_camera(tmp_triangle)) { return false; }
   // 7. Calculate light contribution for each vertex
 /*
   Color aux_color = calculate_lights(color, face.normal);
@@ -232,7 +231,7 @@ bool Projector::calculate_cut_point(const Point3& vertex,
                                     const Vector3& dir_v,
                                           Point2& point) {
   // Calc cut point line - plane
-  const double A = camera->get_plane_vector().x();
+  const double A = camera->get_plane_vector().x();  // Since we are in camera space this should be always (0, 0, 1)
   const double B = camera->get_plane_vector().y();
   const double C = camera->get_plane_vector().z();
 
@@ -258,11 +257,11 @@ bool Projector::calculate_cut_point(const Point3& vertex,
   if ((f < 0 && C > 0) || (f > 0 && C < 0)) {
     T1 = -T1;
     return_value = false;
-  }  
+  }
 
   double parameter = T1 / T2;
 
-  // Intersection in global coordiantes
+  // Intersection in global coordiantes FIXME: Should be in camera
   point.set_x(a + b * parameter);  
   point.set_y(-(c + d * parameter));
   //point.set_z(e + f * parameter);

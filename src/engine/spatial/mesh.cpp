@@ -68,7 +68,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
 
   for (const auto& mesh : mesh_list) {
     unsigned size = mesh->global_coordenates_faces.size();
-    unsigned segment = size / N_THREADS;
+    double segment = double(size) / N_THREADS;
 
     auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(N_THREADS, [&](unsigned i) {      

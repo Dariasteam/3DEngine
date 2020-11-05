@@ -19,6 +19,7 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
   for (auto& promise : promises)
     promise.get();
 */
+
   // New method, thread pool
   unsigned counter = 0;
   active = false;

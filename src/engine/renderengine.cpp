@@ -43,5 +43,5 @@ void RenderEngine::render_loop () {
     fps_render.update();
     a = true;
     cv.notify_one();
-  }  
+  }
 }
