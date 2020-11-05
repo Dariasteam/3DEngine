@@ -7,15 +7,18 @@
 class RasterizeTextured: public AbstractRasteriserCPU {
 private:
   TextureProjector projector;
+  Texture tex;
 
   inline void fillTopFlatTriangle(const Triangle2i& triangle);
-
   inline void fillBottomFlatTriangle(const Triangle2i& triangle);
 
-  void rasterize_triangle (Triangle2i& triangle,
-                           const Texture& tex);
+  void rasterize_triangle (Triangle2i& triangle);
 public:
-  RasterizeTextured(World* w, FrameBufferHandler* cv) : AbstractRasteriserCPU (w, cv) {}
+  RasterizeTextured(World* w, FrameBufferHandler* cv) :
+    AbstractRasteriserCPU (w, cv)
+  {
+    tex.load ("pic.ppm");
+  }
 };
 
 #endif // RASTERIZETEXTURED_H

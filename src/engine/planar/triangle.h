@@ -45,7 +45,7 @@ struct Triangle2i {
   double z_value;   // distance to camera
   Color888 color = {0, 0, 0};
 
-  UV uv;
+  UV uv = {};
 
   Triangle2i (const Triangle2i& t) :
     a (t.a),

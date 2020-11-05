@@ -9,13 +9,13 @@ World::World(Camera* cm) :
     // UPER FACES
     Face({          // RIGHT FACE
       {0 , 0,  0},   // vertex a
-      {0 ,50,  0},   // vertex c
-      {50,50,  0},   // vertex b
-      {0 , 0, -1},    // fake_normal
+      {0 ,500,  0},   // vertex c
+      {500,500,  0},   // vertex b
+      {0 , 0, 1},    // fake_normal
 
-      {0,  0,  0},    // fake_normal_a
-      {0,  0,  0},    // fake_normal_b
-      {0,  0,  0},    // fake_normal_c
+      {0,  0,  1},    // fake_normal_a
+      {0,  0,  1},    // fake_normal_b
+      {0,  0,  1},    // fake_normal_c
     }),
   };
 
@@ -23,6 +23,7 @@ World::World(Camera* cm) :
   tex.load ("pic.ppm");
   a_mesh->texture = tex;
 
+  a_mesh->color = {255, 0, 255};
   a_mesh->uv_per_face = {
     {
       {0, 0},
@@ -31,9 +32,11 @@ World::World(Camera* cm) :
     }
   };
 
+  a_mesh->generate_data();
+
   a_mesh->color = {250, 150, 100};
   a_mesh->rotate_y(10);
-  a_mesh->translate_global({0, -1.5, 50});
+  a_mesh->translate_global({0, 0, 5});
   add_mesh(a_mesh);
 */
 
@@ -105,6 +108,19 @@ World::World(Camera* cm) :
   parsed_mesh->rotate_y(10);
   parsed_mesh->translate_global({0, -1.5, 50});
 
+  // temporary since we don't have real uvs
+  parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
+  for (unsigned i = 0; i < parsed_mesh->uv_per_face.size(); i++) {
+    parsed_mesh->uv_per_face[i] = {
+      {0, 0},
+      {0, 1},
+      {1, 1}
+    };
+  }
+
+  Texture tex;
+  tex.load ("pic.ppm");
+  parsed_mesh->texture = tex;
 /*
   mesh_2->color = {0, 150, 100};
   mesh_2->rotate_y(10);

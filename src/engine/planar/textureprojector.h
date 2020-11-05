@@ -1,7 +1,6 @@
 #ifndef TEXTUREPROJECTOR_H
 #define TEXTUREPROJECTOR_H
 
-#include "../../frontends/framebufferhandler.h"
 #include "../math/matrix2.h"
 #include "texture.h"
 #include "triangle.h"
