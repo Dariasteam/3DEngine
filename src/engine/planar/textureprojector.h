@@ -39,14 +39,17 @@ public:
 
     auto m2 = m * basis_changer;
 
-    // FIXME: Precalculate this
     int x_tex = (v_origin.X + m2[0][0]) * texture->get_width();
     int y_tex = (v_origin.Y + m2[0][1]) * texture->get_height();
 
     if (x_tex < 0 || x_tex > texture->get_width() ||
         y_tex < 0 || y_tex > texture->get_height()) {
-      //std::cout << "ERROR" << std::endl;
-      return {150, 150};
+
+      x_tex = std::min({x_tex, texture->get_width()});
+      x_tex = std::max({x_tex, 0});
+
+      y_tex = std::min({y_tex, texture->get_height()});
+      y_tex = std::max({y_tex, 0});
     }
 
     return {x_tex, y_tex};

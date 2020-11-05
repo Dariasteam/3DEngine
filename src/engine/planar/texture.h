@@ -50,8 +50,8 @@ public:
     content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i] = c;
   }
 
-  inline unsigned get_width() const { return width; }
-  inline unsigned get_height() const { return height; }
+  inline int get_width() const { return width; }
+  inline int get_height() const { return height; }
 
   void print();  
 

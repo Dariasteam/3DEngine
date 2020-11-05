@@ -111,9 +111,9 @@ World::World(Camera* cm) :
   for (unsigned i = 0; i < parsed_mesh->uv_per_face.size() ; i++) {
 
     parsed_mesh->uv_per_face[i] = {
-      {0, 0},
+      {1, 1},
       {0, 1},
-      {1, 1}
+      {0, 0}
     };
   }
 
