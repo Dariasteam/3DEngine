@@ -2,8 +2,7 @@
 
 Texture::Texture(unsigned w, unsigned h) :
   width(w),
-  height(h),
-  content(new unsigned char[w * h * COLOR_DEPTH])
+  height(h)
 {}
 
 Texture::Texture() :
@@ -11,7 +10,18 @@ Texture::Texture() :
   height(0)
 {}
 
-void Texture::load(const std::string& filename) {
+Texture1C::Texture1C() {}
+Texture1C::Texture1C(unsigned w, unsigned h) : Texture (w, h) {
+  content = new unsigned char[w * h];
+}
+
+
+Texture3C::Texture3C() {}
+Texture3C::Texture3C(unsigned w, unsigned h) : Texture (w, h) {
+  content = new unsigned char[w * h * COLOR_DEPTH];
+}
+
+void Texture3C::load(const std::string& filename) {
 
   std::string token;
   std::ifstream file(filename);
@@ -46,7 +56,7 @@ void Texture::load(const std::string& filename) {
   }
 }
 
-void Texture::write(const std::string& filename) const {
+void Texture3C::write(const std::string& filename) const {
 
   std::cout << "Start writing" << std::endl;
 

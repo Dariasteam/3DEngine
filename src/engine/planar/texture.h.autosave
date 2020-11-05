@@ -41,16 +41,11 @@ public:
     return content[y * width + x + i];
   }
 
-  inline unsigned char get_color (const unsigned x,
-                                  const unsigned y) const {
-    return content[y * width * COLOR_DEPTH + x * COLOR_DEPTH];
-  }
-
   inline void set (const unsigned x,
                    const unsigned y,
                    const unsigned i,
                    const unsigned char c) {
-    content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i] = c;
+    content[y * width +  x  + i] = c;
   }
 
 
