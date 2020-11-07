@@ -1,86 +1,79 @@
 #include "texture.h"
 
-Texture::Texture(unsigned w, unsigned h) :
-  width(w),
-  height(h)
-{}
-
-Texture::Texture() :
+template <typename T, unsigned D>
+Texture<T, D>::Texture() :
   width(0),
-  height(0)
+  height(0),
+  depth(D),
+  content(new T[1])
 {}
 
-Texture1C::Texture1C() {}
-Texture1C::Texture1C(unsigned w, unsigned h) : Texture (w, h) {
-  content = new unsigned char[w * h];
+template <typename T, unsigned D>
+Texture<T, D>::Texture(unsigned w, unsigned h) :
+  width(w),
+  height(h),
+  depth(D),
+  content(new T[w * h * D])
+{}
+
+template<typename T, unsigned D>
+void Texture<T, D>::fill(T value) {
+  std::fill(content, content + (width * height * depth), value);
 }
 
-
-Texture3C::Texture3C() {}
-Texture3C::Texture3C(unsigned w, unsigned h) : Texture (w, h) {
-  content = new unsigned char[w * h * COLOR_DEPTH];
-}
-
-void Texture3C::load(const std::string& filename) {
+template <typename T, unsigned D>
+void Texture<T, D>::load(const std::string& filename) {
 
   std::string token;
   std::ifstream file(filename);
 
   file >> token;    // P3
+  if (unsigned(token[1]) != depth)
+    std::cerr << "Error loading Texture " << filename << " incorrect depth value" << std::endl;
+
   file >> width;
   file >> height;
 
   file >> token;
 
-  content = new unsigned char [height * width * COLOR_DEPTH];
+  content = new T [height * width * depth];
 
-  for (unsigned i = 0; i < height; i++) {
-    for (unsigned j = 0; j < width; j++) {
-      unsigned char r;
-      unsigned char g;
-      unsigned char b;
-
-      file >> token;
-      r = std::stoi(token);
-
-      file >> token;
-      g = std::stoi(token);
-
-      file >> token;
-      b = std::stoi(token);
-
-      content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 0] = b;  // b r g
-      content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 1] = r;
-      content [i * width * COLOR_DEPTH + j * COLOR_DEPTH + 2] = g;
+  for (unsigned y = 0; y < height; y++) {
+    for (unsigned x = 0; x < width; x++) {
+      for (unsigned d = 0; d < depth; d++) {
+        T tmp;
+        file >> tmp;
+        set(x, y, tmp, d);
+      }
     }
   }
 }
 
-void Texture3C::write(const std::string& filename) const {
-
-  std::cout << "Start writing" << std::endl;
-
+template <typename T, unsigned D>
+void Texture<T, D>::write(const std::string& filename) const {
   std::ofstream file;
   file.open (filename);
 
   if (file.is_open()) {
 
-    file << "P" << COLOR_DEPTH << "\n"
+    file << "P" << depth << "\n"
          << width << " "
          << height << " "
          << 255 << "\n";
 
-    for (unsigned i = 0; i < height; i++) {
+    for (unsigned i = 0; i <   height; i++) {
       for (unsigned j = 0; j < width; j++) {
-        for (unsigned d = 0; d < COLOR_DEPTH; d++) {
-          file << unsigned(content[i * width * COLOR_DEPTH +
-                                   j * COLOR_DEPTH + d]) << " ";
+        for (unsigned d = 0; d < depth; d++) {
+          file << unsigned(content[i * width * depth +
+                                   j * depth + d]) << " ";
         }
         file << "\n";
       }
     }
     file.close();
   }
-
-  std::cout << "End writting" << std::endl;
 }
+
+template class Texture<unsigned char, 3>; // Regular Texture
+template class Texture<double, 1>;        // Z Buffer
+template class Texture<unsigned long, 1>; // Triangle Buffer

@@ -47,6 +47,7 @@ void FrameBufferHandler::set_screen_buffers(const unsigned char* b_aa,
   b_b = b_bb;
 }
 
+/*
 bool FrameBufferHandler::paint() {
   const unsigned char* buffer_;
 
@@ -76,4 +77,22 @@ bool FrameBufferHandler::paint() {
 
   return true;
 }
+*/
 
+bool FrameBufferHandler::paint(const Texture<unsigned long, 1>& frame) {
+
+  if (initialized) {
+    for (unsigned y = 0; y < frame.get_height(); y++) {
+      for (unsigned x = 0; x < frame.get_width(); x++) {
+        location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
+                   (y+vinfo.yoffset) * finfo.line_length;
+
+        *(fbp + location + 0) = frame.get(x, y, 2) * 100; // B
+        *(fbp + location + 1) = frame.get(x, y, 1) * 100; // G
+        *(fbp + location + 2) = frame.get(x, y, 0) * 50; // R
+      }
+    }
+  }
+
+  return true;
+}

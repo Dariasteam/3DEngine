@@ -5,16 +5,12 @@
 
 class RasteriserFlat : public AbstractRasteriserCPU {
 private:
-  inline void fillTopFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
+  inline void fillTopFlatTriangle(const Triangle2i& triangle, unsigned t_index);
+  inline void fillBottomFlatTriangle(const Triangle2i& triangle, unsigned t_index);
 
-  inline void fillBottomFlatTriangle(const Triangle2i& triangle,
-                              std::vector<std::vector<Color888>>* screen_buffer);
-
-  void rasterize_triangle (Triangle2i& triangle,
-                           std::vector<std::vector<Color888>>* screen_buffer);
+  void rasterize_triangle (Triangle2i& triangle, unsigned t_index);
 public:
-  RasteriserFlat(World* w, Canvas* cv) : AbstractRasteriserCPU (w, cv) {}
+  RasteriserFlat(World* w) : AbstractRasteriserCPU (w) {}
 };
 
 #endif // RASTERISERFLAT_H

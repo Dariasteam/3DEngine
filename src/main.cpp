@@ -1,10 +1,10 @@
 #include "engine/projector.h"
 #include "engine/camera.h"
 #include "engine/world.h"
-#include "engine/rasteriser/rasteriserinterpolatedvertex.h"
-#include "engine/rasteriser/rasterizetextured.h"
+//#include "engine/rasteriser/rasteriserinterpolatedvertex.h"
+//#include "engine/rasteriser/rasterizetextured.h"
 //#include "../../../engine/rasteriser/rasteriseropencl.h"
-//#include "../../../engine/rasteriser/rasteriserflat.h"
+#include "engine/rasteriser/rasteriserflat.h"
 //#include "../../../engine/rasteriser/rasteriserwireframe.h"
 #include "engine/renderengine.h"
 #include "frontends/framebufferhandler.h"
@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
   World world (&camera);
   Projector projector (&camera, &world);
 
-  RasterizeTextured rasteriser (&world, &framebuffer);
+  //RasterizeTextured rasteriser (&world);
   //RasteriserInterpolatedVertex rasteriser (&world, &framebuffer);
 
-  //RasteriserFlat rasteriser(&world, w.get_canvas());
+  RasteriserFlat rasteriser(&world);
   RenderEngine engine (&projector, &rasteriser, &framebuffer, &world);
 
   /*

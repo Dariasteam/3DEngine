@@ -16,15 +16,15 @@ private:
   Point2i t_origin;
   Point2  v_origin;
 
-  Texture const* texture;
+  Texture<unsigned char, 3> const* texture;
 public:
   TextureProjector();
 
-  void project (const Texture& tex,
+  void project (const Texture<unsigned char, 3>& tex,
                 Triangle2i& projected_triangle,
                 const UV& uv);
 
-  void generate_uv_projector (const Texture& tex,
+  void generate_uv_projector (const Texture<unsigned char, 3>& tex,
                               const Triangle2i& projected_triangle,
                               const UV& uv);
 

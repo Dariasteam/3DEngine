@@ -22,7 +22,7 @@ struct Mesh : public Spatial {
   Point3 p{1,1,1};
 
   std::vector<UV> uv_per_face;
-  Texture texture;
+  Texture<unsigned char, 3> texture;
 
   Mesh () {}
   ~Mesh () {}

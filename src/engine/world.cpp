@@ -123,7 +123,7 @@ World::World(Camera* cm) :
     };
   }
 
-  Texture tex;
+  Texture <unsigned char, 3> tex;
   tex.load ("line_texture.ppm");
   parsed_mesh->texture = tex;
 

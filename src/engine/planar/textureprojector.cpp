@@ -2,7 +2,7 @@
 
 TextureProjector::TextureProjector() {}
 
-void TextureProjector::generate_uv_projector(const Texture& tex,
+void TextureProjector::generate_uv_projector(const Texture<unsigned char, 3>& tex,
                                              const Triangle2i& projected_triangle,
                                              const UV& uv) {
   t_origin = projected_triangle.a;
@@ -32,7 +32,11 @@ void TextureProjector::generate_uv_projector(const Texture& tex,
 
 Color888 TextureProjector::get_color_on_uv(int x, int y) {
   const auto& point = get_point_on_uv(x, y);
-  return texture->get_color(point.X, point.Y);
+  return {
+    texture->get(point.X, point.Y, 0),
+    texture->get(point.X, point.Y, 2),
+    texture->get(point.X, point.Y, 3),
+  };
 }
 
 Point2i TextureProjector::get_point_on_uv(int x, int y) {

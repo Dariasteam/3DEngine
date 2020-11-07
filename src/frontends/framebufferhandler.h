@@ -1,9 +1,10 @@
 #ifndef FRAMEBUFFERHANDLER_H
 #define FRAMEBUFFERHANDLER_H
 
-#include "../engine/math/point2d.h"
-#include "../engine/planar/rect.h"
-#include "../engine/planar/triangle.h"
+//#include "../engine/math/point2d.h"
+//#include "../engine/planar/rect.h"
+//#include "../engine/planar/triangle.h"
+#include "../engine/planar/texture.h"
 
 #include <vector>
 #include <algorithm>
@@ -44,8 +45,6 @@ private:
 
   std::mutex mtx;
   bool reading_buffer_a = false;
-
-  inline Point2 adjust_coordinates (const Point2& p);
 public:
   FrameBufferHandler();
   ~FrameBufferHandler() {
@@ -67,7 +66,7 @@ public:
     mtx.unlock();
   }
 
-  bool paint();
+  bool paint(const Texture<unsigned long, 1>& frame);
 };
 
 #endif // FRAMEBUFFERHANDLER_H

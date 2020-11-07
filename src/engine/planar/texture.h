@@ -8,89 +8,91 @@
 #include <sstream>
 #include "../math/point2.h"
 
+// Fixme use a triangle instead?
 struct UV {
   Point2 p;
   Vector2 u;
   Vector2 v;
 };
 
+template <typename T, unsigned D>
 class Texture {
 protected:
   unsigned width;
   unsigned height;
-  unsigned char* content;
+  unsigned depth;
+  T* content;
 public:
   Texture();
   Texture(unsigned w, unsigned h);
-  virtual void load(const std::string& filename) = 0;
-  virtual void write(const std::string& filename) const;
+  // FIXME: This causes an error
+  ~Texture() {
+    //delete[] content;
+  }
 
-  inline int get_width() const { return width; }
-  inline int get_height() const { return height; }
-};
-
-class Texture1C : public Texture {
-public:
   void load(const std::string& filename);
   void write(const std::string& filename) const;
 
-  inline unsigned char get (const unsigned x,
-                            const unsigned y,
-                            const unsigned i) const {
+  inline int get_width() const { return width; }
+  inline int get_height() const { return height; }
 
-    return content[y * width + x + i];
-  }
+  inline T get (const unsigned x,
+                const unsigned y,
+                const unsigned i = 0) const {
 
-  inline unsigned char get_color (const unsigned x,
-                                  const unsigned y) const {
-    return content[y * width * COLOR_DEPTH + x * COLOR_DEPTH];
+    return content[y * width * depth + x * depth + i];
   }
 
   inline void set (const unsigned x,
                    const unsigned y,
-                   const unsigned i,
-                   const unsigned char c) {
-    content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i] = c;
+                   const T c,
+                  const unsigned i = 0) {
+    content[y * width * depth + x * depth + i] = c;
   }
 
+  void fill (T value);
+};
+
+/*
+template <typename T>
+class Texture1C : public Texture<T> {
+public:
+  void load(const std::string& filename);
+  void write(const std::string& filename) const;
+
+  inline T get (const unsigned x,
+                const unsigned y) const {
+
+    return content[y * width + x];
+  }
+
+  inline void set (const unsigned x,
+                   const unsigned y,
+                   const T c) {
+    content[y * width +  x] = c;
+  }
 
   Texture1C();
   Texture1C(unsigned w, unsigned h);
 };
 
-class Texture3C : public Texture {
-private:
-  const unsigned COLOR_DEPTH = 3;
+template <typename T>
+class Texture3C : public Texture<T> {
 public:
   void load(const std::string& filename);
   void write(const std::string& filename) const;
 
-  inline unsigned char get (const unsigned x,
-                            const unsigned y,
-                            const unsigned i) const {
-
-    return content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i];
-  }
-
   inline Color888 get_color (const unsigned x,
                              const unsigned y) const {
     return Color888 {
-      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 1],
-      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 2],
-      content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + 3]
+      content[y * width * depth + x * depth + 1],
+      content[y * width * depth + x * depth + 2],
+      content[y * width * depth + x * depth + 3]
     };
   }
-
-  inline void set (const unsigned x,
-                   const unsigned y,
-                   const unsigned i,
-                   const unsigned char c) {
-    content[y * width * COLOR_DEPTH + x * COLOR_DEPTH + i] = c;
-  }
-
 
   Texture3C();
   Texture3C(unsigned w, unsigned h);
 };
-
+*/
 #endif // TEXTURE_H

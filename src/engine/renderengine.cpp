@@ -9,9 +9,11 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
     fps_render("RENDER"),
     fps_painter("PAINTER")
   {
-
+/*
   std::thread t2 (&RenderEngine::painting_loop, this);  
   t2.detach();
+  */
+  rasteriser->set_screen_dimensions(1000, 1000);
   render_loop();
 }
 
@@ -20,6 +22,7 @@ std::mutex m;
 std::condition_variable cv;
 
 void RenderEngine::painting_loop() {  
+  /*
   while (1) {
     std::unique_lock<std::mutex> lk(m);
     cv.wait(lk, []{return a;});
@@ -28,6 +31,7 @@ void RenderEngine::painting_loop() {
     canvas->paint();
     fps_painter.update();
   }
+  */
 }
 
 void RenderEngine::render_loop () {
@@ -41,7 +45,9 @@ void RenderEngine::render_loop () {
     rasteriser->rasterise(triangles, sz);
 
     fps_render.update();
-    a = true;
-    cv.notify_one();
+    //a = true;
+
+    canvas->paint(rasteriser->get_triangle_buffer());
+    //cv.notify_one();
   }
 }
