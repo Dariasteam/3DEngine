@@ -15,7 +15,7 @@ void TextureProjector::generate_uv_projector(const Texture<unsigned char, 3>& te
     {(uv.v.X - uv.p.X), (uv.v.Y - uv.p.Y)}
   };
 
-  // Screen basis in base of projected triangle points (origin)
+  // Projected triangle vertices as base of the screen (origin)
   Basis2 screen_basis ({
                {double(projected_triangle.b.X - projected_triangle.a.X),
                   double(projected_triangle.b.Y - projected_triangle.a.Y)},
@@ -34,8 +34,8 @@ Color888 TextureProjector::get_color_on_uv(int x, int y) {
   const auto& point = get_point_on_uv(x, y);
   return {
     texture->get(point.X, point.Y, 0),
+    texture->get(point.X, point.Y, 1),
     texture->get(point.X, point.Y, 2),
-    texture->get(point.X, point.Y, 3),
   };
 }
 

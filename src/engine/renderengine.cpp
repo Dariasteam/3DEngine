@@ -17,6 +17,7 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
 
   // Add shader steps
   fragmentShader.push_operation(new FlatNormals());
+  fragmentShader.push_operation(new TexturePainter());
 
   render_loop();
 }
@@ -54,7 +55,7 @@ void RenderEngine::render_loop () {
     fps_render.update();
     //a = true;
 
-    canvas->paint(CommonBuffers::get().normal_buffer);
+    canvas->paint(CommonBuffers::get().screen_buffer);
     //cv.notify_one();
   }
 }

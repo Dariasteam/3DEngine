@@ -27,10 +27,14 @@ void Texture<T, D>::load(const std::string& filename) {
   std::string token;
   std::ifstream file(filename);
 
-  file >> token;    // P3
-  if (unsigned(token[1]) != depth)
-    std::cerr << "Error loading Texture " << filename << " incorrect depth value" << std::endl;
+  file >> token;                    // P3
+  if (token[1] != '3') {
+    std::cerr << "Error loading Texture " << filename <<
+                 " incorrect depth value (" << depth << " vs " << token[1] << ")\n";
+    return;
+  }
 
+  depth = token[1] - '0';
   file >> width;
   file >> height;
 
@@ -41,8 +45,8 @@ void Texture<T, D>::load(const std::string& filename) {
   for (unsigned y = 0; y < height; y++) {
     for (unsigned x = 0; x < width; x++) {
       for (unsigned d = 0; d < depth; d++) {
-        T tmp;
-        file >> tmp;
+        file >> token;
+        T tmp = std::stoi(token);
         set(x, y, tmp, d);
       }
     }

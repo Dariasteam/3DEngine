@@ -15,11 +15,21 @@
 #include "../world.h"
 #include "../planar/texture.h"
 
+#include <algorithm>
 #include <list>
 
 // FIXME: Generate all texture projection matrixes previously
 
 class FragmentOperation {
+protected:
+  inline Point2i to_coordenates(unsigned pixel_index) {
+    unsigned width = CommonBuffers::get().get_width();
+
+    unsigned y = pixel_index / width;
+    unsigned x = pixel_index  - (y * width);
+
+    return Point2i(x, y);
+  }
 public:
   static std::vector<Triangle2i>* triangles;
   static std::vector<TextureProjector> texture_projectors;

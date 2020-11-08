@@ -29,15 +29,12 @@ public:
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
 
-  void set_dimension (unsigned w, unsigned h) {
-    triangle_index_buffer = Texture<unsigned long, 1> (w, h);
-    z_buffer = Texture<double, 1> (w, h);
-    normal_buffer = Texture<unsigned char, 3> (w, h);
-  };
+  void set_dimension (unsigned w, unsigned h);;
 
   inline unsigned get_height() { return triangle_index_buffer.get_height(); }
   inline unsigned get_width() { return triangle_index_buffer.get_width(); }
 
+  void clean();
 };
 
 

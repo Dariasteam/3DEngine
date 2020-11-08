@@ -18,8 +18,8 @@ World::World(Camera* cm) :
 
     parsed_mesh->uv_per_face[i] = {
       {0, 0},
-      {0, .5},
-      {.5, .5}
+      {0, .9},
+      {.9, .9}
     };
   }
 

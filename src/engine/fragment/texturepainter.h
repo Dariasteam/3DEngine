@@ -5,7 +5,7 @@
 
 class TexturePainter : public FragmentOperation {
 public:
-  void operator () (unsigned pixel_index) const;
+  void operator () (unsigned pixel_index);
 };
 
 #endif // TEXTUREPROJECTORSHADER_H
