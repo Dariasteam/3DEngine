@@ -43,11 +43,19 @@ public:
     return content[y * width * depth + x * depth + i];
   }
 
+  inline T get (const unsigned index) const {
+    return content[index];
+  }
+
   inline void set (const unsigned x,
                    const unsigned y,
                    const T c,
                   const unsigned i = 0) {
     content[y * width * depth + x * depth + i] = c;
+  }
+
+  inline void set (const unsigned index, const T& c) const {
+    content[index] = c;
   }
 
   void fill (T value);

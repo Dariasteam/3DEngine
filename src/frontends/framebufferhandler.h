@@ -66,7 +66,7 @@ public:
     mtx.unlock();
   }
 
-  bool paint(const Texture<unsigned long, 1>& frame);
+  bool paint(const Texture<unsigned char, 3>& frame);
 };
 
 #endif // FRAMEBUFFERHANDLER_H

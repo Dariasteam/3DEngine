@@ -168,8 +168,8 @@ bool Projector::calculate_mesh_projection(const Face& face,
   double mod_v3 = Vector3::vector_module(face.c);
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
-  //double z_max = std::max({mod_v1, mod_v2, mod_v3});
-  if (z_min > 10000) { return false; }
+  //double z_max = std::max({mod_v1, mod_v2, mod_v3});  
+  if (z_min > INFINITY) { return false; }
 
   // 3. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)
@@ -185,14 +185,23 @@ bool Projector::calculate_mesh_projection(const Face& face,
   Color aux_color = calculate_lights(color, face.normal);
   tmp_triangle.color   = Color888(aux_color);
 */
+  // Now managed by the fragment shader
+  /*
   tmp_triangle.a.color = calculate_lights(color, face.normal_a);
   tmp_triangle.b.color = calculate_lights(color, face.normal_b);
   tmp_triangle.c.color = calculate_lights(color, face.normal_c);
-
+*/
   // FIXME: This should be managed by the rasteriser
   // 8. Convert triangle to screen space
+
+  // Copy normals FIXME: Use only vertex normals, not glboal one
   auto& e = tmp_triangles_i[index][tmp_triangles_sizes[index]];
   triangle_to_screen_space(tmp_triangle, e);
+
+  e.normal   = face.normal;
+  e.normal_a = face.normal_a;
+  e.normal_b = face.normal_b;
+  e.normal_c = face.normal_c;
 
   // Set uv
   e.uv = uv;

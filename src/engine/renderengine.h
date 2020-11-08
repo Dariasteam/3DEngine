@@ -14,6 +14,10 @@
 #include "world.h"
 #include "camera.h"
 #include "rasteriser/abstractrasteriserCPU.h"
+
+#include "fragment/fragmentshader.h"
+#include "fragment/normals.h"
+
 #include "../frontends/framebufferhandler.h"
 
 class FPSControl {
@@ -52,6 +56,8 @@ private:
   AbstractRasteriser* rasteriser;
   FrameBufferHandler* canvas;
   World* world;
+
+  FragmentShader fragmentShader;
 
   std::thread t;
 

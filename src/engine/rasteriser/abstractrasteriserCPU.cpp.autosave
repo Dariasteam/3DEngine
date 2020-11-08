@@ -14,7 +14,7 @@ void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>* triangles,
 */
   // 2. Clear buffers
 
-  CommonBuffers::get().z_buffer.fill(INFINITY);
+  CommonBuffers::get().z_buffer.fill(INFINITY_DISTANCE);
   CommonBuffers::get().triangle_index_buffer.fill(0);
   CommonBuffers::get().normal_buffer.fill(0);
 

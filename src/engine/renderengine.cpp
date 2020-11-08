@@ -13,7 +13,11 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
   std::thread t2 (&RenderEngine::painting_loop, this);  
   t2.detach();
   */
-  rasteriser->set_screen_dimensions(1000, 1000);
+  CommonBuffers::get().set_dimension(1000, 1000);
+
+  // Add shader steps
+  fragmentShader.push_operation(new Normals());
+
   render_loop();
 }
 
@@ -44,10 +48,13 @@ void RenderEngine::render_loop () {
 
     rasteriser->rasterise(triangles, sz);
 
+    // Execute shading
+    fragmentShader(triangles);
+
     fps_render.update();
     //a = true;
 
-    canvas->paint(rasteriser->get_triangle_buffer());
+    canvas->paint(CommonBuffers::get().normal_buffer);
     //cv.notify_one();
   }
 }

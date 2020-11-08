@@ -5,6 +5,7 @@
 #include "../math/point3.h"
 #include "vertex.h"
 #include "../planar/texture.h"
+#include "../math/vector3.h"
 
 struct Triangle2 {
   Point2 a;
@@ -41,6 +42,12 @@ struct Triangle2i {
   Point2i a;
   Point2i b;
   Point2i c;
+
+  Vector3 normal;
+
+  Vector3 normal_a;
+  Vector3 normal_b;
+  Vector3 normal_c;
 
   double z_value;   // distance to camera
   Color888 color = {0, 0, 0};
