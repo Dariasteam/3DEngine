@@ -23,8 +23,8 @@ private:
   std::vector <Mesh*> meshes;
 
   DirectionalLight sunlight {
-    Vector3 {0.5, 0.5, 0},
-    Color {255, 255, 255},
+    Vector3 {1, 0.5, .1},
+    Color {1, 1, 1},
     1.2
   };
 
