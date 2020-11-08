@@ -5,7 +5,7 @@ World::World(Camera* cm) :
   {
 
   sun = {
-    Vector3 {.5, .5, 0},
+    Vector3 {-.5, .5, 0},
     Color {1, 1, 1},
     2.2
   };
