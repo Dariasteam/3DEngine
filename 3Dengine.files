@@ -10,6 +10,8 @@ src/engine/fragment/flatnormals.cpp
 src/engine/fragment/flatnormals.h
 src/engine/fragment/fragmentshader.cpp
 src/engine/fragment/fragmentshader.h
+src/engine/fragment/lightness.cpp
+src/engine/fragment/lightness.h
 src/engine/fragment/texturepainter.cpp
 src/engine/fragment/texturepainter.h
 src/engine/math/matrix.cpp

@@ -1,9 +1,11 @@
 #include "fragmentshader.h"
 
-FragmentShader::FragmentShader() {
+FragmentShader::FragmentShader(const World* w) {
   push_operation(new CalculateProjections());
+
   // FIXME: Asociate textures per mesh
   FragmentOperation::texture.load("line_texture.ppm");
+  FragmentOperation::world = w;
 }
 
 void FragmentShader::operator()(std::vector<Triangle2i>* triangles) {
@@ -55,4 +57,6 @@ std::vector<Triangle2i>* FragmentOperation::triangles = nullptr;
 std::vector<TextureProjector> FragmentOperation::texture_projectors;
 std::vector<bool> FragmentOperation::matrices;
 Texture<unsigned char, 3> FragmentOperation::texture;
+const World* FragmentOperation::world = nullptr;
 std::mutex CalculateProjections::mtx;
+

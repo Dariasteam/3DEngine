@@ -6,6 +6,7 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
     rasteriser (r),
     canvas (c),
     world (w),
+    fragmentShader(w),
     fps_render("RENDER"),
     fps_painter("PAINTER")
   {
@@ -18,6 +19,7 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
   // Add shader steps
   fragmentShader.push_operation(new FlatNormals());
   fragmentShader.push_operation(new TexturePainter());
+  fragmentShader.push_operation(new Lightness());
 
   render_loop();
 }

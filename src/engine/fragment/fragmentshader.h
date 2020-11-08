@@ -4,6 +4,7 @@
 #include "../../auxiliar/multithreadmanager.h"
 #include "../rasteriser/abstractrasteriser.h"
 #include "../projector.h"
+#include "../world.h"
 #include "../planar/textureprojector.h"
 
 #include "../math/point2.h"
@@ -22,7 +23,7 @@
 
 class FragmentOperation {
 protected:
-  inline Point2i to_coordenates(unsigned pixel_index) {
+  inline Point2i pixel_index_to_coordenates(unsigned pixel_index) {
     unsigned width = CommonBuffers::get().get_width();
 
     unsigned y = pixel_index / width;
@@ -30,7 +31,18 @@ protected:
 
     return Point2i(x, y);
   }
+
+  inline unsigned get_triangle_index_at_pixel_index (unsigned pixel_index) {
+    return CommonBuffers::get().triangle_index_buffer.get(pixel_index);
+  }
+
+
+  inline Triangle2i& get_triangle_at_pixel_index(unsigned pixel_index) {
+    return (*triangles)[get_triangle_index_at_pixel_index(pixel_index)];
+  }
+
 public:
+  static const World* world;
   static std::vector<Triangle2i>* triangles;
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<bool> matrices;
@@ -49,7 +61,7 @@ class FragmentShader {
 private:
   std::list<FragmentOperation*> operations;
 public:
-  FragmentShader();
+  FragmentShader(const World* w);
   void operator() (std::vector<Triangle2i>* triangles);
   void push_operation(FragmentOperation* op);
 };

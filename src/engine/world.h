@@ -23,16 +23,16 @@ private:
   std::vector <Mesh*> meshes;
 
   DirectionalLight sunlight {
-    Vector3 {1, 0.5, 0},
+    Vector3 {0.5, 0.5, 0},
     Color {255, 255, 255},
-    0.5 //1.2
+    1.2
   };
 
 public:
   World (Camera* cm);
 
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
-  inline const DirectionalLight get_light () { return sunlight; }
+  inline const DirectionalLight get_light () const { return sunlight; }
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);

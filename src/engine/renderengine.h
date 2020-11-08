@@ -18,6 +18,7 @@
 #include "fragment/fragmentshader.h"
 #include "fragment/flatnormals.h"
 #include "fragment/texturepainter.h"
+#include "fragment/lightness.h"
 
 #include "../frontends/framebufferhandler.h"
 
