@@ -16,7 +16,7 @@
 #include "rasteriser/abstractrasteriserCPU.h"
 
 #include "fragment/fragmentshader.h"
-#include "fragment/normals.h"
+#include "fragment/flatnormals.h"
 
 #include "../frontends/framebufferhandler.h"
 

@@ -16,7 +16,7 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
   CommonBuffers::get().set_dimension(1000, 1000);
 
   // Add shader steps
-  fragmentShader.push_operation(new Normals());
+  fragmentShader.push_operation(new FlatNormals());
 
   render_loop();
 }

@@ -7,8 +7,6 @@
 #include <vector>
 #include <algorithm>
 
-#define INFINITY_DISTANCE 1000000000
-
 class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
 protected:

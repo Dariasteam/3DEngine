@@ -169,7 +169,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
   //double z_max = std::max({mod_v1, mod_v2, mod_v3});  
-  if (z_min > INFINITY) { return false; }
+  if (z_min > INFINITY_DISTANCE) { return false; }
 
   // 3. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)

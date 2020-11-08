@@ -6,10 +6,12 @@ src/auxiliar/openclhandler.cpp
 src/auxiliar/openclhandler.h
 src/engine/camera.cpp
 src/engine/camera.h
+src/engine/fragment/flatnormals.cpp
+src/engine/fragment/flatnormals.h
 src/engine/fragment/fragmentshader.cpp
 src/engine/fragment/fragmentshader.h
-src/engine/fragment/normals.cpp
-src/engine/fragment/normals.h
+src/engine/fragment/texturepainter.cpp
+src/engine/fragment/texturepainter.h
 src/engine/math/matrix.cpp
 src/engine/math/matrix.h
 src/engine/math/matrix2.h

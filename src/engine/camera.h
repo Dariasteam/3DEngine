@@ -6,6 +6,8 @@
 #include "planar/rect.h"
 #include "spatial/spatial.h"
 
+#define INFINITY_DISTANCE 10000000
+
 class Camera : public Spatial {
 private:
   RectF bounds;

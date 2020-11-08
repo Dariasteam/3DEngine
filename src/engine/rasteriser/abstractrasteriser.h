@@ -14,7 +14,6 @@
 #include <vector>
 #include <algorithm>
 
-//#define SCREEN_SIZE 1000
 
 class CommonBuffers {
 private:
