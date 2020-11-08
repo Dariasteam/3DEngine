@@ -21,18 +21,13 @@ class World {
 private:
   Camera* camera;
   std::vector <Mesh*> meshes;
-
-  DirectionalLight sunlight {
-    Vector3 {1, 0.5, .1},
-    Color {1, 1, 1},
-    1.2
-  };
+  DirectionalLight sun;
 
 public:
   World (Camera* cm);
 
   inline const std::vector <Mesh*>& get_elements () { return meshes; }
-  inline const DirectionalLight get_light () const { return sunlight; }
+  inline const DirectionalLight get_light () const { return sun; }
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);

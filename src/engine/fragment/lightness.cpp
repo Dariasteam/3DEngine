@@ -14,7 +14,7 @@ void Lightness::operator ()(unsigned pixel_index) {
   Vector3 normal(normal_x, normal_y, normal_z);
 
   // Using dot product as angle
-  double angle_to_light = 1.5 + (normal * light.direction * light.intensity);
+  double angle_to_light = fabs(normal * light.direction) * light.intensity;
 
   Color color = light.color;
   color *= angle_to_light;
