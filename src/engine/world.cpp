@@ -48,7 +48,7 @@ bool movingLeft = false;
 
 void World::calculate_next_frame() const {
   meshes.front()->rotate_y(-0.008);
-  meshes.front()->rotate_x(-0.013);
-  meshes.front()->rotate_z(-0.02);
+  //meshes.front()->rotate_x(-0.013);
+  //meshes.front()->rotate_z(-0.02);
 }
 

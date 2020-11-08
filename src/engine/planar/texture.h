@@ -25,6 +25,7 @@ protected:
 public:
   Texture();
   Texture(unsigned w, unsigned h);
+
   // FIXME: This causes an error
   ~Texture() {
     //delete[] content;

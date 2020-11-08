@@ -5,17 +5,16 @@ void Lightness::operator ()(unsigned pixel_index) {
 
   double normal_x = CommonBuffers::get().normal_buffer.get(pixel_index * 3 + 0);
   double normal_y = CommonBuffers::get().normal_buffer.get(pixel_index * 3 + 1);
-  double normal_z = CommonBuffers::get().normal_buffer.get(pixel_index * 3 + 2);
+  double normal_z = -1;
 
   // Convert to a value between -1 and 1 again
   normal_x = (2 * normal_x - 255) / 255;
   normal_y = (2 * normal_y - 255) / 255;
-  normal_z = (2 * normal_z - 255) / 255;
 
   Vector3 normal(normal_x, normal_y, normal_z);
 
   // Using dot product as angle
-  double angle_to_light = (normal * light.direction * light.intensity);
+  double angle_to_light = 1.5 + (normal * light.direction * light.intensity);
 
   Color color = light.color;
   color *= angle_to_light;

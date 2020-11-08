@@ -47,6 +47,7 @@ public:
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<bool> matrices;
   static Texture<unsigned char, 3> texture;
+  static Texture<unsigned char, 3> normal_map;
 public:
   virtual void operator()(unsigned pixel_index) = 0;
 };

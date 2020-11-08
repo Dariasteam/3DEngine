@@ -4,7 +4,8 @@ FragmentShader::FragmentShader(const World* w) {
   push_operation(new CalculateProjections());
 
   // FIXME: Asociate textures per mesh
-  FragmentOperation::texture.load("line_texture.ppm");
+  FragmentOperation::texture.load("texture.ppm");
+  FragmentOperation::normal_map.load("normal.ppm");
   FragmentOperation::world = w;
 }
 
@@ -47,7 +48,8 @@ void CalculateProjections::operator()(unsigned pixel_index) {
   mtx.unlock();
 
   FragmentOperation::texture_projectors[t_index].generate_uv_projector(
-    texture, (*triangles)[t_index], (*triangles)[t_index].uv);
+        (*triangles)[t_index],
+        (*triangles)[t_index].uv);
 }
 
 
@@ -57,6 +59,7 @@ std::vector<Triangle2i>* FragmentOperation::triangles = nullptr;
 std::vector<TextureProjector> FragmentOperation::texture_projectors;
 std::vector<bool> FragmentOperation::matrices;
 Texture<unsigned char, 3> FragmentOperation::texture;
+Texture<unsigned char, 3> FragmentOperation::normal_map;
 const World* FragmentOperation::world = nullptr;
 std::mutex CalculateProjections::mtx;
 
