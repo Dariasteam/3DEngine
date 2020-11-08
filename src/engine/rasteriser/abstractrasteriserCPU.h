@@ -10,7 +10,7 @@
 class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
 protected:
-  virtual void rasterize_triangle (Triangle2i& triangle, unsigned t_index) = 0;
+  virtual void rasterize_triangle (const Triangle2i& triangle, unsigned t_index) const = 0;
 
 public:
   AbstractRasteriserCPU(World* w) : AbstractRasteriser (w) {}

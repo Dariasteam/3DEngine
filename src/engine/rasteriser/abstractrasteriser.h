@@ -48,7 +48,7 @@ protected:
 
 
   inline void update_buffers(unsigned x, unsigned y,
-                             double z_value, unsigned long t_index) {        
+                             double z_value, unsigned long t_index) const {
 
     if (z_value < CommonBuffers::get().z_buffer.get(x, y)) {
       CommonBuffers::get().z_buffer.set(x, y, z_value);

@@ -5,10 +5,10 @@
 
 class RasteriserFlat : public AbstractRasteriserCPU {
 private:
-  inline void fillTopFlatTriangle(const Triangle2i& triangle, unsigned t_index);
-  inline void fillBottomFlatTriangle(const Triangle2i& triangle, unsigned t_index);
+  inline void fillTopFlatTriangle(const Triangle2i& triangle, unsigned t_index) const;
+  inline void fillBottomFlatTriangle(const Triangle2i& triangle, unsigned t_index) const;
 
-  void rasterize_triangle (Triangle2i& triangle, unsigned t_index);
+  void rasterize_triangle (const Triangle2i& triangle, unsigned t_index) const;
 public:
   RasteriserFlat(World* w) : AbstractRasteriserCPU (w) {}
 };

@@ -16,7 +16,7 @@
  *
  * */
 void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
-                                            unsigned t_index) {
+                                            unsigned t_index) const {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -66,7 +66,7 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
  *
  * */
 void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
-                                         unsigned t_index) {
+                                         unsigned t_index) const {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -98,17 +98,18 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
   }
 }
 
-void RasteriserFlat::rasterize_triangle (Triangle2i& triangle, unsigned t_index) {
+void RasteriserFlat::rasterize_triangle (const Triangle2i& triangle, unsigned t_index) const {
 
   // Sort vertices by Y
-  std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};  
   std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2i& a, const Point2i& b) {
     return std::isless(a.y(), b.y());
   });
 
-  triangle.a = aux_vec[0];
-  triangle.b = aux_vec[1];
-  triangle.c = aux_vec[2];
+  Triangle2i tmp_triangle;
+  tmp_triangle.a = aux_vec[0];
+  tmp_triangle.b = aux_vec[1];
+  tmp_triangle.c = aux_vec[2];
 
   const Point2i& v1 = aux_vec[0];
   const Point2i& v2 = aux_vec[1];
@@ -116,9 +117,9 @@ void RasteriserFlat::rasterize_triangle (Triangle2i& triangle, unsigned t_index)
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
-    fillBottomFlatTriangle(triangle, t_index);
+    fillBottomFlatTriangle(tmp_triangle, t_index);
   } else if (v1.y() == v2.y()) {
-    fillTopFlatTriangle(triangle, t_index);
+    fillTopFlatTriangle(tmp_triangle, t_index);
   } else {
 
     double a = v3.y() - v1.y();
@@ -129,8 +130,8 @@ void RasteriserFlat::rasterize_triangle (Triangle2i& triangle, unsigned t_index)
 
     Point2i v4 (static_cast<int>(std::round(x)), v2.y());
 
-    Triangle2i aux_t1 {triangle};
-    Triangle2i aux_t2 {triangle};
+    Triangle2i aux_t1 {tmp_triangle};
+    Triangle2i aux_t2 {tmp_triangle};
 
     aux_t1.c = v4;
 
