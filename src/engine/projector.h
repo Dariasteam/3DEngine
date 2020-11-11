@@ -1,7 +1,7 @@
 #ifndef RASTERISER_H
 #define RASTERISER_H
 
-#include "camera.h"
+#include "spatial/camera.h"
 #include "world.h"
 #include "planar/triangle.h"
 #include "../auxiliar/multithreadmanager.h"
@@ -25,7 +25,7 @@ private:
 
 
   World* world;
-  Camera* camera;
+  PerspectiveCamera* camera;
 
   bool double_faces = false;
 
@@ -45,8 +45,7 @@ private:
   void set_projection_data ();
   inline bool calculate_mesh_projection (const Face& face,
                                          const UV& uv,
-                                         unsigned index,
-                                         const Color& color);
+                                         unsigned index);
 
   void generate_mesh_list (const std::vector<Mesh*>& meshes);
 
@@ -62,7 +61,7 @@ private:
   bool triangle_inside_camera(const Triangle2 &triangle);
   inline Triangle2i triangle_to_screen_space (const Triangle2& triangle, Triangle2i& t);
 public:
-  Projector(Camera* camera, World* world);
+  Projector(PerspectiveCamera* camera, World* world);
   void project();
 
   inline unsigned getNElementsToRender() {

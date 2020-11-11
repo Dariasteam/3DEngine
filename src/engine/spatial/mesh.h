@@ -18,7 +18,6 @@ struct Mesh : public Spatial {
   std::vector<Face> global_coordenates_faces;
 
   std::vector<Mesh*> nested_meshes;
-  Color color{0, 0, 0};
   Point3 p{1,1,1};
 
   std::vector<UV> uv_per_face;
@@ -35,8 +34,7 @@ struct Mesh : public Spatial {
   Mesh (const Mesh& m) :
     Spatial(m.basis, m.translation),
     local_coordenates_faces (m.local_coordenates_faces),    
-    global_coordenates_faces (m.global_coordenates_faces),
-    color (m.color)
+    global_coordenates_faces (m.global_coordenates_faces)
   {}
 
   void add_nested_mesh (Mesh* mesh) {

@@ -1,7 +1,7 @@
 #ifndef ABSTRACTRASTERISER_H
 #define ABSTRACTRASTERISER_H
 
-#include "../camera.h"
+#include "../spatial/camera.h"
 #include "../world.h"
 #include "../planar/texture.h"
 
@@ -43,7 +43,7 @@ protected:
   //unsigned screen_size = SCREEN_SIZE;
 
   World* world;
-  Camera* camera;
+  PerspectiveCamera* camera;
 
 
 

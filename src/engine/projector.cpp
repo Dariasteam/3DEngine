@@ -1,6 +1,6 @@
 #include "projector.h"
 
-Projector::Projector(Camera* cm, World* wd) :
+Projector::Projector(PerspectiveCamera* cm, World* wd) :
   world (wd),
   camera (cm),
   elements_to_render(200000)
@@ -58,7 +58,7 @@ void Projector::multithreaded_rasterize_single_mesh(unsigned init,
   for (unsigned k = init; k < end; k++) {
     const auto& face = aux_mesh->global_coordenates_faces[k];
     const auto& uv   = aux_mesh->uv_per_face[k];
-    calculate_mesh_projection(face, uv, index, aux_mesh->color);
+    calculate_mesh_projection(face, uv, index);
   }  
 
   mtx.lock();
@@ -113,30 +113,9 @@ void Projector::set_projection_data() {
   //elements_to_render.clear();
 }
 
-Color Projector::calculate_lights (const Color& m_color,
-                                    const Vector3& normal) const {
-
-  const DirectionalLight& light = world->get_light();
-
-  // Using dot product as angle
-  double angle_to_light = 1 + (normal * light.direction);
-
-  Color color = light.color;
-  color *= angle_to_light * world->get_light().intensity;
-
-  color.set_x((color.x() * m_color.x() / 255));
-  color.set_y((color.y() * m_color.y() / 255));
-  color.set_z((color.z() * m_color.z() / 255));
-
-  clamp_color(color);
-
-  return color;
-}
-
 bool Projector::calculate_mesh_projection(const Face& face,
                                           const UV& uv,
-                                          unsigned index,
-                                          const Color& color) {
+                                          unsigned index) {
 
   auto& tmp_triangle = tmp_triangles_f[index][tmp_triangles_sizes[index]];
 
@@ -160,7 +139,7 @@ bool Projector::calculate_mesh_projection(const Face& face,
   bool angle_normal = (face.normal * face.a) < 0
                     | (face.normal * face.b) < 0
                     | (face.normal * face.c) < 0;
-  if (!angle_normal) { return false; }
+  if (!angle_normal) return false;
 
   // 2. Calculate distance to camera
   double mod_v1 = Vector3::vector_module(face.a);
@@ -169,28 +148,18 @@ bool Projector::calculate_mesh_projection(const Face& face,
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
   //double z_max = std::max({mod_v1, mod_v2, mod_v3});  
-  if (z_min > INFINITY_DISTANCE) { return false; }
+  if (z_min > INFINITY_DISTANCE) return false;
 
   // 3. Calculate intersection points with the plane
   bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)
                 | calculate_cut_point(face.b, face.b, tmp_triangle.b)
                 | calculate_cut_point(face.c, face.c, tmp_triangle.c);
-  if (!visible) { return false; }
+  if (!visible) return false;
 
   tmp_triangle.z_value = z_min;  
 
-  if (!triangle_inside_camera(tmp_triangle)) { return false; }
-  // 7. Calculate light contribution for each vertex
-/*
-  Color aux_color = calculate_lights(color, face.normal);
-  tmp_triangle.color   = Color888(aux_color);
-*/
-  // Now managed by the fragment shader
-  /*
-  tmp_triangle.a.color = calculate_lights(color, face.normal_a);
-  tmp_triangle.b.color = calculate_lights(color, face.normal_b);
-  tmp_triangle.c.color = calculate_lights(color, face.normal_c);
-*/
+  if (!triangle_inside_camera(tmp_triangle)) return false;
+
   // FIXME: This should be managed by the rasteriser
   // 8. Convert triangle to screen space
 

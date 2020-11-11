@@ -77,10 +77,5 @@ static double deg2rad (double deg) {
 
 typedef Point3 Color;
 
-inline void clamp_color (Color& color) {
-  color.set_x(std::max (0.0, std::min(color.x(), 255.0)));
-  color.set_y(std::max (0.0, std::min(color.y(), 255.0)));
-  color.set_z(std::max (0.0, std::min(color.z(), 255.0)));
-}
 
 #endif // POINT3_H

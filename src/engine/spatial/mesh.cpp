@@ -64,7 +64,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
     lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
       mesh->apply_translation_part(aux_pos, from, to);
     };
-  }
+  }  
 
   for (const auto& mesh : mesh_list) {
     unsigned size = mesh->global_coordenates_faces.size();

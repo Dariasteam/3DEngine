@@ -4,8 +4,8 @@ FragmentShader::FragmentShader(const World* w) {
   push_operation(new CalculateProjections());
 
   // FIXME: Asociate textures per mesh
-  FragmentOperation::texture.load("texture.ppm");
-  FragmentOperation::normal_map.load("normal.ppm");
+  FragmentOperation::texture.load("/home/darias/Desarrollo/3D/texture.ppm");
+  FragmentOperation::normal_map.load("/home/darias/Desarrollo/3D/normal.ppm");
   FragmentOperation::world = w;
 }
 

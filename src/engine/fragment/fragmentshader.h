@@ -12,7 +12,7 @@
 #include "../math/point3.h"
 #include "../math/point3d.h"
 #include "../planar/triangle.h"
-#include "../camera.h"
+#include "../spatial/camera.h"
 #include "../world.h"
 #include "../planar/texture.h"
 

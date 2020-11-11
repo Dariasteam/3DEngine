@@ -57,6 +57,10 @@ src/engine/renderengine.h
 src/engine/spatial/face3.h
 src/engine/spatial/mesh.cpp
 src/engine/spatial/mesh.h
+src/engine/spatial/camera.h
+src/engine/spatial/camera.cpp
+src/engine/spatial/directionallight.cpp
+src/engine/spatial/directionallight.h
 src/engine/spatial/spatial.h
 src/engine/world.cpp
 src/engine/world.h

@@ -1,21 +1,15 @@
 #include "world.h"
 
-World::World(Camera* cm) :
-  camera (cm)
-  {
+World::World(PerspectiveCamera* cm) :
+  camera (cm),
+  sun(Vector3 {.5, .5, 0}, Color {1, 1, 1}, 3.0)
 
-  sun = {
-    Vector3 {-.5, .5, 0},
-    Color {1, 1, 1},
-    2.2
-  };
-
+{
   ObjParser parser;
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
 
-  parsed_mesh->color = {250, 150, 100};
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, 0, 30});
+  parsed_mesh->translate_global({0, 0, 50});
 
   // temporary since we don't have real uvs
   parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
@@ -30,7 +24,7 @@ World::World(Camera* cm) :
   }
 
   Texture <unsigned char, 3> tex;
-  tex.load ("line_texture.ppm");
+  tex.load ("/home/darias/Desarrollo/3D/line_texture.ppm");
   parsed_mesh->texture = tex;
 
   add_mesh(parsed_mesh);
@@ -55,6 +49,6 @@ bool movingLeft = false;
 void World::calculate_next_frame() const {
   meshes.front()->rotate_y(-0.008);
   meshes.front()->rotate_x(-0.003);
-  //meshes.front()->rotate_z(-0.02);
+  meshes.front()->rotate_z(-0.02);
 }
 

@@ -46,10 +46,10 @@ void RenderEngine::render_loop () {
     world->calculate_next_frame();
     projector->project();
 
-    auto triangles = projector->getElementsToRender();
+    auto triangles = projector->getElementsToRender();    
     auto sz = projector->getNElementsToRender();
 
-    rasteriser->rasterise(triangles, sz);
+    rasteriser->rasterise(triangles, sz);    
 
     // Execute shading
     fragmentShader(triangles);
@@ -58,6 +58,6 @@ void RenderEngine::render_loop () {
     //a = true;
 
     canvas->paint(CommonBuffers::get().screen_buffer);
-    //cv.notify_one();
+    //cv.notify_one();    
   }
 }
