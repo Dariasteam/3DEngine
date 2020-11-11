@@ -7,41 +7,10 @@
 #include "../planar/texture.h"
 #include "../math/vector3.h"
 
-struct Triangle2 {
+struct Triangle {
   Point2 a;
   Point2 b;
   Point2 c;  
-
-  double z_value;   // distance to camera
-  Color888 color = {0, 0, 0};
-
-  Triangle2 (const Triangle2& t) :
-    a (t.a),
-    b (t.b),
-    c (t.c),
-    z_value (t.z_value),
-    color (t.color)
-  {}
-
-  Triangle2 () {}
-
-  Triangle2 (const Point2& aa,
-              const Point2& bb,
-              const Point2& cc,
-              const double z,
-              const Color& col) :
-    a (aa),
-    b (bb),
-    c (cc),
-    z_value (z),
-    color (col)
-  {}
-};
-
-struct Triangle2i {
-  Point2i a;
-  Point2i b;
-  Point2i c;
 
   Vector3 normal;
 
@@ -50,7 +19,35 @@ struct Triangle2i {
   Vector3 normal_c;
 
   double z_value;   // distance to camera
-  Color888 color = {0, 0, 0};
+
+  Triangle (const Triangle& t) :
+    a (t.a),
+    b (t.b),
+    c (t.c),
+    z_value (t.z_value)
+  {}
+
+  UV uv = {};
+
+  Triangle () {}
+
+  Triangle (const Point2& aa,
+              const Point2& bb,
+              const Point2& cc,
+              const double z) :
+    a (aa),
+    b (bb),
+    c (cc),
+    z_value (z)
+  {}
+};
+
+struct Triangle2i {
+  Point2i a;
+  Point2i b;
+  Point2i c;
+
+  double z_value;   // distance to camera
 
   UV uv = {};
 
@@ -58,16 +55,14 @@ struct Triangle2i {
     a (t.a),
     b (t.b),
     c (t.c),
-    z_value (t.z_value),
-    color (t.color)
+    z_value (t.z_value)
   {}
 
-  Triangle2i (const Triangle2& t) :
+  Triangle2i (const Triangle& t) :
     a (t.a),
     b (t.b),
     c (t.c),
-    z_value (t.z_value),
-    color (t.color)
+    z_value (t.z_value)
   {}
 
   Triangle2i () {}
@@ -75,13 +70,11 @@ struct Triangle2i {
   Triangle2i (const Point2i& aa,
               const Point2i& bb,
               const Point2i& cc,
-              const double z,
-              const Color& col) :
+              const double z) :
     a (aa),
     b (bb),
     c (cc),
-    z_value (z),
-    color (col)
+    z_value (z)
   {}
 };
 

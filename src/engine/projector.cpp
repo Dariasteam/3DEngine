@@ -3,12 +3,56 @@
 Projector::Projector(PerspectiveCamera* cm, World* wd) :
   world (wd),
   camera (cm),
-  elements_to_render(200000)
+  buffers (CommonBuffers::get())
 {
-  for (unsigned i = 0; i < N_THREADS; i++) {
-    tmp_triangles_sizes[i] = 0;
-    tmp_triangles_i[i] = new Triangle2i[50000];
-    tmp_triangles_f[i] = new Triangle2[50000];
+  buffers.triangles_size = 0;
+  buffers.triangles.resize(50000);
+}
+
+void Projector::project() {
+  set_projection_data();
+
+  unsigned n_faces = 0;
+  for (const auto* mesh : meshes_vector) {
+    n_faces += mesh->local_coordenates_faces.size();
+  }
+
+  double regular_segment = double(n_faces) / N_THREADS;
+  unsigned lengths [N_THREADS];
+
+  auto& m = MultithreadManager::get_instance();
+  m.calculate_threaded(N_THREADS, [&](unsigned i) {
+    lengths[i] = 0;
+    unsigned base_index = std::round(regular_segment * i);
+
+    for (const auto* mesh : meshes_vector) {
+      const auto& faces = mesh->global_coordenates_faces;
+
+      double local_segment = double(faces.size()) / N_THREADS;
+
+      unsigned long from = std::round(local_segment * i);
+      unsigned long to = std::round(local_segment * (i + 1));
+
+      for (unsigned j = from; j < to; j++) {
+        bool b = calculate_mesh_projection(faces[j],
+                                           mesh->uv_per_face[j],
+                                           base_index + lengths[i]);
+        if (b)
+          lengths[i]++;
+      }
+    }
+  });
+
+  buffers.triangles_size = lengths[0];
+
+  for (unsigned i = 1; i < N_THREADS; i++) {
+    unsigned base_index = std::round(regular_segment * i);
+
+    std::copy(buffers.triangles.begin() + base_index,
+              buffers.triangles.begin() + base_index + lengths[i],
+              buffers.triangles.begin() + buffers.triangles_size);
+
+    buffers.triangles_size += lengths[i];
   }
 }
 
@@ -17,75 +61,6 @@ void Projector::generate_mesh_list(const std::vector<Mesh*> &meshes) {
     meshes_vector.push_back(mesh);
     generate_mesh_list(mesh->get_nested_meshes());
   }
-}
-
-
-void Projector::multithreaded_rasterize_mesh_list(unsigned init, unsigned end) {
-  n_elements_to_render = 0;
-  for (unsigned i = init; i < end; i++) {
-    Mesh* aux_mesh = meshes_vector[i];
-    double segment_length = (double(aux_mesh->global_coordenates_faces.size()) / N_THREADS);
-
-    c = 0;
-    cv_bool = false;
-    unsigned tmp_n_elements_to_render[N_THREADS];    
-
-    auto& m = MultithreadManager::get_instance();
-    m.calculate_threaded(N_THREADS, [&](unsigned i) {
-      long unsigned from = i * segment_length;
-      long unsigned to = (i + 1) * segment_length;                  
-
-      multithreaded_rasterize_single_mesh(from,
-                                          to,
-                                          i,
-                                          aux_mesh);
-
-      tmp_n_elements_to_render[i] = tmp_triangles_sizes[i];
-    });
-
-    for (unsigned j = 0; j < N_THREADS; j++)
-      n_elements_to_render += tmp_n_elements_to_render[j];
-  }
-}
-
-void Projector::multithreaded_rasterize_single_mesh(unsigned init,
-                                                    unsigned end,
-                                                    unsigned index,
-                                                    const Mesh* aux_mesh) {
-
-  tmp_triangles_sizes[index] = 0;
-
-  for (unsigned k = init; k < end; k++) {
-    const auto& face = aux_mesh->global_coordenates_faces[k];
-    const auto& uv   = aux_mesh->uv_per_face[k];
-    calculate_mesh_projection(face, uv, index);
-  }  
-
-  mtx.lock();
-  c++;
-  mtx.unlock();
-
-  if (c == N_THREADS) {
-    cv_bool = true;
-    cv2.notify_all();
-  } else {
-    mtx.lock();
-    std::unique_lock<std::mutex> lk(mtx2);
-    mtx.unlock();
-
-    cv2.wait(lk, [&]{return cv_bool;});
-  }
-
-  unsigned prev_offset = 0;
-
-  for (unsigned i = 0; i < index; i++)
-    prev_offset += tmp_triangles_sizes[i];
-
-  std::copy(tmp_triangles_i[index],
-            tmp_triangles_i[index] + tmp_triangles_sizes[index],
-            std::begin(elements_to_render) +
-                 prev_offset +
-                 n_elements_to_render); // append if it's not the first element
 }
 
 void Projector::set_projection_data() {
@@ -110,14 +85,13 @@ void Projector::set_projection_data() {
   // Generate iterable list of meshes
   meshes_vector.clear();
   generate_mesh_list(world->get_elements());
-  //elements_to_render.clear();
 }
 
 bool Projector::calculate_mesh_projection(const Face& face,
                                           const UV& uv,
                                           unsigned index) {
 
-  auto& tmp_triangle = tmp_triangles_f[index][tmp_triangles_sizes[index]];
+  auto& tmp_triangle = buffers.triangles[index];
 
   //Triangle2 tmp_triangle;
 
@@ -160,29 +134,19 @@ bool Projector::calculate_mesh_projection(const Face& face,
 
   if (!triangle_inside_camera(tmp_triangle)) return false;
 
-  // FIXME: This should be managed by the rasteriser
-  // 8. Convert triangle to screen space
-
-  // Copy normals FIXME: Use only vertex normals, not glboal one
-  auto& e = tmp_triangles_i[index][tmp_triangles_sizes[index]];
-  triangle_to_screen_space(tmp_triangle, e);
-
-  e.normal   = face.normal;
-  e.normal_a = face.normal_a;
-  e.normal_b = face.normal_b;
-  e.normal_c = face.normal_c;
+  // 4. Copy normals FIXME: Use only vertex normals, not the global one
+  tmp_triangle.normal   = face.normal;
+  tmp_triangle.normal_a = face.normal_a;
+  tmp_triangle.normal_b = face.normal_b;
+  tmp_triangle.normal_c = face.normal_c;
 
   // Set uv
-  e.uv = uv;
-  tmp_triangles_sizes[index]++;
+  tmp_triangle.uv = uv;
 
+  //buffers.triangles_sizes[thread_index]++;
   return true;
 }
 
-void Projector::project() {
-  set_projection_data();
-  multithreaded_rasterize_mesh_list(0, meshes_vector.size());
-}
 
 bool Projector::is_point_between_camera_bounds(const Point2& p) const {
   return p.x() < camera->get_bounds().x       |
@@ -247,21 +211,7 @@ bool Projector::calculate_cut_point(const Point3& vertex,
   return return_value;
 }
 
-unsigned screen_size = 1000;
-
-bool Projector::triangle_inside_screen(const Triangle2i &triangle) {
-  // Check all points inside render area
-  if (triangle.a.x() < 0.0 || triangle.a.x() > screen_size) return false;
-  if (triangle.a.y() < 0.0 || triangle.a.y() > screen_size) return false;
-  if (triangle.b.x() < 0.0 || triangle.b.x() > screen_size) return false;
-  if (triangle.b.y() < 0.0 || triangle.b.y() > screen_size) return false;
-  if (triangle.c.x() < 0.0 || triangle.c.x() > screen_size) return false;
-  if (triangle.c.y() < 0.0 || triangle.c.y() > screen_size) return false;
-
-  return true;
-}
-
-bool Projector::triangle_inside_camera(const Triangle2 &triangle) {
+bool Projector::triangle_inside_camera(const Triangle &triangle) {
   // Check all points inside render area
   if (triangle.a.x() < camera->get_bounds().x || triangle.a.x() > camera->get_bounds().width) return false;
   if (triangle.a.y() < camera->get_bounds().y || triangle.a.y() > camera->get_bounds().height) return false;
@@ -271,34 +221,4 @@ bool Projector::triangle_inside_camera(const Triangle2 &triangle) {
   if (triangle.c.y() < camera->get_bounds().y || triangle.c.y() > camera->get_bounds().height) return false;
 
   return true;
-}
-
-// FIXME: Don not return anything
-Triangle2i Projector::triangle_to_screen_space (const Triangle2& triangle, Triangle2i& t) {
-
-  unsigned height = screen_size;
-  unsigned width = screen_size;
-
-  double v_factor = height / camera->get_bounds().y;
-  double h_factor = width  / camera->get_bounds().x;
-
-  unsigned x_offset = width  / 2;
-  unsigned y_offset = height / 2;
-
-  t.a.set_x(triangle.a.x() * h_factor + x_offset);
-  t.a.set_y(triangle.a.y() * v_factor + y_offset);
-
-  t.b.set_x(triangle.b.x() * h_factor + x_offset);
-  t.b.set_y(triangle.b.y() * v_factor + y_offset);
-
-  t.c.set_x(triangle.c.x() * h_factor + x_offset);
-  t.c.set_y(triangle.c.y() * v_factor + y_offset);
-
-  t.a.color = triangle.a.color;
-  t.b.color = triangle.b.color;
-  t.c.color = triangle.c.color;
-
-  t.z_value = triangle.z_value;
-
-  return t;
 }

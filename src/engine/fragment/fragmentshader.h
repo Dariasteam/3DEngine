@@ -23,6 +23,9 @@
 
 class FragmentOperation {
 protected:
+
+  CommonBuffers& buffers;
+
   inline Point2i pixel_index_to_coordenates(unsigned pixel_index) {
     unsigned width = CommonBuffers::get().get_width();
 
@@ -33,23 +36,23 @@ protected:
   }
 
   inline unsigned get_triangle_index_at_pixel_index (unsigned pixel_index) {
-    return CommonBuffers::get().triangle_index_buffer.get(pixel_index);
+    return buffers.triangle_index_buffer.get(pixel_index);
   }
 
 
-  inline Triangle2i& get_triangle_at_pixel_index(unsigned pixel_index) {
-    return (*triangles)[get_triangle_index_at_pixel_index(pixel_index)];
+  inline Triangle& get_triangle_at_pixel_index(unsigned pixel_index) {
+    return buffers.triangles[get_triangle_index_at_pixel_index(pixel_index)];
   }
 
 public:
-  static const World* world;
-  static std::vector<Triangle2i>* triangles;
+  static const World* world;  
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<bool> matrices;
   static Texture<unsigned char, 3> texture;
   static Texture<unsigned char, 3> normal_map;
 public:
   virtual void operator()(unsigned pixel_index) = 0;
+  FragmentOperation();
 };
 
 class CalculateProjections : public FragmentOperation {
@@ -61,9 +64,10 @@ class CalculateProjections : public FragmentOperation {
 class FragmentShader {
 private:
   std::list<FragmentOperation*> operations;
+  CommonBuffers& buffers;
 public:
   FragmentShader(const World* w);
-  void operator() (std::vector<Triangle2i>* triangles);
+  void operator() ();
   void push_operation(FragmentOperation* op);
 };
 

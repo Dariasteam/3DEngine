@@ -45,19 +45,9 @@ void RenderEngine::render_loop () {
   while (1) {
     world->calculate_next_frame();
     projector->project();
-
-    auto triangles = projector->getElementsToRender();    
-    auto sz = projector->getNElementsToRender();
-
-    rasteriser->rasterise(triangles, sz);    
-
-    // Execute shading
-    fragmentShader(triangles);
-
+    rasteriser->rasterise();
+    fragmentShader();
     fps_render.update();
-    //a = true;
-
-    canvas->paint(CommonBuffers::get().screen_buffer);
-    //cv.notify_one();    
+    canvas->paint(CommonBuffers::get().screen_buffer); 
   }
 }

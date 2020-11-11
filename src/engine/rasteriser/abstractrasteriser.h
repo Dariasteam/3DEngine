@@ -34,6 +34,9 @@ public:
   inline unsigned get_height() { return triangle_index_buffer.get_height(); }
   inline unsigned get_width() { return triangle_index_buffer.get_width(); }
 
+  std::vector<Triangle> triangles;
+  unsigned triangles_size;  
+
   void clean();
 };
 
@@ -41,26 +44,22 @@ public:
 class AbstractRasteriser {
 protected:
   //unsigned screen_size = SCREEN_SIZE;
-
+  CommonBuffers& buffers;
   World* world;
   PerspectiveCamera* camera;
 
-
-
   inline void update_buffers(unsigned x, unsigned y,
                              double z_value, unsigned long t_index) const {
-
-    if (z_value < CommonBuffers::get().z_buffer.get(x, y)) {
-      CommonBuffers::get().z_buffer.set(x, y, z_value);
-      CommonBuffers::get().triangle_index_buffer.set(x, y, t_index);
+    if (z_value < buffers.z_buffer.get(x, y)) {
+      buffers.z_buffer.set(x, y, z_value);
+      buffers.triangle_index_buffer.set(x, y, t_index);
     }
   }
 
 public:  
 
   AbstractRasteriser(World* w);
-  virtual void rasterise (std::vector<Triangle2i>* triangles,
-                          unsigned sz) = 0;
+  virtual void rasterise () = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

@@ -2,7 +2,8 @@
 
 AbstractRasteriser::AbstractRasteriser(World* w) :
   world (w),
-  camera (w->get_camera())
+  camera (w->get_camera()),
+  buffers(CommonBuffers::get())
 {}
 
 void CommonBuffers::set_dimension(unsigned w, unsigned h) {

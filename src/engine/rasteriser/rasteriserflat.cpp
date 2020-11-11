@@ -35,7 +35,6 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
   int y1 = v1.y();
   int y2 = v2.y();
 
-
   for (int y = y1; y <= y2; y++) {
     int min_x = static_cast<int>(std::round(curx1));
     int max_x = static_cast<int>(std::round(curx2));
@@ -98,18 +97,20 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
   }
 }
 
-void RasteriserFlat::rasterize_triangle (const Triangle2i& triangle, unsigned t_index) const {
+void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) const {
+  triangle_to_screen_space(triangle);
 
   // Sort vertices by Y
-  std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};  
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2i& a, const Point2i& b) {
+  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
     return std::isless(a.y(), b.y());
-  });
+  });  
 
   Triangle2i tmp_triangle;
-  tmp_triangle.a = aux_vec[0];
-  tmp_triangle.b = aux_vec[1];
-  tmp_triangle.c = aux_vec[2];
+  tmp_triangle.a = Point2i(aux_vec[0]);
+  tmp_triangle.b = Point2i(aux_vec[1]);
+  tmp_triangle.c = Point2i(aux_vec[2]);
+  tmp_triangle.z_value = triangle.z_value;
 
   const Point2i& v1 = aux_vec[0];
   const Point2i& v2 = aux_vec[1];

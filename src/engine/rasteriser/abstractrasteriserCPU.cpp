@@ -1,34 +1,28 @@
 #include "abstractrasteriserCPU.h"
 
-void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>* triangles,
-                                      unsigned sz) {  
-/*
-  // 1. Select unused buffer
-  canvas->lock_buffer_mutex();
-  if (canvas->reading_from_buffer_a())
-    buff = screen_buff_b;
-  else
-    buff = screen_buff_a;
+void AbstractRasteriserCPU::triangle_to_screen_space (Triangle& triangle) const {
 
-  canvas->unlock_buffer_mutex();                 // Acts like Vsync
-*/
-  // 2. Clear buffers
+  double v_factor = buffers.get_height() / camera->get_bounds().y;
+  double h_factor = buffers.get_width()  / camera->get_bounds().x;
 
-  CommonBuffers::get().clean();
+  unsigned y_offset = buffers.get_height() / 2;
+  unsigned x_offset = buffers.get_width()  / 2;
 
-  /*
-  std::fill(z_buff, z_buff + SCREEN_SIZE * SCREEN_SIZE, 1000000000000);
-  std::fill(buff, buff + SCREEN_SIZE * SCREEN_SIZE * 3, 0);
-  */
+  triangle.a.set_x(std::round(triangle.a.x() * h_factor + x_offset));
+  triangle.a.set_y(std::round(triangle.a.y() * v_factor + y_offset));
 
-  // 3. Rasterize
-  
-  auto& m = MultithreadManager::get_instance();
+  triangle.b.set_x(std::round(triangle.b.x() * h_factor + x_offset));
+  triangle.b.set_y(std::round(triangle.b.y() * v_factor + y_offset));
 
-  //int t_size = sz;
-  //int offset = (t_size / N_THREADS);
+  triangle.c.set_x(std::round(triangle.c.x() * h_factor + x_offset));
+  triangle.c.set_y(std::round(triangle.c.y() * v_factor + y_offset));
+}
 
-  m.calculate_threaded(sz, [&](unsigned i) {
-    rasterize_triangle(triangles->operator[](i), i);
+void AbstractRasteriserCPU::rasterise() {
+  buffers.clean();
+  auto& m = MultithreadManager::get_instance();  
+
+  m.calculate_threaded(buffers.triangles_size, [&](unsigned i) {
+    rasterize_triangle(buffers.triangles[i], i);
   });    
 }

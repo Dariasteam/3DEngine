@@ -10,12 +10,13 @@
 class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
 protected:
-  virtual void rasterize_triangle (const Triangle2i& triangle, unsigned t_index) const = 0;
+  virtual void rasterize_triangle (Triangle& triangle, unsigned t_index) const = 0;
+  void triangle_to_screen_space (Triangle& t) const;
 
 public:
   AbstractRasteriserCPU(World* w) : AbstractRasteriser (w) {}
 
-  void rasterise (std::vector<Triangle2i>* triangles, unsigned sz);
+  void rasterise ();
 };
 
 #endif // PROJECTOR_H

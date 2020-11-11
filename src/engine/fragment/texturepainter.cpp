@@ -7,7 +7,7 @@ void TexturePainter::operator ()(unsigned pixel_index) {
 
   Color888 c = texture_projectors[t_index].get_color_on_uv(p.X, p.Y, texture);
 
-  CommonBuffers::get().screen_buffer.set(p.X, p.Y, c.r, 0);
-  CommonBuffers::get().screen_buffer.set(p.X, p.Y, c.g, 1);
-  CommonBuffers::get().screen_buffer.set(p.X, p.Y, c.b, 2);
+  buffers.screen_buffer.set(p.X, p.Y, c.r, 0);
+  buffers.screen_buffer.set(p.X, p.Y, c.g, 1);
+  buffers.screen_buffer.set(p.X, p.Y, c.b, 2);
 }

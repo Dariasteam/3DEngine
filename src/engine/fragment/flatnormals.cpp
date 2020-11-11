@@ -18,7 +18,7 @@ void FlatNormals::operator ()(unsigned pixel_index) {
   unsigned char x = 128 + std::round(127.0 * r);
   unsigned char y = 128 + std::round(127.0 * g);
 
-  CommonBuffers::get().normal_buffer.set(pixel_index * 3 + 0, x);
-  CommonBuffers::get().normal_buffer.set(pixel_index * 3 + 2, y);
-  CommonBuffers::get().normal_buffer.set(pixel_index * 3 + 2, 255);
+  buffers.normal_buffer.set(pixel_index * 3 + 0, x);
+  buffers.normal_buffer.set(pixel_index * 3 + 2, y);
+  buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
 }
