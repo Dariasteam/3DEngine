@@ -1,7 +1,7 @@
 #ifndef DIRECTIONALLIGHT_H
 #define DIRECTIONALLIGHT_H
 
-#include "camera.h"
+#include "parallelcamera.h"
 
 class DirectionalLight : public ParallelCamera {
 private:

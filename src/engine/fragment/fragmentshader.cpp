@@ -26,7 +26,13 @@ void FragmentShader::operator()() {
   MultithreadManager::get_instance().calculate_threaded(n_pixels,
                                                         [&](unsigned pixel_index) {
 
-    if (buffers.z_buffer.get(pixel_index) >= INFINITY_DISTANCE) return;
+    // If too far away, paint sky color
+    if (buffers.z_buffer.get(pixel_index) >= INFINITY_DISTANCE) {
+      buffers.screen_buffer.set(pixel_index * 3 + 0, 255);
+      buffers.screen_buffer.set(pixel_index * 3 + 1, 255);
+      buffers.screen_buffer.set(pixel_index * 3 + 2, 255);
+      return;
+    }
 
     for (auto& operation : operations) {
       operation->operator()(pixel_index);

@@ -19,7 +19,7 @@ void AbstractRasteriserCPU::triangle_to_screen_space (Triangle& triangle) const 
 }
 
 void AbstractRasteriserCPU::rasterise() {
-  buffers.clean();
+  buffers.reset_z_buffer();
   auto& m = MultithreadManager::get_instance();  
 
   m.calculate_threaded(buffers.triangles_size, [&](unsigned i) {

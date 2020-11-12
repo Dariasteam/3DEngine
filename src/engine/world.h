@@ -4,7 +4,7 @@
 #include "math/point3.h"
 #include "math/vector3.h"
 #include "spatial/mesh.h"
-#include "spatial/camera.h"
+#include "spatial/perspectivecamera.h"
 #include "spatial/directionallight.h"
 #include "../auxiliar/objparser.h"
 
@@ -14,7 +14,7 @@
 
 class World {
 private:
-  PerspectiveCamera* camera;
+  PerspectiveCamera* principal_camera;
   std::vector <Mesh*> meshes;
   DirectionalLight sun;
 
@@ -26,7 +26,7 @@ public:
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
-  inline PerspectiveCamera* get_camera () { return camera; }
+  inline PerspectiveCamera* get_camera () { return principal_camera; }
 
   void calculate_next_frame () const;
 

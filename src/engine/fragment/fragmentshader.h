@@ -2,7 +2,7 @@
 #define FRAGMENTSHADER_H
 
 #include "../../auxiliar/multithreadmanager.h"
-#include "../rasteriser/abstractrasteriser.h"
+#include "../buffers/commonbuffers.h"
 #include "../projector.h"
 #include "../world.h"
 #include "../planar/textureprojector.h"

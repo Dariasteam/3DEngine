@@ -1,7 +1,7 @@
 #include "world.h"
 
 World::World(PerspectiveCamera* cm) :
-  camera (cm),
+  principal_camera (cm),
   sun(Vector3 {.5, .5, 0}, Color {1, 1, 1}, 3.0)
 
 {
@@ -9,7 +9,7 @@ World::World(PerspectiveCamera* cm) :
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
 
   parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, 0, 50});
+  parsed_mesh->translate_global({0, 0, 13});
 
   // temporary since we don't have real uvs
   parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());

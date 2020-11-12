@@ -4,6 +4,8 @@ src/auxiliar/objparser.cpp
 src/auxiliar/objparser.h
 src/auxiliar/openclhandler.cpp
 src/auxiliar/openclhandler.h
+src/engine/buffers/commonbuffers.cpp
+src/engine/buffers/commonbuffers.h
 src/engine/camera.cpp
 src/engine/camera.h
 src/engine/fragment/flatnormals.cpp
@@ -50,8 +52,6 @@ src/engine/rasteriser/rasteriseropencl.cpp
 src/engine/rasteriser/rasteriseropencl.h
 src/engine/rasteriser/rasteriserwireframe.cpp
 src/engine/rasteriser/rasteriserwireframe.h
-src/engine/rasteriser/rasterizetextured.cpp
-src/engine/rasteriser/rasterizetextured.h
 src/engine/renderengine.cpp
 src/engine/renderengine.h
 src/engine/spatial/face3.h
@@ -61,6 +61,10 @@ src/engine/spatial/camera.h
 src/engine/spatial/camera.cpp
 src/engine/spatial/directionallight.cpp
 src/engine/spatial/directionallight.h
+src/engine/spatial/parallelcamera.cpp
+src/engine/spatial/parallelcamera.h
+src/engine/spatial/perspectivecamera.cpp
+src/engine/spatial/perspectivecamera.h
 src/engine/spatial/spatial.h
 src/engine/world.cpp
 src/engine/world.h

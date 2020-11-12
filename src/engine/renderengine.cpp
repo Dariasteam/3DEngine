@@ -45,7 +45,7 @@ void RenderEngine::render_loop () {
   while (1) {
     world->calculate_next_frame();
     projector->project();
-    rasteriser->rasterise();
+    rasteriser->rasterise();    
     fragmentShader();
     fps_render.update();
     canvas->paint(CommonBuffers::get().screen_buffer); 

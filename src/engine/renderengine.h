@@ -12,7 +12,7 @@
 #include "math/point3.h"
 #include "projector.h"
 #include "world.h"
-#include "spatial/camera.h"
+#include "spatial/perspectivecamera.h"
 #include "rasteriser/abstractrasteriserCPU.h"
 
 #include "fragment/fragmentshader.h"

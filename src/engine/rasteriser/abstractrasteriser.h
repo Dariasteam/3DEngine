@@ -1,9 +1,9 @@
 #ifndef ABSTRACTRASTERISER_H
 #define ABSTRACTRASTERISER_H
 
+#include "../buffers/commonbuffers.h"
 #include "../spatial/camera.h"
 #include "../world.h"
-#include "../planar/texture.h"
 
 #include "../math/point2.h"
 #include "../math/point2d.h"
@@ -13,33 +13,6 @@
 
 #include <vector>
 #include <algorithm>
-
-
-class CommonBuffers {
-private:
-  CommonBuffers () {}
-public:
-  inline static CommonBuffers& get () {
-    static CommonBuffers instance;
-    return instance;
-  }
-
-  Texture<unsigned long, 1> triangle_index_buffer;
-  Texture<double, 1> z_buffer;
-  Texture<unsigned char, 3> normal_buffer;
-  Texture<unsigned char, 3> screen_buffer;
-
-  void set_dimension (unsigned w, unsigned h);;
-
-  inline unsigned get_height() { return triangle_index_buffer.get_height(); }
-  inline unsigned get_width() { return triangle_index_buffer.get_width(); }
-
-  std::vector<Triangle> triangles;
-  unsigned triangles_size;  
-
-  void clean();
-};
-
 
 class AbstractRasteriser {
 protected:
