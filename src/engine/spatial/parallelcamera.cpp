@@ -1,66 +1,58 @@
 #include "parallelcamera.h"
 
 ParallelCamera::ParallelCamera(const Vector3& v_plane,
-                               const Point3& p_plane) :
-  Camera (v_plane, p_plane)
+                               const RectF& b) :
+  Camera (v_plane, b)
 {}
 
 ParallelCamera::ParallelCamera(const ParallelCamera& cam) :
   Camera(cam)
 {}
 
-// Calculate the intersection point between the camera plane and the
-// line described by vertex and camera_fugue (dir_v)
-/* Plane expresed as Ax + By + Cz + D = 0
- * Rect expresed as
- *  x = a + bß
- *  y = c + dß
- *  z = e + fß
- *
- * T1 = D + A*a + B*c + C*e
- * T2 = - A*b - B*d - C*f
- *
- * ß = T1 / T2
- *
- * */
-inline bool ParallelCamera::calculate_cut_point(const Point3& vertex,
-                                                   const Vector3& dir_v,
-                                                   Point2& point) const {
-  // Calc cut point line - plane
-  const double A = get_plane_vector().x();  // Since we are in camera space this should be always (0, 0, 1)
-  const double B = get_plane_vector().y();
-  const double C = get_plane_vector().z();
+inline bool ParallelCamera::calculate_mesh_projection(const Face& face,
+                                                      const UV& uv,
+                                                      unsigned index) const {
 
-  const double D = -(get_plane_point().x() * A +
-                     get_plane_point().y() * B +
-                     get_plane_point().z() * C);
+  auto& tmp_triangle = buffers.triangles[index];
 
-  const double& a = vertex.x();
-  const double& c = vertex.y();
-  const double& e = vertex.z();
+  // 1. Face to 2D triangle
+  tmp_triangle.a.X = face.a.X;
+  tmp_triangle.a.Y = face.a.Y;
 
-  const double& b = dir_v.x();
-  const double& d = dir_v.y();
-  const double& f = dir_v.z();
+  tmp_triangle.b.X = face.b.X;
+  tmp_triangle.b.Y = face.b.Y;
 
-  // NOTE: Changed from -D to avoid render upside down
-  double T1 {-D + A*a + B*c + C*e};
-  double T2 {- A*b - B*d - C*f};
+  tmp_triangle.c.X = face.c.X;
+  tmp_triangle.c.Y = face.c.Y;
 
-  bool return_value = true;
-/*
-  // Some vertices are behind camera
-  if ((f < 0 && C > 0) || (f > 0 && C < 0)) {
-    T1 = -T1;
-    return_value = false;
-  }
-*/
-  double parameter = T1 / T2;
+  // 2. Check triangle between camera bounds
+  if (!triangle_inside_camera(tmp_triangle)) return false;
 
-  // Intersection in camera coordinates
-  point.set_x(a + b * parameter);
-  point.set_y(-(c + d * parameter));
-  //point.set_z(e + f * parameter);
+  // 3. Check normal of the face is towards camera, do not check angle,
+  // only if it's bigger than 90º instead
+  bool angle_normal = (face.normal * face.a) < 0
+                    | (face.normal * face.b) < 0
+                    | (face.normal * face.c) < 0;
+  //if (!angle_normal) return false;
 
-  return return_value;
+  // FIXME: Use per vertex Z instead of triangle one
+  // 4. Calculate distance to camera
+  double mod_v1 = face.a.Z;
+  double mod_v2 = face.b.Z;
+  double mod_v3 = face.c.Z;
+
+  double z_min = std::min({mod_v1, mod_v2, mod_v3});
+  //double z_max = std::max({mod_v1, mod_v2, mod_v3});
+  if (z_min > INFINITY_DISTANCE) return false;
+
+  // 5. Copy normals FIXME: Use only vertex normals, not the global one
+  tmp_triangle.normal   = face.normal;
+  tmp_triangle.normal_a = face.normal_a;
+  tmp_triangle.normal_b = face.normal_b;
+  tmp_triangle.normal_c = face.normal_c;
+  tmp_triangle.z_value  = z_min;
+
+  // Set uv
+  tmp_triangle.uv = uv;
+  return true;
 }

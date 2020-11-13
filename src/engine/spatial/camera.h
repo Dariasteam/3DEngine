@@ -10,25 +10,31 @@
 
 class Camera : public Spatial {
 protected:
-  CommonBuffers& buffers;
-  Vector3 vector_plane;
+  Vector3 vector_plane {0, 0, 1};
   RectF bounds {-1, -1, 1, 1};
   Point3 point_plane;
+  CommonBuffers& buffers;
 
-  inline bool is_point_between_camera_bounds (const Point2& p) const;
-  inline bool triangle_inside_camera (const Triangle& t) const;
+  inline bool is_point_between_bounds (const Point2& p) const {
+    return p.x() >= get_bounds().x       &
+           p.x() <= get_bounds().width   &
+           p.y() >= get_bounds().y       &
+           p.y() <= get_bounds().height;
+  };
+
+  inline bool triangle_inside_camera (const Triangle& t) const {
+    return is_point_between_bounds(t.a) &
+           is_point_between_bounds(t.b) &
+           is_point_between_bounds(t.c);
+  };
 
 
-  inline bool calculate_mesh_projection (const Face& face,
+  virtual bool calculate_mesh_projection (const Face& face,
                                          const UV& uv,
-                                         unsigned thread_index) const;
-
-  inline virtual bool calculate_cut_point (const Point3&,
-                                           const Vector3& dir_v,
-                                           Point2&) const = 0;
+                                         unsigned thread_index) const = 0;
 public:
   Camera(const Vector3& v_plane,
-         const Point3& p_plane);
+         const RectF& b);
 
   Camera (const Camera& cam);
 
@@ -36,6 +42,7 @@ public:
   inline const Point3&  get_plane_point() const { return point_plane; }
   inline const RectF& get_bounds() const { return bounds; }
 
+  inline void set_bounds(const RectF& b) { bounds = b; }
   inline void set_plane_vector(const Vector3& p) { vector_plane = p; }
   inline void set_plane_point (const Point3& p)  { point_plane  = p; }  
 

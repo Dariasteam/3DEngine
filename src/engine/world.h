@@ -36,7 +36,7 @@ public:
   inline void delete_mesh (Mesh* mesh);
   inline Camera& get_camera () { return principal_camera; }
 
-  void calculate_next_frame () const;
+  void calculate_next_frame ();
 
   ~World () {
     meshes.clear();

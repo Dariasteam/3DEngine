@@ -2,7 +2,7 @@
 
 World::World() :
   principal_camera(Vector3{0, 0, 1},
-                   Point3{0, 0, 3}
+                   RectF{-6, -6, 6, 6}
                    ),
   sun(Vector3 {.5, .5, 0},
       Color {1, 1, 1},
@@ -11,7 +11,7 @@ World::World() :
   ObjParser parser;
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
 
-  parsed_mesh->rotate_y(10);
+  parsed_mesh->rotate_y(10);  
   parsed_mesh->translate_global({0, 0, 13});
 
   // temporary since we don't have real uvs
@@ -49,9 +49,9 @@ void World::delete_mesh(Mesh* mesh) {
 
 bool movingLeft = false;
 
-void World::calculate_next_frame() const {
+void World::calculate_next_frame() {
   meshes.front()->rotate_y(-0.008);
   meshes.front()->rotate_x(-0.003);
-  meshes.front()->rotate_z(-0.02);
+  meshes.front()->rotate_z(-0.02);  
 }
 

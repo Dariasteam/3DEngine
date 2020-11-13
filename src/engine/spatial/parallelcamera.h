@@ -5,12 +5,12 @@
 
 class ParallelCamera : public Camera {
 protected:
-  inline virtual bool calculate_cut_point (const Point3&,
-                                           const Vector3& dir_v,
-                                           Point2&) const;
+  virtual bool calculate_mesh_projection (const Face& face,
+                                          const UV& uv,
+                                          unsigned thread_index) const;
 public:
   ParallelCamera(const Vector3& v_plane,
-                 const Point3& p_plane);
+                 const RectF& b);
 
   ParallelCamera(const ParallelCamera& cam);
 };

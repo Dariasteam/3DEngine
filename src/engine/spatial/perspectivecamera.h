@@ -6,14 +6,16 @@
 
 class PerspectiveCamera : public Camera {
 protected:
-  inline virtual bool calculate_cut_point (const Point3&,
-                                           const Vector3& dir_v,
-                                           Point2&) const;
+  inline bool calculate_mesh_projection (const Face& face,
+                                          const UV& uv,
+                                          unsigned thread_index) const;
+
+  inline void calculate_cut_point (const Point3& vertex,
+                                   Point2&) const;
 public:
   PerspectiveCamera (const Vector3& v_plane,
-                     const Point3& p_plane);
+                     const RectF& b);
 
-  PerspectiveCamera ();
   PerspectiveCamera (const PerspectiveCamera& cam);
 };
 

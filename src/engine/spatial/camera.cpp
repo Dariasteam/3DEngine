@@ -1,8 +1,9 @@
 #include "camera.h"
 
-Camera::Camera(const Vector3& v_plane, const Point3& p_plane) :
+Camera::Camera(const Vector3& v_plane,
+               const RectF& b) :
   vector_plane (v_plane),
-  point_plane (p_plane),
+  bounds (b),
   buffers(CommonBuffers::get())
 {}
 
@@ -12,19 +13,6 @@ Camera::Camera(const Camera& cam) :
   point_plane (cam.point_plane),
   buffers(CommonBuffers::get())
 {}
-
-inline bool Camera::is_point_between_camera_bounds(const Point2& p) const {
-  return p.x() >= get_bounds().x       &
-         p.x() <= get_bounds().width   &
-         p.y() >= get_bounds().y       &
-         p.y() <= get_bounds().height;
-}
-
-inline bool Camera::triangle_inside_camera(const Triangle &triangle) const {
-  return is_point_between_camera_bounds(triangle.a) &
-         is_point_between_camera_bounds(triangle.b) &
-         is_point_between_camera_bounds(triangle.c);
-}
 
 void Camera::project(const std::vector<Mesh*> meshes_vector) const {
   unsigned n_faces = 0;
@@ -72,60 +60,4 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
   }
 }
 
-inline bool Camera::calculate_mesh_projection(const Face& face,
-                                              const UV& uv,
-                                              unsigned index) const {
 
-  auto& tmp_triangle = buffers.triangles[index];
-
-  //Triangle2 tmp_triangle;
-
-  // ONLY USEFUL IF USING DOUBLE FACES
-  // 1. Check face is not behind camera. Since we are using camera basis
-  // we only need z value of the plane. Also each point coordinate is also
-  // it's vector
-
-  // FIXME: this should not exist
-  /*
-  auto plane_distance = camera->get_plane_point().z();
-  if (face.a.z() < plane_distance &&
-      face.b.z() < plane_distance &&
-      face.c.z() < plane_distance) return false;
-      */
-
-  // 2. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º instead
-  bool angle_normal = (face.normal * face.a) < 0
-                    | (face.normal * face.b) < 0
-                    | (face.normal * face.c) < 0;
-  if (!angle_normal) return false;
-
-  // 2. Calculate distance to camera
-  double mod_v1 = Vector3::vector_module(face.a);
-  double mod_v2 = Vector3::vector_module(face.b);
-  double mod_v3 = Vector3::vector_module(face.c);
-
-  double z_min = std::min({mod_v1, mod_v2, mod_v3});
-  //double z_max = std::max({mod_v1, mod_v2, mod_v3});
-  if (z_min > INFINITY_DISTANCE) return false;
-
-  // 3. Calculate intersection points with the plane
-  bool visible  = calculate_cut_point(face.a, face.a, tmp_triangle.a)
-                | calculate_cut_point(face.b, face.b, tmp_triangle.b)
-                | calculate_cut_point(face.c, face.c, tmp_triangle.c);
-  if (!visible) return false;
-
-  tmp_triangle.z_value = z_min;
-
-  if (!triangle_inside_camera(tmp_triangle)) return false;
-
-  // 4. Copy normals FIXME: Use only vertex normals, not the global one
-  tmp_triangle.normal   = face.normal;
-  tmp_triangle.normal_a = face.normal_a;
-  tmp_triangle.normal_b = face.normal_b;
-  tmp_triangle.normal_c = face.normal_c;
-
-  // Set uv
-  tmp_triangle.uv = uv;
-  return true;
-}

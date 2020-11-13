@@ -63,13 +63,9 @@ private:
   FragmentShader fragmentShader;
   World& world;
 
-  std::thread t;
-
   FPSControl fps_render;
-  FPSControl fps_painter;  
 public:
   RenderEngine();
-  void painting_loop ();
   void render_loop ();
 };
 
