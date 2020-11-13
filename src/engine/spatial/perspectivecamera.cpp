@@ -9,9 +9,9 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
   Camera (cam)
 {}
 
-inline bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
-                                                          const UV& uv,
-                                                          unsigned index) const {
+bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
+                                                  const UV& uv,
+                                                  unsigned index) const {
 
   auto& tmp_triangle = buffers.triangles[index];
 
@@ -80,8 +80,8 @@ inline bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
  * ß = T1 / T2
  *
  * */
-inline void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
-                                                   Point2& result) const {
+void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
+                                            Point2& result) const {
   const Vector3& dir_v = vertex;            // Since we are in camera space, the vertex is also the director vector of the line
 
   // Calc cut point line - plane
@@ -101,7 +101,6 @@ inline void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
   const double& d = dir_v.y();
   const double& f = dir_v.z();
 
-  // NOTE: Changed from -D to avoid render upside down
   double T1 {-D + A*a + B*c + C*e};
   double T2 {- A*b - B*d - C*f};
   double parameter = T1 / T2;

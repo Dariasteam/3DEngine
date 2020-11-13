@@ -15,7 +15,7 @@
 
 class World {
 private:
-  ParallelCamera principal_camera;
+  PerspectiveCamera principal_camera;
   std::vector <Mesh*> meshes;
   DirectionalLight sun;
 

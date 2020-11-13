@@ -6,11 +6,11 @@
 
 class PerspectiveCamera : public Camera {
 protected:
-  inline bool calculate_mesh_projection (const Face& face,
+  bool calculate_mesh_projection (const Face& face,
                                           const UV& uv,
                                           unsigned thread_index) const;
 
-  inline void calculate_cut_point (const Point3& vertex,
+  void calculate_cut_point (const Point3& vertex,
                                    Point2&) const;
 public:
   PerspectiveCamera (const Vector3& v_plane,

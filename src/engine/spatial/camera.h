@@ -10,9 +10,9 @@
 
 class Camera : public Spatial {
 protected:
-  Vector3 vector_plane {0, 0, 1};
-  RectF bounds {-1, -1, 1, 1};
-  Point3 point_plane;
+  Vector3 vector_plane;
+  RectF bounds;
+  Point3 point_plane {0, 0, 3};
   CommonBuffers& buffers;
 
   inline bool is_point_between_bounds (const Point2& p) const {

@@ -1,8 +1,8 @@
 #include "world.h"
 
 World::World() :
-  principal_camera(Vector3{0, 0, 1},
-                   RectF{-6, -6, 6, 6}
+  principal_camera(Point3{0, 0, 1},
+                   RectF{-1, -1, 1, 1}
                    ),
   sun(Vector3 {.5, .5, 0},
       Color {1, 1, 1},
@@ -11,7 +11,7 @@ World::World() :
   ObjParser parser;
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
 
-  parsed_mesh->rotate_y(10);  
+  parsed_mesh->rotate_y(10);
   parsed_mesh->translate_global({0, 0, 13});
 
   // temporary since we don't have real uvs

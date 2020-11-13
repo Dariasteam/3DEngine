@@ -2,8 +2,8 @@
 
 Camera::Camera(const Vector3& v_plane,
                const RectF& b) :
-  vector_plane (v_plane),
   bounds (b),
+  vector_plane (v_plane),
   buffers(CommonBuffers::get())
 {}
 

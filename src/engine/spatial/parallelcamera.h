@@ -5,9 +5,9 @@
 
 class ParallelCamera : public Camera {
 protected:
-  virtual bool calculate_mesh_projection (const Face& face,
-                                          const UV& uv,
-                                          unsigned thread_index) const;
+  bool calculate_mesh_projection (const Face& face,
+                                  const UV& uv,
+                                  unsigned thread_index) const;
 public:
   ParallelCamera(const Vector3& v_plane,
                  const RectF& b);
