@@ -1,9 +1,12 @@
 #include "world.h"
 
-World::World(PerspectiveCamera* cm) :
-  principal_camera (cm),
-  sun(Vector3 {.5, .5, 0}, Color {1, 1, 1}, 3.0)
-
+World::World() :
+  principal_camera(Vector3{0, 0, 1},
+                   Point3{0, 0, 3}
+                   ),
+  sun(Vector3 {.5, .5, 0},
+      Color {1, 1, 1},
+      3.0)
 {
   ObjParser parser;
   Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");

@@ -23,6 +23,9 @@ public:
     return instance;
   }
 
+  CommonBuffers (MultithreadManager const &) = delete;
+  void operator= (CommonBuffers const &) = delete;
+
   Texture<unsigned long, 1> triangle_index_buffer;
   Texture<double, 1> z_buffer;
   Texture<unsigned char, 3> normal_buffer;

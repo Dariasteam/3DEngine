@@ -3,7 +3,7 @@
 #define BASE_LIGHT 1
 
 void Lightness::operator ()(unsigned pixel_index) {
-  const DirectionalLight& light = world->get_light();
+  const DirectionalLight& light = World::get().get_light();
 
   double normal_x = buffers.normal_buffer.get(pixel_index * 3 + 0);
   double normal_y = buffers.normal_buffer.get(pixel_index * 3 + 1);

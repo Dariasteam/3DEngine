@@ -14,6 +14,8 @@
 #include "world.h"
 #include "spatial/perspectivecamera.h"
 #include "rasteriser/abstractrasteriserCPU.h"
+#include "rasteriser/rasteriserflat.h"
+#include "planar/textureprojector.h"
 
 #include "fragment/fragmentshader.h"
 #include "fragment/flatnormals.h"
@@ -54,22 +56,21 @@ public:
 
 class RenderEngine {
 private:
-  Projector* projector;
-  AbstractRasteriser* rasteriser;
-  FrameBufferHandler* canvas;
-  World* world;
+  Projector projector;
+  RasteriserFlat rasteriser;
+  FrameBufferHandler canvas;
 
   FragmentShader fragmentShader;
+  World& world;
 
   std::thread t;
 
   FPSControl fps_render;
-  FPSControl fps_painter;
-
-  void render_loop ();
+  FPSControl fps_painter;  
 public:
-  RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandler* c, World* w);
+  RenderEngine();
   void painting_loop ();
+  void render_loop ();
 };
 
 #endif // RENDERENGINE_H

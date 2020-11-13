@@ -12,7 +12,7 @@ public:
   ParallelCamera(const Vector3& v_plane,
                  const Point3& p_plane);
 
-  ParallelCamera( const ParallelCamera& cam);
+  ParallelCamera(const ParallelCamera& cam);
 };
 
 #endif // PARALLELCAMERA_H

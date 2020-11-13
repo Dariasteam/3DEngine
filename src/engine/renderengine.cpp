@@ -1,12 +1,7 @@
 #include "renderengine.h"
 
-
-RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandler* c, World* w) :
-    projector (p),
-    rasteriser (r),
-    canvas (c),
-    world (w),
-    fragmentShader(w),
+RenderEngine::RenderEngine() :
+    world(World::get()),
     fps_render("RENDER"),
     fps_painter("PAINTER")
   {
@@ -19,9 +14,7 @@ RenderEngine::RenderEngine(Projector* p, AbstractRasteriser* r, FrameBufferHandl
   // Add shader steps
   fragmentShader.push_operation(new FlatNormals());
   fragmentShader.push_operation(new TexturePainter());
-  fragmentShader.push_operation(new Lightness());
-
-  render_loop();
+  fragmentShader.push_operation(new Lightness());  
 }
 
 bool a = false;
@@ -41,13 +34,13 @@ void RenderEngine::painting_loop() {
   */
 }
 
-void RenderEngine::render_loop () {
+void RenderEngine::render_loop () {  
   while (1) {
-    world->calculate_next_frame();
-    projector->project();
-    rasteriser->rasterise();    
+    world.calculate_next_frame();
+    projector.project_camera(world.get_camera());
+    rasteriser.rasterise(world.get_camera());
     fragmentShader();
     fps_render.update();
-    canvas->paint(CommonBuffers::get().screen_buffer); 
+    canvas.paint(CommonBuffers::get().screen_buffer);
   }
 }

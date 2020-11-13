@@ -44,8 +44,7 @@ protected:
     return buffers.triangles[get_triangle_index_at_pixel_index(pixel_index)];
   }
 
-public:
-  static const World* world;  
+public:   
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<bool> matrices;
   static Texture<unsigned char, 3> texture;
@@ -66,7 +65,7 @@ private:
   std::list<FragmentOperation*> operations;
   CommonBuffers& buffers;
 public:
-  FragmentShader(const World* w);
+  FragmentShader();
   void operator() ();
   void push_operation(FragmentOperation* op);
 };

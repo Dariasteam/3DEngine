@@ -13,10 +13,12 @@ protected:
   virtual void rasterize_triangle (Triangle& triangle, unsigned t_index) const = 0;
   void triangle_to_screen_space (Triangle& t) const;
 
+  const Camera* camera;
 public:
-  AbstractRasteriserCPU(World* w) : AbstractRasteriser (w) {}
+  AbstractRasteriserCPU()
+  {}
 
-  void rasterise ();
+  void rasterise (const Camera& camera);
 };
 
 #endif // PROJECTOR_H

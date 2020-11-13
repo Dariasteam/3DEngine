@@ -1,6 +1,6 @@
 #include "fragmentshader.h"
 
-FragmentShader::FragmentShader(const World* w) :
+FragmentShader::FragmentShader() :
   buffers(CommonBuffers::get())
 {
   push_operation(new CalculateProjections());
@@ -8,7 +8,6 @@ FragmentShader::FragmentShader(const World* w) :
   // FIXME: Asociate textures per mesh
   FragmentOperation::texture.load("/home/darias/Desarrollo/3D/texture.ppm");
   FragmentOperation::normal_map.load("/home/darias/Desarrollo/3D/normal.ppm");
-  FragmentOperation::world = w;
 }
 
 void FragmentShader::operator()() {
@@ -64,7 +63,6 @@ std::vector<TextureProjector> FragmentOperation::texture_projectors;
 std::vector<bool> FragmentOperation::matrices;
 Texture<unsigned char, 3> FragmentOperation::texture;
 Texture<unsigned char, 3> FragmentOperation::normal_map;
-const World* FragmentOperation::world = nullptr;
 std::mutex CalculateProjections::mtx;
 
 

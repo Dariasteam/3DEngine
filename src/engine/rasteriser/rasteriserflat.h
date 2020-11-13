@@ -10,7 +10,7 @@ private:
 
   void rasterize_triangle (Triangle& triangle, unsigned t_index) const;
 public:
-  RasteriserFlat(World* w) : AbstractRasteriserCPU (w) {}
+  RasteriserFlat() {}
 };
 
 #endif // RASTERISERFLAT_H

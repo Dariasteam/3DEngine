@@ -3,7 +3,6 @@
 
 #include "../buffers/commonbuffers.h"
 #include "../spatial/camera.h"
-#include "../world.h"
 
 #include "../math/point2.h"
 #include "../math/point2d.h"
@@ -17,9 +16,7 @@
 class AbstractRasteriser {
 protected:
   //unsigned screen_size = SCREEN_SIZE;
-  CommonBuffers& buffers;
-  World* world;
-  PerspectiveCamera* camera;
+  CommonBuffers& buffers;    
 
   inline void update_buffers(unsigned x, unsigned y,
                              double z_value, unsigned long t_index) const {
@@ -31,8 +28,8 @@ protected:
 
 public:  
 
-  AbstractRasteriser(World* w);
-  virtual void rasterise () = 0;
+  AbstractRasteriser();
+  virtual void rasterise (const Camera& cam) = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

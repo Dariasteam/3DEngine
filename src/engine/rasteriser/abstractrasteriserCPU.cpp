@@ -18,7 +18,8 @@ void AbstractRasteriserCPU::triangle_to_screen_space (Triangle& triangle) const 
   triangle.c.set_y(std::round(triangle.c.y() * v_factor + y_offset));
 }
 
-void AbstractRasteriserCPU::rasterise() {
+void AbstractRasteriserCPU::rasterise(const Camera& cam) {
+  camera = &cam;
   buffers.reset_z_buffer();
   auto& m = MultithreadManager::get_instance();  
 
