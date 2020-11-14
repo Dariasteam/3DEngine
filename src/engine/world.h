@@ -29,12 +29,13 @@ public:
   World (MultithreadManager const &) = delete;
   void operator= (World const &) = delete;
 
-  inline const std::vector <Mesh*>& get_elements () { return meshes; }
-  inline const DirectionalLight get_light () const { return sun; }
+  inline const std::vector <Mesh*>& get_elements () { return meshes; }  
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
+
   inline Camera& get_camera () { return principal_camera; }
+  inline DirectionalLight& get_light () { return sun; }
 
   void calculate_next_frame ();
 

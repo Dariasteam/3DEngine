@@ -34,6 +34,8 @@ public:
   void load(const std::string& filename);
   void write(const std::string& filename) const;
 
+  void operator=(const Texture<T, D>& t);
+
   inline int get_width() const { return width; }
   inline int get_height() const { return height; }
 
@@ -62,46 +64,4 @@ public:
   void fill (T value);
 };
 
-/*
-template <typename T>
-class Texture1C : public Texture<T> {
-public:
-  void load(const std::string& filename);
-  void write(const std::string& filename) const;
-
-  inline T get (const unsigned x,
-                const unsigned y) const {
-
-    return content[y * width + x];
-  }
-
-  inline void set (const unsigned x,
-                   const unsigned y,
-                   const T c) {
-    content[y * width +  x] = c;
-  }
-
-  Texture1C();
-  Texture1C(unsigned w, unsigned h);
-};
-
-template <typename T>
-class Texture3C : public Texture<T> {
-public:
-  void load(const std::string& filename);
-  void write(const std::string& filename) const;
-
-  inline Color888 get_color (const unsigned x,
-                             const unsigned y) const {
-    return Color888 {
-      content[y * width * depth + x * depth + 1],
-      content[y * width * depth + x * depth + 2],
-      content[y * width * depth + x * depth + 3]
-    };
-  }
-
-  Texture3C();
-  Texture3C(unsigned w, unsigned h);
-};
-*/
 #endif // TEXTURE_H

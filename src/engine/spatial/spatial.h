@@ -50,6 +50,14 @@ struct Spatial {
     position_changed = true;
   }
 
+  void scale (double s) {
+    for (unsigned i = 0; i < 3; i++) {
+      for (unsigned j = 0; j < 3; j++) {
+        basis[i][j] = basis[i][j] * 3;
+      }
+    }
+  }
+
   void rotate_x (double deg) {
     Matrix3 rotation_matrix {
                               {1, 0, 0},

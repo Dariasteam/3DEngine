@@ -33,6 +33,7 @@ protected:
                                          const UV& uv,
                                          unsigned thread_index) const = 0;
 public:
+  // FIXME: Do not allow this without adapting the plane orientation to vector
   Camera(const Vector3& v_plane,
          const RectF& b);
 

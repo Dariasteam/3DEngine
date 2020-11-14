@@ -16,13 +16,14 @@ inline bool ParallelCamera::calculate_mesh_projection(const Face& face,
   auto& tmp_triangle = buffers.triangles[index];
 
   // 1. Face to 2D triangle
-  tmp_triangle.a.X = face.a.X;
+  // FIXME: -x to prevent inverted image, is the error here or in perspective camera?
+  tmp_triangle.a.X = -face.a.X;
   tmp_triangle.a.Y = face.a.Y;
 
-  tmp_triangle.b.X = face.b.X;
+  tmp_triangle.b.X = -face.b.X;
   tmp_triangle.b.Y = face.b.Y;
 
-  tmp_triangle.c.X = face.c.X;
+  tmp_triangle.c.X = -face.c.X;
   tmp_triangle.c.Y = face.c.Y;
 
   // 2. Check triangle between camera bounds
@@ -33,7 +34,7 @@ inline bool ParallelCamera::calculate_mesh_projection(const Face& face,
   bool angle_normal = (face.normal * face.a) < 0
                     | (face.normal * face.b) < 0
                     | (face.normal * face.c) < 0;
-  //if (!angle_normal) return false;
+//  if (!angle_normal) return false;
 
   // FIXME: Use per vertex Z instead of triangle one
   // 4. Calculate distance to camera

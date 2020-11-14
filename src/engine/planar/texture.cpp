@@ -78,6 +78,20 @@ void Texture<T, D>::write(const std::string& filename) const {
   }
 }
 
+template<typename T, unsigned D>
+void Texture<T, D>::operator=(const Texture<T, D>& t) {
+  width = t.width;
+  height = t.height;
+  depth = t.depth;
+
+  content = new T [width * height * depth];
+
+  for (unsigned i = 0; i < width * height * depth; i++) {
+    content[i] = t.get(i);
+  }
+
+}
+
 template class Texture<unsigned char, 3>; // Regular Texture
 template class Texture<double, 1>;        // Z Buffer
 template class Texture<unsigned long, 1>; // Triangle Buffer

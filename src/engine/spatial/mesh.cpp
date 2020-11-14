@@ -80,6 +80,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*> mesh_list,
   position_changed = false;
 }
 
+/*
 void Mesh::change_basis(const std::list<Mesh *> mesh_list,
                         const Basis3 &new_basis,
                         const Point3 &camera_translation,
@@ -124,6 +125,7 @@ void Mesh::change_basis(const std::list<Mesh *> mesh_list,
   basis_changed = false;
   position_changed = false;
 }
+*/
 
 std::vector<Vector3*> Mesh::get_adjacent_vertices(Point3& p, unsigned from, std::vector<bool>& vertex_normals) {
   std::vector<Vector3*> adjacents;

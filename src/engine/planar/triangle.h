@@ -24,6 +24,10 @@ struct Triangle {
     a (t.a),
     b (t.b),
     c (t.c),
+    normal  (t.normal),
+    normal_a(t.normal_a),
+    normal_b(t.normal_b),
+    normal_c(t.normal_c),
     z_value (t.z_value)
   {}
 

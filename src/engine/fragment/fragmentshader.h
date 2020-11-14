@@ -44,9 +44,13 @@ protected:
     return buffers.triangles[get_triangle_index_at_pixel_index(pixel_index)];
   }
 
-public:   
+public:
   static std::vector<TextureProjector> texture_projectors;
-  static std::vector<bool> matrices;
+  static std::vector<bool> t_matrices;
+
+  static std::vector<TextureProjector> lightness_projectors;
+  static std::vector<bool> l_matrices;
+
   static Texture<unsigned char, 3> texture;
   static Texture<unsigned char, 3> normal_map;
 public:
@@ -54,11 +58,15 @@ public:
   FragmentOperation();
 };
 
-class CalculateProjections : public FragmentOperation {
+class CalculateTextureProjections : public FragmentOperation {
   static std::mutex mtx;
   void operator()(unsigned pixel_index);
 };
 
+class CalculateLightnessProjections : public FragmentOperation {
+  static std::mutex mtx;
+  void operator()(unsigned pixel_index);
+};
 
 class FragmentShader {
 private:
@@ -67,6 +75,7 @@ private:
 public:
   FragmentShader();
   void operator() ();
+  void generate_projection_matrices();
   void push_operation(FragmentOperation* op);
 };
 

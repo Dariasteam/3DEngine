@@ -1,36 +1,50 @@
 #include "world.h"
 
 World::World() :
-  principal_camera(Point3{0, 0, 1},
+  principal_camera(Vector3{0, 0, 1},
                    RectF{-1, -1, 1, 1}
                    ),
-  sun(Vector3 {.5, .5, 0},
+  sun(Vector3 {0, 0, 1},
       Color {1, 1, 1},
-      3.0)
+      2)
 {
   ObjParser parser;
-  Mesh* parsed_mesh = parser ("/home/darias/Desarrollo/3D/mesh_examples/default_cube.obj");
-
-  parsed_mesh->rotate_y(10);
-  parsed_mesh->translate_global({0, 0, 13});
+  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
 
   // temporary since we don't have real uvs
-  parsed_mesh->uv_per_face.resize(parsed_mesh->local_coordenates_faces.size());
-  unsigned size = parsed_mesh->uv_per_face.size();
+  mesh_1->uv_per_face.resize(mesh_1->local_coordenates_faces.size());
+  unsigned size = mesh_1->uv_per_face.size();
   for (unsigned i = 0; i < size; i++) {
-
-    parsed_mesh->uv_per_face[i] = {
+    mesh_1->uv_per_face[i] = {
       {0, 0},
       {0, .9},
       {.9, .9}
     };
   }
 
+  mesh_1->rotate_z(1);
+  mesh_1->translate_global({0, -2.5, 50});
+
   Texture <unsigned char, 3> tex;
   tex.load ("/home/darias/Desarrollo/3D/line_texture.ppm");
-  parsed_mesh->texture = tex;
+  mesh_1->texture = tex;
+  add_mesh(mesh_1);
 
-  add_mesh(parsed_mesh);
+  /*
+
+  Mesh* mesh_2 = new Mesh (*mesh_1);
+  mesh_2->translate_global({0, -2, 30});
+  mesh_2->scale(3);
+
+  add_mesh(mesh_2);
+  */
+
+  principal_camera.translate_global({5, 0, 0});
+  principal_camera.rotate_y(-.5);
+
+  sun.translate_global({-2, 0, 0});
+//  sun.rotate_x(+0.3);
+  sun.rotate_y(.5);
 }
 
 
@@ -50,8 +64,9 @@ void World::delete_mesh(Mesh* mesh) {
 bool movingLeft = false;
 
 void World::calculate_next_frame() {
-  meshes.front()->rotate_y(-0.008);
-  meshes.front()->rotate_x(-0.003);
-  meshes.front()->rotate_z(-0.02);  
+  //meshes.front()->rotate_y(-0.008);
+  //meshes.front()->translate_global({0, 2.5, 30});
+  //meshes.front()->rotate_x(-0.003);
+  //meshes.front()->rotate_z(-0.02);
 }
 

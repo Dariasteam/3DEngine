@@ -34,7 +34,9 @@ struct Mesh : public Spatial {
   Mesh (const Mesh& m) :
     Spatial(m.basis, m.translation),
     local_coordenates_faces (m.local_coordenates_faces),    
-    global_coordenates_faces (m.global_coordenates_faces)
+    global_coordenates_faces (m.global_coordenates_faces),
+    p (m.p),
+    uv_per_face(m.uv_per_face)
   {}
 
   void add_nested_mesh (Mesh* mesh) {

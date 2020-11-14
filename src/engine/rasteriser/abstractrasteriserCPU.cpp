@@ -23,7 +23,8 @@ void AbstractRasteriserCPU::rasterise(const Camera& cam) {
   buffers.reset_z_buffer();
   auto& m = MultithreadManager::get_instance();  
 
-  m.calculate_threaded(buffers.triangles_size, [&](unsigned i) {
-    rasterize_triangle(buffers.triangles[i], i);
+  m.calculate_threaded(buffers.n_renderable_triangles, [&](unsigned i) {
+    unsigned t_index = buffers.triangle_indices[i];
+    rasterize_triangle(buffers.triangles[t_index], t_index);
   });    
 }

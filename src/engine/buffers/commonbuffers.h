@@ -14,8 +14,9 @@
 class CommonBuffers {
 private:
   CommonBuffers () :
-    triangles_size (0),
-    triangles (50000)
+    triangles (50000),
+    triangle_indices (50000),
+    n_renderable_triangles (0)
   {}
 public:
   inline static CommonBuffers& get () {
@@ -31,15 +32,24 @@ public:
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
 
+  Texture<unsigned long, 1> l_triangle_index_buffer;
+  Texture<unsigned char, 3> lightmap_buffer;
+
   void set_dimension (unsigned w, unsigned h);;
 
   inline unsigned get_height() { return triangle_index_buffer.get_height(); }
   inline unsigned get_width() { return triangle_index_buffer.get_width(); }
 
   std::vector<Triangle> triangles;
-  unsigned triangles_size;
+  std::vector<Triangle> light_triangles;
+
+  std::vector<unsigned long> triangle_indices;
+  std::vector<unsigned long> l_triangle_indices;
 
   void reset_z_buffer();
+
+  unsigned n_renderable_triangles;
+  unsigned n_l_renderable_triangles;
 };
 
 #endif // COMMONBUFFERS_H
