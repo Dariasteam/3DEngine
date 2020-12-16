@@ -65,6 +65,7 @@ src/engine/spatial/parallelcamera.cpp
 src/engine/spatial/parallelcamera.h
 src/engine/spatial/perspectivecamera.cpp
 src/engine/spatial/perspectivecamera.h
+src/engine/spatial/spatial.cpp
 src/engine/spatial/spatial.h
 src/engine/world.cpp
 src/engine/world.h

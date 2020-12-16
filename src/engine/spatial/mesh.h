@@ -32,7 +32,7 @@ struct Mesh : public Spatial {
   {}
 
   Mesh (const Mesh& m) :
-    Spatial(m.basis, m.translation),
+    Spatial(m.basis, m.position),
     local_coordenates_faces (m.local_coordenates_faces),    
     global_coordenates_faces (m.global_coordenates_faces),
     p (m.p),
@@ -59,15 +59,11 @@ struct Mesh : public Spatial {
   void generate_data ();
 
   std::list<Mesh*> express_in_parents_basis (const Basis3& new_basis,
-                                             const Point3& camera_translation,
-                                             bool camera_rotated,
-                                             bool camera_translated);
+                                             const Point3& camera_translation);
 
-  void inline change_basis_multithreaded (const std::list<Mesh*> mesh_list,
+  void inline change_basis_multithreaded (const std::list<Mesh*>& mesh_list,
                                           const Basis3& new_basis,
-                                          const Point3& camera_translation,
-                                          bool camera_rotated,
-                                          bool camera_translated);
+                                          const Point3& position);
 
   void inline change_basis (const std::list<Mesh*> mesh_list,
                             const Basis3& new_basis,
@@ -77,6 +73,9 @@ struct Mesh : public Spatial {
 
   void inline apply_translation_part (const Vector3& translation,
                                       unsigned from, unsigned to);
+
+
+  void apply_rotations ();
 
   void inline change_basis_part (const Matrix3& basis_changer,
                                  const Vector3& translation,

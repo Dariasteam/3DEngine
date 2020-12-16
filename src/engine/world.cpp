@@ -23,7 +23,7 @@ World::World() :
   }
 
   mesh_1->rotate_z(1);
-  mesh_1->translate_global({0, -2.5, 50});
+  mesh_1->set_position_global({0, -2.5, 35});
 
   Texture <unsigned char, 3> tex;
   tex.load ("/home/darias/Desarrollo/3D/line_texture.ppm");
@@ -39,10 +39,10 @@ World::World() :
   add_mesh(mesh_2);
   */
 
-  principal_camera.translate_global({5, 0, 0});
-  principal_camera.rotate_y(-.5);
+  principal_camera.set_position_global({0, 0, 0});
+  //principal_camera.rotate_y(-.5);
 
-  sun.translate_global({-2, 0, 0});
+  sun.set_position_global({-2, 0, 0});
 //  sun.rotate_x(+0.3);
   sun.rotate_y(.5);
 }
@@ -61,12 +61,13 @@ void World::delete_mesh(Mesh* mesh) {
   meshes.erase(std::remove(meshes.begin(), meshes.end(), mesh), meshes.end());
 }
 
-bool movingLeft = false;
-
 void World::calculate_next_frame() {
-  //meshes.front()->rotate_y(-0.008);
-  //meshes.front()->translate_global({0, 2.5, 30});
-  //meshes.front()->rotate_x(-0.003);
-  //meshes.front()->rotate_z(-0.02);
+ meshes.front()->rotate_y(-0.008);
+//  meshes.front()->position += Point3{0, 0, 1};
+  meshes.front()->rotate_x(-0.003);
+  meshes.front()->rotate_z(-0.02);
+
+
+
 }
 

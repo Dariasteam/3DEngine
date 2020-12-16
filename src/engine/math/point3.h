@@ -58,6 +58,15 @@ struct Point3 {
     set_z(z() / v);
   }
 
+  inline Point3 operator- (const Point3& v) {
+    return Point3 {
+      x() - v.x(),
+      y() - v.y(),
+      z() - v.z()
+    };
+  }
+
+
   inline double x() const { return X;}
   inline double y() const { return Y;}
   inline double z() const { return Z;}

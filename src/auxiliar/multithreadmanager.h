@@ -9,7 +9,7 @@
 #include <iostream>
 #include <future>
 
-#define N_THREADS 8
+#define N_THREADS 16
 
 class CallableThread {
 private:

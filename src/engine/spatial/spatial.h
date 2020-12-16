@@ -5,39 +5,26 @@
 #include "../math/vector3.h"
 #include "../math/matrix3.h"
 
-const Basis3 canonical_base {
-  {1, 0, 0},
-  {0, 1, 0},
-  {0, 0, 1},
-};
-
 struct Spatial {      
-  bool basis_changed = true;
-  bool position_changed = true;
-
   Spatial (const Spatial& sp) :
-    basis_changed (sp.basis_changed),
-    position_changed (sp.position_changed),
     basis (sp.basis),
-    translation (sp.translation)
+    position(sp.position)
   {} 
 
   Spatial () {}
 
   Spatial (const Basis3& b, const Point3& p) :
     basis (b),
-    translation (p)
+    position (p)
   {}  
 
-  Basis3 basis {
-          {1, 0, 0},
-          {0, 1, 0},
-          {0, 0, 1}};
+  const static Basis3 canonical_base;
 
-  Point3 translation {0, 0, 0};
+  Basis3 basis = canonical_base;
+
   Point3 position {0, 0, 0};
 
-  void translate_global (const Vector3& v) {
+  void set_position_global (const Vector3& v) {
 
     // FIXME: is this usefull for nested meshes?
 /*
@@ -45,9 +32,7 @@ struct Spatial {
     MatrixOps::generate_basis_change_matrix(basis, canonical_base, m);
     Point3Ops::change_basis(m, position, position);
 */
-    translation = v;
     position = v;
-    position_changed = true;
   }
 
   void scale (double s) {
@@ -65,8 +50,7 @@ struct Spatial {
                               {0, std::sin(deg),  std::cos(deg)}
                             };
 
-    basis = rotation_matrix * basis;    
-    basis_changed = true;
+    basis = rotation_matrix * basis;        
   }
 
   void rotate_y (double deg) {
@@ -76,8 +60,7 @@ struct Spatial {
                               {-std::sin(deg), 0, std::cos(deg)}
                             };
 
-    basis = rotation_matrix * basis;    
-    basis_changed = true;
+    basis = rotation_matrix * basis;        
   }
 
   void rotate_z (double deg) {
@@ -87,8 +70,7 @@ struct Spatial {
                               {0, 0, 1}
                             };
 
-    basis = rotation_matrix * basis;    
-    basis_changed = true;
+    basis = rotation_matrix * basis;        
   }
 };
 
