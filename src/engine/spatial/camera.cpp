@@ -2,7 +2,7 @@
 
 Camera::Camera(const Vector3& v_plane,
                const RectF& b) :
-  vector_plane (v_plane),
+  local_vector_plane (v_plane),
   bounds (b),
   buffers(CommonBuffers::get())
 {
@@ -10,9 +10,9 @@ Camera::Camera(const Vector3& v_plane,
 }
 
 Camera::Camera(const Camera& cam) :
-  vector_plane (cam.vector_plane),
+  local_vector_plane (cam.local_vector_plane),
   bounds (cam.bounds),
-  point_plane (cam.point_plane),
+  local_point_plane (cam.local_point_plane),
   buffers(CommonBuffers::get())
 {}
 

@@ -10,9 +10,14 @@
 
 class Camera : public Spatial {
 protected:
-  Vector3 vector_plane;
+  Vector3 local_vector_plane;
+  Vector3 global_vector_plane;
+
   RectF bounds;
-  Point3 point_plane {0, 0, 3};
+
+  Point3 local_point_plane {0, 0, 3};
+  Point3 global_point_plane {0, 0, 3};
+
   CommonBuffers& buffers;
 
   inline bool is_point_between_bounds (const Point2& p) const {
@@ -39,15 +44,29 @@ public:
 
   Camera (const Camera& cam);
 
-  inline const Vector3& get_plane_vector() const { return vector_plane; }
-  inline const Point3&  get_plane_point() const { return point_plane; }
+  inline const Vector3& get_plane_vector() const { return local_vector_plane; }
+  inline const Point3&  get_plane_point() const { return local_point_plane; }
   inline const RectF& get_bounds() const { return bounds; }
 
   inline void set_bounds(const RectF& b) { bounds = b; }
-  inline void set_plane_vector(const Vector3& p) { vector_plane = p; }
-  inline void set_plane_point (const Point3& p)  { point_plane  = p; }  
+  inline void set_plane_vector(const Vector3& p) { local_vector_plane = p; }
+  inline void set_plane_point (const Point3& p)  { local_point_plane  = p; }
 
   void project (const std::vector<Mesh*> meshes_vector) const;
+
+
+  inline const Vector3& get_global_plane_vector() const { return global_vector_plane; }
+
+
+  // FIXME: This is not a significative name
+  void express_in_parent_basis (const Basis3& b) {
+    Matrix m;
+    MatrixOps::generate_basis_change_matrix(b, basis, m);
+    Point3Ops::change_basis(m, local_vector_plane, global_vector_plane);
+    Point3Ops::change_basis(m, local_point_plane, global_point_plane);
+
+//    global_vector_plane = local_vector_plane;
+  }
 };
 
 

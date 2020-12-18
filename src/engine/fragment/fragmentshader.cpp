@@ -3,8 +3,8 @@
 FragmentShader::FragmentShader() :
   buffers(CommonBuffers::get())
 {
-  //push_operation(new CalculateTextureProjections());
-  //push_operation(new CalculateLightnessProjections());
+  push_operation(new CalculateTextureProjections());
+  push_operation(new CalculateLightnessProjections());
 
   // FIXME: Asociate textures per mesh
   FragmentOperation::texture.load("/home/darias/Desarrollo/3D/texture.ppm");
@@ -19,7 +19,7 @@ void FragmentShader::operator()() {
   unsigned n_pixels = buffers.get_height() * buffers.get_width();
 
   // Prepare texture projection
-  // FIXME Way too many matrices nad projectors
+  // FIXME Way too many matrices and projectors
   FragmentOperation::texture_projectors.resize(buffers.triangles.size());
   FragmentOperation::t_matrices.resize(buffers.triangles.size());
   std::fill(FragmentOperation::t_matrices.begin(),
@@ -85,7 +85,6 @@ void CalculateLightnessProjections::operator()(unsigned pixel_index) {
                 it2,
                 t_index
                 ) == it2) {
-    std::cout << "NOP" << std::endl;
     return;
   }
 

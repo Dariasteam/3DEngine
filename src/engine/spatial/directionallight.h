@@ -1,9 +1,9 @@
 #ifndef DIRECTIONALLIGHT_H
 #define DIRECTIONALLIGHT_H
 
-#include "parallelcamera.h"
+#include "perspectivecamera.h"
 
-class DirectionalLight : public ParallelCamera {
+class DirectionalLight : public PerspectiveCamera {
 private:
   Color color;
   double intensity;
@@ -13,7 +13,7 @@ public:
                    const double instensity);
   inline const Color& get_color () const { return color; }
   inline double get_intensity () const { return intensity; }
-  inline const Vector3& get_direction () const { return vector_plane; }
+//  inline const Vector3& get_direction () const { return global_vector_plane; }
 };
 
 #endif // DIRECTIONALLIGHT_H

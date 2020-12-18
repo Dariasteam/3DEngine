@@ -1,6 +1,6 @@
 #include "flatnormals.h"
 
-void FlatNormals::operator ()(unsigned pixel_index) {   
+void FlatNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
 
   buffers.normal_buffer.set(pixel_index * 3 + 0, triangle.normal.X);

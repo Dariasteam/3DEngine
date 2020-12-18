@@ -26,7 +26,7 @@ protected:
 
   CommonBuffers& buffers;
 
-  inline Point2i pixel_index_to_coordenates(unsigned pixel_index) {
+  inline Point2i pixel_index_to_screen_coordenates(unsigned pixel_index) {
     unsigned width = CommonBuffers::get().get_width();
 
     unsigned y = pixel_index / width;
