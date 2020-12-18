@@ -1,9 +1,9 @@
 #ifndef DIRECTIONALLIGHT_H
 #define DIRECTIONALLIGHT_H
 
-#include "perspectivecamera.h"
+#include "parallelcamera.h"
 
-class DirectionalLight : public PerspectiveCamera {
+class DirectionalLight : public ParallelCamera {
 private:
   Color color;
   double intensity;

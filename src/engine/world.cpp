@@ -30,11 +30,22 @@ World::World() :
   mesh_1->texture = tex;
   add_mesh(mesh_1);
 
-  principal_camera.set_position_global({0, 0, 0});
-  //principal_camera.rotate_y(-.5);
-
+  principal_camera.set_position_global({0, 4, 0});
+  principal_camera.rotate_x(-.1);
+/*
   sun.set_position_global({0, -60, 0});
   sun.rotate_x(1);
+  */
+/*
+  sun.set_position_global({-60, -60, 0});
+  sun.rotate_x(1);
+  sun.rotate_y(-1);
+  */
+
+  sun.set_position_global({-60, -60, 0});
+  sun.rotate_x(1);
+  sun.rotate_y(-0.39);
+
   sun.express_in_parent_basis(get_camera().basis);
 }
 
@@ -53,9 +64,9 @@ void World::delete_mesh(Mesh* mesh) {
 }
 
 void World::calculate_next_frame() {
- meshes.front()->rotate_y(-0.008);
+  meshes.front()->rotate_y(-0.01);
 //  meshes.front()->position += Point3{0, 0, 1};
-  meshes.front()->rotate_x(-0.03);
+  meshes.front()->rotate_x(-0.01);
 //  meshes.front()->rotate_z(-0.02);
 
 

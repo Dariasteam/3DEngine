@@ -3,7 +3,7 @@
 DirectionalLight::DirectionalLight(const Vector3& v_plane,
                                    const Color& c,
                                    const double i) :
-  PerspectiveCamera(v_plane, RectF{-1, -1, 1, 1}),
+  ParallelCamera(v_plane, RectF{-35, -35, 35, 35}),
   color (c),
   intensity (i)
 {}

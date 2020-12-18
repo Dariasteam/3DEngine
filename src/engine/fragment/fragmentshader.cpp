@@ -73,6 +73,7 @@ void CalculateTextureProjections::operator()(unsigned pixel_index) {
 }
 
 void CalculateLightnessProjections::operator()(unsigned pixel_index) {
+  /*
   unsigned t_index   = buffers.triangle_index_buffer.get(pixel_index);
 
   if (l_matrices[t_index])
@@ -102,6 +103,7 @@ void CalculateLightnessProjections::operator()(unsigned pixel_index) {
   FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
         buffers.light_triangles[t_index],
         fakeuv);
+        */
 }
 
 

@@ -43,6 +43,7 @@ public:
   std::vector<Triangle> triangles;
   std::vector<Triangle> light_triangles;
 
+  // FIXME: Should these be sets?
   std::vector<unsigned long> triangle_indices;
   std::vector<unsigned long> l_triangle_indices;
 
