@@ -1,25 +1,37 @@
 #include "abstractrasteriserCPU.h"
 
-void AbstractRasteriserCPU::triangle_to_screen_space (Triangle& triangle) const {
+void AbstractRasteriserCPU::triangle_to_texture_space(Triangle &triangle) const {
+/*
+  double v_factor = height / camera->get_bounds().y;
+  double h_factor = width / camera->get_bounds().x;
 
-  double v_factor = buffers.get_height() / camera->get_bounds().y;
-  double h_factor = buffers.get_width()  / camera->get_bounds().x;
+  unsigned y_offset = height / 2;
+  unsigned x_offset = width / 2;
+*/
 
-  unsigned y_offset = buffers.get_height() / 2;
-  unsigned x_offset = buffers.get_width()  / 2;
 
-  triangle.a.set_x(std::round(triangle.a.x() * h_factor + x_offset));
-  triangle.a.set_y(std::round(triangle.a.y() * v_factor + y_offset));
+  double v_factor = camera->get_bounds().height * 2;
+  double h_factor = camera->get_bounds().height * 2;
 
-  triangle.b.set_x(std::round(triangle.b.x() * h_factor + x_offset));
-  triangle.b.set_y(std::round(triangle.b.y() * v_factor + y_offset));
+  unsigned y_offset = camera->get_bounds().height;
+  unsigned x_offset = camera->get_bounds().width;
 
-  triangle.c.set_x(std::round(triangle.c.x() * h_factor + x_offset));
-  triangle.c.set_y(std::round(triangle.c.y() * v_factor + y_offset));
+  triangle.a.set_x(std::round((triangle.a.x() + x_offset ) * height / v_factor));
+  triangle.a.set_y(std::round((triangle.a.y() + y_offset ) * width  / h_factor));
+
+  triangle.b.set_x(std::round((triangle.b.x() + x_offset ) * height / v_factor));
+  triangle.b.set_y(std::round((triangle.b.y() + y_offset ) * width  / h_factor));
+
+  triangle.c.set_x(std::round((triangle.c.x() + x_offset ) * height / v_factor));
+  triangle.c.set_y(std::round((triangle.c.y() + y_offset ) * width  / h_factor));
 }
 
-void AbstractRasteriserCPU::rasterise(const Camera& cam) {
+
+void AbstractRasteriserCPU::rasterise(const Camera& cam, unsigned w, unsigned h) {
   camera = &cam;
+  width = w;
+  height = h;
+
   buffers.reset_z_buffer();
   auto& m = MultithreadManager::get_instance();  
 

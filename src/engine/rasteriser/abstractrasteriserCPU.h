@@ -11,14 +11,12 @@ class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
 protected:
   virtual void rasterize_triangle (Triangle& triangle, unsigned t_index) const = 0;
-  void triangle_to_screen_space (Triangle& t) const;
-
-  const Camera* camera;
+  void triangle_to_texture_space (Triangle& triangle) const;
 public:
   AbstractRasteriserCPU()
   {}
 
-  void rasterise (const Camera& camera);
+  void rasterise (const Camera& cam, unsigned w, unsigned h);
 };
 
 #endif // PROJECTOR_H

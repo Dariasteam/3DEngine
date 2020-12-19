@@ -28,11 +28,12 @@ public:
   void operator= (CommonBuffers const &) = delete;
 
   Texture<unsigned long, 1> triangle_index_buffer;
+  Texture<unsigned long, 1> l_triangle_index_buffer;
+
   Texture<double, 1> z_buffer;
+
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
-
-  Texture<unsigned long, 1> l_triangle_index_buffer;
   Texture<unsigned char, 3> lightmap_buffer;
 
   void set_dimension (unsigned w, unsigned h);;

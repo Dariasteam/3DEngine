@@ -11,10 +11,6 @@ FragmentShader::FragmentShader() :
   FragmentOperation::normal_map.load("/home/darias/Desarrollo/3D/normal.ppm");
 }
 
-void FragmentShader::generate_projection_matrices() {
-
-}
-
 void FragmentShader::operator()() {
   unsigned n_pixels = buffers.get_height() * buffers.get_width();
 
@@ -67,43 +63,45 @@ void CalculateTextureProjections::operator()(unsigned pixel_index) {
   t_matrices[t_index] = true;
   mtx.unlock();
 
-  FragmentOperation::texture_projectors[t_index].generate_uv_projector(
-        buffers.triangles[t_index],
-        buffers.triangles[t_index].uv);
+  texture_projectors[t_index].generate_uv_projector(
+                                buffers.triangles[t_index],
+                                buffers.triangles[t_index].uv);
 }
 
 void CalculateLightnessProjections::operator()(unsigned pixel_index) {
-  /*
-  unsigned t_index   = buffers.triangle_index_buffer.get(pixel_index);
+
+  unsigned t_index   = get_triangle_index_at_pixel_index(pixel_index);
 
   if (l_matrices[t_index])
     return;
 
-  // Check the triangle exist in the light render
+  // Check the triangle exist in the light mapper
   auto it1 = buffers.l_triangle_indices.begin();
   auto it2 = buffers.l_triangle_indices.begin() + buffers.n_l_renderable_triangles;
-  if (std::find(it1,
-                it2,
-                t_index
-                ) == it2) {
+
+  if (std::find(it1, it2, t_index) == it2)
     return;
-  }
 
   mtx.lock();
     l_matrices[t_index] = true;
   mtx.unlock();
 
-  auto& t = buffers.light_triangles[t_index];
+  const Triangle& t = buffers.light_triangles[t_index];
   UV fakeuv;
 
   fakeuv.p = t.a;
   fakeuv.u = t.b - t.a;
   fakeuv.v = t.c - t.a;
 
-  FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
-        buffers.light_triangles[t_index],
-        fakeuv);
-        */
+  lightness_projectors[t_index].generate_uv_projector(
+                                  buffers.triangles[t_index],
+                                  fakeuv);
+
+  /*
+  std::cout << fakeuv.p.X << " " << fakeuv.p.Y << " " <<
+               fakeuv.u.X << " " << fakeuv.u.Y << " " <<
+               fakeuv.v.X << " " << fakeuv.v.Y << " " << std::endl;
+  */
 }
 
 

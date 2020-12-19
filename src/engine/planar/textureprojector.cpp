@@ -2,7 +2,7 @@
 
 TextureProjector::TextureProjector() {}
 
-void TextureProjector::generate_uv_projector(const Triangle2i& projected_triangle,
+void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
                                              const UV& uv) {
   t_origin = projected_triangle.a;
   v_origin = uv.p;  
@@ -27,6 +27,36 @@ void TextureProjector::generate_uv_projector(const Triangle2i& projected_triangl
                                           screen_basis,
                                           basis_changer);
 }
+
+/*
+void TextureProjector::generate_light_projector(const Triangle2i& light_triangle,
+                                                const Triangle2i& screen_triangle,
+                                                const UV& uv) {
+  t_origin = projected_triangle.a;
+  v_origin = uv.p;
+
+  // UV of the triangle as Texture basis (destination)
+  Basis2 texture_basis {
+    {(uv.u.X - uv.p.X), (uv.u.Y - uv.p.Y)},
+    {(uv.v.X - uv.p.X), (uv.v.Y - uv.p.Y)}
+  };
+
+  // Projected triangle vertices as base of the screen (origin)
+  Basis2 screen_basis ({
+               {double(projected_triangle.b.X - projected_triangle.a.X),
+                  double(projected_triangle.b.Y - projected_triangle.a.Y)},
+
+               {double(projected_triangle.c.X - projected_triangle.a.X),
+                  double(projected_triangle.c.Y - projected_triangle.a.Y)},
+             });
+
+  // Generate matrix to change between basis
+  MatrixOps::generate_basis_change_matrix(texture_basis,
+                                          screen_basis,
+                                          basis_changer);
+}
+*/
+
 
 Color888 TextureProjector::get_color_on_uv(int x, int y,
                                            const Texture<unsigned char, 3>& tex) const {

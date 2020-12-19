@@ -26,10 +26,14 @@ protected:
     }
   }
 
+  unsigned width;
+  unsigned height;
+  const Camera* camera;
+
 public:  
 
   AbstractRasteriser();
-  virtual void rasterise (const Camera& cam) = 0;
+  virtual void rasterise (const Camera& cam, unsigned w, unsigned h) = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

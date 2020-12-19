@@ -11,14 +11,17 @@ RenderEngine::RenderEngine() :
   fragmentShader.push_operation(new Lightness());
 }
 
+// FIXME:
 #include <unordered_set>
 
 void RenderEngine::render_loop () {
   while (1) {
     world.calculate_next_frame();
 
+    unsigned screen_sz = CommonBuffers::get().get_height();
+
     projector.project_camera(world.get_light());
-    rasteriser.rasterise(world.get_light());    
+    rasteriser.rasterise(world.get_light(), screen_sz, screen_sz);
 
     Texture<double, 1> z = CommonBuffers::get().z_buffer;
     Texture<unsigned char, 3> lightmap (z.get_height(), z.get_width());
@@ -45,9 +48,9 @@ void RenderEngine::render_loop () {
     CommonBuffers::get().l_triangle_indices.clear();
     std::unordered_set <unsigned long> light_indices;
 
-    unsigned sz = CommonBuffers::get().get_height();
-    for (unsigned i = 0; i < sz; i++) {
-      for (unsigned j = 0; j < sz; j++) {
+
+    for (unsigned i = 0; i < screen_sz; i++) {
+      for (unsigned j = 0; j < screen_sz; j++) {
         if (CommonBuffers::get().z_buffer.get(i, j) != INFINITY_DISTANCE)
           light_indices.insert(CommonBuffers::get().triangle_index_buffer.get(i, j));
       }
@@ -56,14 +59,10 @@ void RenderEngine::render_loop () {
     for (const unsigned long& triangle_index : light_indices) {
       CommonBuffers::get().l_triangle_indices.push_back(triangle_index);
     }
-
     CommonBuffers::get().n_l_renderable_triangles = light_indices.size();
 
-//   CommonBuffers::get().l_triangle_indices = CommonBuffers::get().triangle_indices;
-//   CommonBuffers::get().n_l_renderable_triangles = CommonBuffers::get().n_renderable_triangles;
-
     projector.project_camera(world.get_camera());
-    rasteriser.rasterise(world.get_camera());
+    rasteriser.rasterise(world.get_camera(), screen_sz, screen_sz);
 
     fragmentShader();
 

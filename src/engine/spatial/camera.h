@@ -13,6 +13,7 @@ protected:
   Vector3 local_vector_plane;
   Vector3 global_vector_plane;
 
+  // FIXME: only use height and width?
   RectF bounds;
 
   Point3 local_point_plane {0, 0, 3};
@@ -35,8 +36,8 @@ protected:
 
 
   virtual bool calculate_mesh_projection (const Face& face,
-                                         const UV& uv,
-                                         unsigned thread_index) const = 0;
+                                          const UV& uv,
+                                          unsigned thread_index) const = 0;
 public:
   // FIXME: Do not allow this without adapting the plane orientation to vector
   Camera(const Vector3& v_plane,

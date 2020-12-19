@@ -18,7 +18,7 @@ private:
 public:
   TextureProjector();
 
-  void generate_uv_projector (const Triangle2i& projected_triangle,
+  void generate_uv_projector (const Triangle& projected_triangle,
                               const UV& uv);
 
   Color888 get_color_on_uv (int x, int y, const Texture<unsigned char, 3>& tex) const;

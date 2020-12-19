@@ -98,7 +98,7 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
 }
 
 void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) const {
-  triangle_to_screen_space(triangle);
+  triangle_to_texture_space(triangle);
 
   // Sort vertices by Y
   std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
