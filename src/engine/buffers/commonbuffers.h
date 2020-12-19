@@ -15,8 +15,13 @@ class CommonBuffers {
 private:
   CommonBuffers () :
     triangles (50000),
+    light_triangles (50000),
+
     triangle_indices (50000),
-    n_renderable_triangles (0)
+    l_triangle_indices (50000),
+
+    n_renderable_triangles (0),
+    n_l_renderable_triangles (0)
   {}
 public:
   inline static CommonBuffers& get () {

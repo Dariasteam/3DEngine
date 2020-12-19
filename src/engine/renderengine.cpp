@@ -19,12 +19,12 @@ void RenderEngine::render_loop () {
     world.calculate_next_frame();
 
     unsigned screen_sz = CommonBuffers::get().get_height();
-
     projector.project_camera(world.get_light());
     rasteriser.rasterise(world.get_light(), screen_sz, screen_sz);
 
     Texture<double, 1> z = CommonBuffers::get().z_buffer;
     Texture<unsigned char, 3> lightmap (z.get_height(), z.get_width());
+
 
     for (int i = 0; i < z.get_height() * z.get_width(); i++) {
       if (z.get(i) < INFINITY_DISTANCE) {
@@ -48,11 +48,14 @@ void RenderEngine::render_loop () {
     CommonBuffers::get().l_triangle_indices.clear();
     std::unordered_set <unsigned long> light_indices;
 
-
     for (unsigned i = 0; i < screen_sz; i++) {
       for (unsigned j = 0; j < screen_sz; j++) {
-        if (CommonBuffers::get().z_buffer.get(i, j) != INFINITY_DISTANCE)
-          light_indices.insert(CommonBuffers::get().triangle_index_buffer.get(i, j));
+        if (CommonBuffers::get().z_buffer.get(i, j) < INFINITY_DISTANCE) {
+          light_indices.insert(CommonBuffers::get().l_triangle_index_buffer.get(i, j));
+        } else {
+          // FIXME: We don't need to clean this
+          CommonBuffers::get().l_triangle_index_buffer.set(i, j, 10000000000);
+        }
       }
     }
 
