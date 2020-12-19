@@ -7,7 +7,7 @@ FragmentShader::FragmentShader() :
   push_operation(new CalculateLightnessProjections());
 
   // FIXME: Asociate textures per mesh
-  FragmentOperation::texture.load("/home/darias/Desarrollo/3D/texture.ppm");
+  FragmentOperation::texture.load("/home/darias/Desarrollo/3D/star_texture.ppm");
   FragmentOperation::normal_map.load("/home/darias/Desarrollo/3D/normal.ppm");
 }
 

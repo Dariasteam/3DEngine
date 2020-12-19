@@ -47,10 +47,9 @@ Point2i TextureProjector::get_point_on_uv(const int x, const int y, const Textur
   int x_tex = std::round((uv_origin.X + m2[0][0]) * texture.get_width());
   int y_tex = std::round((uv_origin.Y + m2[0][1]) * texture.get_height());
 
+  // FIXME: This should not exist, there should be no errors
   if (x_tex < 0 || x_tex > texture.get_width() ||
-      y_tex < 0 || y_tex > texture.get_height()) {
-
-//    std::cout << "Ultra error " << x_tex << " " << y_tex << std::endl;
+      y_tex < 0 || y_tex > texture.get_height()) {    
 
     x_tex = std::min({x_tex, texture.get_width()});
     x_tex = std::max({x_tex, 0});

@@ -5,11 +5,11 @@ World::World() :
                    RectF{-1, -1, 1, 1}
                    ),
   sun(Vector3 {0, 0, 1},
-      Color {1, 1, 1},
-      2)
+      Color {0.8, 1, 0.8},
+      1.2)
 {
   ObjParser parser;
-  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
+  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/shadow_tester.obj");
 
   // temporary since we don't have real uvs
   mesh_1->uv_per_face.resize(mesh_1->local_coordenates_faces.size());
@@ -31,8 +31,8 @@ World::World() :
   mesh_1->texture = tex;
   add_mesh(mesh_1);
 
-  principal_camera.set_position_global({-17, 0, 20});
-  principal_camera.rotate_y(-.7);
+  principal_camera.set_position_global({-11, -3, 27});
+  principal_camera.rotate_y(-0.8);
 /*
   sun.set_position_global({0, -60, 0});
   sun.rotate_x(1);
