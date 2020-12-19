@@ -6,7 +6,7 @@ World::World() :
                    ),
   sun(Vector3 {0, 0, 1},
       Color {0.8, 1, 0.8},
-      1.2)
+      1)
 {
   ObjParser parser;
   Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/shadow_tester.obj");

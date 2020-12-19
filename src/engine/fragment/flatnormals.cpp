@@ -2,12 +2,12 @@
 
 void FlatNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
-/*
+
   buffers.normal_buffer.set(pixel_index * 3 + 0, triangle.normal.X);
   buffers.normal_buffer.set(pixel_index * 3 + 2, triangle.normal.Y);
   buffers.normal_buffer.set(pixel_index * 3 + 2, triangle.normal.Z);
-*/
 
+/*
   Point2i p = pixel_index_to_screen_coordenates(pixel_index);
 
   unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
@@ -28,5 +28,5 @@ void FlatNormals::operator ()(unsigned pixel_index) {
   buffers.normal_buffer.set(pixel_index * 3 + 0, x);
   buffers.normal_buffer.set(pixel_index * 3 + 2, y);
   buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
-
+*/
 }

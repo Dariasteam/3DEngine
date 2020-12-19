@@ -18,12 +18,22 @@ void Lightness::operator ()(unsigned pixel_index) {
   Point2i p = pixel_index_to_screen_coordenates(pixel_index);
   const DirectionalLight& light = World::get().get_light();
 
-  auto normalColor = texture_projectors[t_index].get_color_on_uv(p.X, p.Y, normal_map);
-  Vector3 normalVec = {(double(normalColor.r) / 255) - 1,
-                       (double(normalColor.g) / 255) - 1,
-                       0};
+  // Calculate normal maps
+  Color888 c = texture_projectors[t_index].get_color_on_uv(p.X, p.Y, normal_map);
+
+  double r = get_triangle_at_pixel_index(pixel_index).normal.X;
+  double g = get_triangle_at_pixel_index(pixel_index).normal.Z;
+
+  r -= (2.0 * double(c.r) - 255) / 255;
+  g -= (2.0 * double(c.g) - 255) / 255;
+
+ // r = std::min(1.0, std::max(-1.0, r));
+ // g = std::min(1.0, std::max(-1.0, g));
+
+  Vector3 normalVec (r, g, 1);
 
   double incidence = std::max(0.0, (normalVec * light.get_global_plane_vector()));
+
   light_contribution.X = light_contribution.X * incidence;
   light_contribution.Y = light_contribution.Y * incidence;
   light_contribution.Z = light_contribution.Z * incidence;
@@ -36,7 +46,7 @@ void Lightness::operator ()(unsigned pixel_index) {
                                                                 buffers.get().lightmap_buffer);
 
     // Check the triangle index in the lightmapper equals the one at this pixel
-    if (buffers.l_triangle_index_buffer.get(p_l.X, p_l.Y) == t_index) {
+    if (buffers.l_triangle_index_buffer.get(p_l.X, p_l.Y) == t_index && incidence > 0.2) {
 
       double intensity = light.get_intensity();
       Color light_color = light.get_color();
