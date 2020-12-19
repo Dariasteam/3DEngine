@@ -19,17 +19,18 @@ void Lightness::operator ()(unsigned pixel_index) {
   // 1. Get coordinate of the screen
   Point2i p = pixel_index_to_screen_coordenates(pixel_index);
 
+
   // 2. Get the point in the light texture
   Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X,
                                                               p.Y,
-                                                              texture);
+                                                              buffers.get().
+                                                                lightmap_buffer);
 
-//  std::cout << p_l.X << " " << p_l.Y << std::endl;
-/*
+// std::cout << p_l.X << " " << p_l.Y << std::endl;
   // 4. Check point in the light texture is the triangle at this pixel, if not, is occluded
-  if (buffers.l_triangle_index_buffer.get(p_l.X, p_l.Y) == t_index)
+  if (buffers.l_triangle_index_buffer.get(p_l.X, p_l.Y) != t_index)
     return;
-*/
+
 
   const DirectionalLight& light = World::get().get_light();
   auto& triangle = get_triangle_at_pixel_index(pixel_index);

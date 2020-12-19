@@ -87,21 +87,39 @@ void CalculateLightnessProjections::operator()(unsigned pixel_index) {
   mtx.unlock();
 
   const Triangle& t = buffers.light_triangles[t_index];
-  UV fakeuv;
+  UV fakeuv;  
 
   fakeuv.p = t.a;
   fakeuv.u = t.b - t.a;
   fakeuv.v = t.c - t.a;
 
+  // Normalize UV to the lightmap size
+  unsigned lightmap_size = buffers.lightmap_buffer.get_height();
+
+
+  fakeuv.p.X /= lightmap_size;
+  fakeuv.p.Y /= lightmap_size;
+  fakeuv.u.X /= lightmap_size;
+  fakeuv.u.Y /= lightmap_size;
+  fakeuv.v.X /= lightmap_size;
+  fakeuv.v.Y /= lightmap_size;
+
   lightness_projectors[t_index].generate_uv_projector(
                                   buffers.triangles[t_index],
                                   fakeuv);
 
-  /*
+/*
   std::cout << fakeuv.p.X << " " << fakeuv.p.Y << " " <<
                fakeuv.u.X << " " << fakeuv.u.Y << " " <<
                fakeuv.v.X << " " << fakeuv.v.Y << " " << std::endl;
-  */
+*/
+
+/*
+  std::cout << buffers.triangles[t_index].a.X << " " << buffers.triangles[t_index].a.Y << " " <<
+               buffers.triangles[t_index].b.X << " " << buffers.triangles[t_index].b.Y << " " <<
+               buffers.triangles[t_index].c.X << " " << buffers.triangles[t_index].c.Y << " " << std::endl;
+*/
+
 }
 
 

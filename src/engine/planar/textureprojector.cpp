@@ -4,8 +4,8 @@ TextureProjector::TextureProjector() {}
 
 void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
                                              const UV& uv) {
-  t_origin = projected_triangle.a;
-  v_origin = uv.p;  
+  t_origin  = projected_triangle.a;
+  uv_origin = uv.p;
 
   // UV of the triangle as Texture basis (destination)
   Basis2 texture_basis {
@@ -25,40 +25,10 @@ void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
   // Generate matrix to change between basis
   MatrixOps::generate_basis_change_matrix(texture_basis,
                                           screen_basis,
-                                          basis_changer);
+                                          basis_changer);  
 }
 
-/*
-void TextureProjector::generate_light_projector(const Triangle2i& light_triangle,
-                                                const Triangle2i& screen_triangle,
-                                                const UV& uv) {
-  t_origin = projected_triangle.a;
-  v_origin = uv.p;
-
-  // UV of the triangle as Texture basis (destination)
-  Basis2 texture_basis {
-    {(uv.u.X - uv.p.X), (uv.u.Y - uv.p.Y)},
-    {(uv.v.X - uv.p.X), (uv.v.Y - uv.p.Y)}
-  };
-
-  // Projected triangle vertices as base of the screen (origin)
-  Basis2 screen_basis ({
-               {double(projected_triangle.b.X - projected_triangle.a.X),
-                  double(projected_triangle.b.Y - projected_triangle.a.Y)},
-
-               {double(projected_triangle.c.X - projected_triangle.a.X),
-                  double(projected_triangle.c.Y - projected_triangle.a.Y)},
-             });
-
-  // Generate matrix to change between basis
-  MatrixOps::generate_basis_change_matrix(texture_basis,
-                                          screen_basis,
-                                          basis_changer);
-}
-*/
-
-
-Color888 TextureProjector::get_color_on_uv(int x, int y,
+Color888 TextureProjector::get_color_on_uv(const int x, const int y,
                                            const Texture<unsigned char, 3>& tex) const {
 
   const auto& point = get_point_on_uv(x, y, tex);
@@ -69,13 +39,13 @@ Color888 TextureProjector::get_color_on_uv(int x, int y,
   };
 }
 
-Point2i TextureProjector::get_point_on_uv(int x, int y, const Texture<unsigned char, 3>& texture) const {
+Point2i TextureProjector::get_point_on_uv(const int x, const int y, const Texture<unsigned char, 3>& texture) const {
   Matrix m ({{double(x - t_origin.X), double(y - t_origin.Y)}});
 
-  auto m2 = m * basis_changer;
+  auto m2 = m * basis_changer;  
 
-  int x_tex = std::round((v_origin.X + m2[0][0]) * texture.get_width());
-  int y_tex = std::round((v_origin.Y + m2[0][1]) * texture.get_height());
+  int x_tex = std::round((uv_origin.X + m2[0][0]) * texture.get_width());
+  int y_tex = std::round((uv_origin.Y + m2[0][1]) * texture.get_height());
 
   if (x_tex < 0 || x_tex > texture.get_width() ||
       y_tex < 0 || y_tex > texture.get_height()) {
