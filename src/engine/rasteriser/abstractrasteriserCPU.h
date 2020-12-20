@@ -11,7 +11,7 @@ class AbstractRasteriserCPU : public AbstractRasteriser {
 private:
 protected:
   virtual void rasterize_triangle (Triangle& triangle, unsigned t_index) const = 0;
-  void triangle_to_texture_space (Triangle& triangle) const;
+  void triangle_to_surface_space (Triangle& triangle) const;
 public:
   AbstractRasteriserCPU()
   {}

@@ -1,6 +1,6 @@
 #include "abstractrasteriserCPU.h"
 
-void AbstractRasteriserCPU::triangle_to_texture_space(Triangle &triangle) const {
+void AbstractRasteriserCPU::triangle_to_surface_space(Triangle &triangle) const {
 /*
   double v_factor = height / camera->get_bounds().y;
   double h_factor = width / camera->get_bounds().x;

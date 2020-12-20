@@ -19,6 +19,8 @@ void RenderEngine::render_loop () {
     world.calculate_next_frame();
 
     unsigned screen_sz = CommonBuffers::get().get_height();
+
+
     projector.project_camera(world.get_light());
     rasteriser.rasterise(world.get_light(), screen_sz, screen_sz);
 
@@ -68,6 +70,6 @@ void RenderEngine::render_loop () {
 
     fps_render.update();
 
-    canvas.paint(CommonBuffers::get().screen_buffer);
+    canvas.paint(CommonBuffers::get().l_triangle_index_buffer);
   }
 }

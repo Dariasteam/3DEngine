@@ -66,7 +66,26 @@ public:
     mtx.unlock();
   }
 
-  bool paint(const Texture<unsigned char, 3>& frame);
+  template <typename T,unsigned D>
+  bool paint(const Texture<T, D>& target) {
+    if (initialized) {
+
+      for (unsigned y = 0; y < target.get_height(); y++) {
+        for (unsigned x = 0; x < target.get_width(); x++) {
+          location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
+                     (y+vinfo.yoffset) * finfo.line_length;
+
+          unsigned m_d = D - 1;
+          for (int i = m_d; i >= 0; i--) {
+            *(fbp + location + (m_d - i)) = target.get(x, y, i);  // B
+          }
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
 
 #endif // FRAMEBUFFERHANDLER_H

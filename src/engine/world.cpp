@@ -5,11 +5,11 @@ World::World() :
                    RectF{-1, -1, 1, 1}
                    ),
   sun(Vector3 {0, 0, 1},
-      Color {0.8, 1, 0.8},
-      1)
+      Color {1, 1, 1},
+      3)
 {
   ObjParser parser;
-  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/shadow_tester.obj");
+  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
 
   // temporary since we don't have real uvs
   mesh_1->uv_per_face.resize(mesh_1->local_coordenates_faces.size());
