@@ -11,8 +11,6 @@ RenderEngine::RenderEngine() :
   fragmentShader.push_operation(new Lightness());
 }
 
-// FIXME:
-#include <unordered_set>
 
 void RenderEngine::render_loop () {
   while (1) {
@@ -48,7 +46,6 @@ void RenderEngine::render_loop () {
       buffers.l_triangle_indices.push_back(triangle_index);
     }
 
-    // FIXME: Do not copy this, make n_l_renderable_triangles a set
     buffers.n_l_renderable_triangles = light_indices.size();
 
     projector.project_camera(world.get_camera());

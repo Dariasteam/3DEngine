@@ -7,6 +7,7 @@
 #include <string>
 
 #include <utility>
+#include <unordered_set>
 
 #include "math/point3.h"
 #include "math/point3.h"

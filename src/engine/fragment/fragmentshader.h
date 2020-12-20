@@ -46,9 +46,7 @@ protected:
 
 public:
   static std::vector<TextureProjector> texture_projectors;
-  static std::vector<bool> t_matrices;
-
-  static std::vector<TextureProjector> lightness_projectors;
+  static std::vector<TextureProjector> lightness_projectors;  
   static std::vector<bool> l_matrices;
 
   static Texture<unsigned char, 3> texture;
@@ -58,16 +56,6 @@ public:
   FragmentOperation();
 };
 
-class CalculateTextureProjections : public FragmentOperation {
-  static std::mutex mtx;
-  void operator()(unsigned pixel_index);
-};
-
-class CalculateLightnessProjections : public FragmentOperation {
-  static std::mutex mtx;
-  void operator()(unsigned pixel_index);
-};
-
 class FragmentShader {
 private:
   std::list<FragmentOperation*> operations;
@@ -75,7 +63,8 @@ private:
 public:
   FragmentShader();
   void operator() ();
-  void generate_projection_matrices();
+  void generate_texture_projectors();
+  void generate_light_projectors();
   void push_operation(FragmentOperation* op);
 };
 

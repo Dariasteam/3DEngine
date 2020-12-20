@@ -25,7 +25,7 @@ public:
 
 
   template <typename T, unsigned D>
-  std::vector<T> get_on_uv (const int x, const int y, const Texture<T, D>& texture) const {
+  inline std::vector<T> get_on_uv (const int x, const int y, const Texture<T, D>& texture) const {
     const auto& point = get_point_on_uv(x, y, texture);
     std::vector<T> aux;
 
@@ -36,7 +36,7 @@ public:
   }
 
   template <typename T, unsigned D>
-  Point2i get_point_on_uv  (const int x, const int y, const Texture<T, D>& texture) const {
+  inline Point2i get_point_on_uv  (const int x, const int y, const Texture<T, D>& texture) const {
     Matrix m ({{double(x - t_origin.X), double(y - t_origin.Y)}});
 
     auto m2 = m * basis_changer;
