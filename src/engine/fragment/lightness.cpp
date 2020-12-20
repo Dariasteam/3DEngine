@@ -39,9 +39,9 @@ void Lightness::operator ()(unsigned pixel_index) {
   // Check the triangle exist in the lightmapper
   if (l_matrices[t_index] && incidence > 0.01) {
 
-    // Get the point in the light texture
+    // Get the point in the lightmap
     Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
-                                                                buffers.get().lightmap_buffer);
+                                                                buffers.get().l_triangle_index_buffer);
 
     // Check the triangle index in the lightmapper equals the one at this pixel
     if (buffers.l_triangle_index_buffer.get(p_l.X, p_l.Y) == t_index) {

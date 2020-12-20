@@ -16,7 +16,9 @@ public:
   AbstractRasteriserCPU()
   {}
 
-  void rasterise (const Camera& cam, unsigned w, unsigned h);
+  void rasterise (const Camera& cam,
+                  Texture<unsigned long, 1>& i_surface,
+                  Texture<double, 1>& z_surface) ;
 };
 
 #endif // PROJECTOR_H

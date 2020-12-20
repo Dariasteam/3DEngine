@@ -55,6 +55,7 @@ void FragmentShader::push_operation(FragmentOperation* op) {
 // FIXME: Use the triangle_indices instead of shader?
 void CalculateTextureProjections::operator()(unsigned pixel_index) {
   unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
+  auto& triangle = get_triangle_at_pixel_index(pixel_index);
 
   if (t_matrices[t_index])
     return;
@@ -63,9 +64,7 @@ void CalculateTextureProjections::operator()(unsigned pixel_index) {
   t_matrices[t_index] = true;
   mtx.unlock();
 
-  texture_projectors[t_index].generate_uv_projector(
-                                buffers.triangles[t_index],
-                                buffers.triangles[t_index].uv);
+  texture_projectors[t_index].generate_uv_projector(triangle, triangle.uv);
 }
 
 void CalculateLightnessProjections::operator()(unsigned pixel_index) {
@@ -94,7 +93,7 @@ void CalculateLightnessProjections::operator()(unsigned pixel_index) {
   fakeuv.v = t.c;
 
   // Normalize UV to the lightmap size
-  unsigned lightmap_size = buffers.lightmap_buffer.get_height();
+  unsigned lightmap_size = buffers.l_triangle_index_buffer.height();
   fakeuv.p.X /= lightmap_size;
   fakeuv.p.Y /= lightmap_size;
   fakeuv.u.X /= lightmap_size;
@@ -106,7 +105,6 @@ void CalculateLightnessProjections::operator()(unsigned pixel_index) {
                                   buffers.triangles[t_index],
                                   fakeuv);
 }
-
 
 std::vector<TextureProjector> FragmentOperation::texture_projectors;
 std::vector<bool> FragmentOperation::t_matrices;

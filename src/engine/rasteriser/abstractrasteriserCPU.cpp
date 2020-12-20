@@ -1,15 +1,6 @@
 #include "abstractrasteriserCPU.h"
 
 void AbstractRasteriserCPU::triangle_to_surface_space(Triangle &triangle) const {
-/*
-  double v_factor = height / camera->get_bounds().y;
-  double h_factor = width / camera->get_bounds().x;
-
-  unsigned y_offset = height / 2;
-  unsigned x_offset = width / 2;
-*/
-
-
   double v_factor = camera->get_bounds().height * 2;
   double h_factor = camera->get_bounds().height * 2;
 
@@ -27,12 +18,18 @@ void AbstractRasteriserCPU::triangle_to_surface_space(Triangle &triangle) const 
 }
 
 
-void AbstractRasteriserCPU::rasterise(const Camera& cam, unsigned w, unsigned h) {
+void AbstractRasteriserCPU::rasterise(const Camera& cam,
+                                      Texture<unsigned long, 1>& i_surface,
+                                      Texture<double, 1>& z_surface) {
   camera = &cam;
-  width = w;
-  height = h;
+  indices_target_surface = &i_surface;
+  z_target_surface = &z_surface;
 
-  buffers.reset_z_buffer();
+  height = indices_target_surface->height();
+  width = indices_target_surface->width();
+
+  z_target_surface->fill(INFINITY_DISTANCE);
+
   auto& m = MultithreadManager::get_instance();  
 
   m.calculate_threaded(buffers.n_renderable_triangles, [&](unsigned i) {

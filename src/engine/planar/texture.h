@@ -18,9 +18,9 @@ struct UV {
 template <typename T, unsigned D>
 class Texture {
 protected:
-  unsigned width;
-  unsigned height;
-  unsigned depth;
+  unsigned w;
+  unsigned h;
+  unsigned d;
   T* content;
 public:
   Texture();
@@ -36,14 +36,15 @@ public:
 
   void operator=(const Texture<T, D>& t);
 
-  inline int get_width() const { return width; }
-  inline int get_height() const { return height; }
+  inline int width() const { return w; }
+  inline int height() const { return h; }
+  inline unsigned depth() const { return d; }
 
   inline T get (const unsigned x,
                 const unsigned y,
                 const unsigned i = 0) const {
 
-    return content[y * width * depth + x * depth + i];
+    return content[y * w * d + x * d + i];
   }
 
   inline T get (const unsigned index) const {
@@ -54,7 +55,7 @@ public:
                    const unsigned y,
                    const T c,
                   const unsigned i = 0) {
-    content[y * width * depth + x * depth + i] = c;
+    content[y * w * d + x * d + i] = c;
   }
 
   inline void set (const unsigned index, const T& c) const {

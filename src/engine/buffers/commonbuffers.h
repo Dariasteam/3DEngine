@@ -39,12 +39,12 @@ public:
 
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
-  Texture<unsigned char, 3> lightmap_buffer;
+//  Texture<bool, 1> lightmap_buffer;
 
   void set_dimension (unsigned w, unsigned h);;
 
-  inline unsigned get_height() { return triangle_index_buffer.get_height(); }
-  inline unsigned get_width() { return triangle_index_buffer.get_width(); }
+  inline unsigned get_height() { return triangle_index_buffer.height(); }
+  inline unsigned get_width() { return triangle_index_buffer.width(); }
 
   std::vector<Triangle> triangles;
   std::vector<Triangle> light_triangles;

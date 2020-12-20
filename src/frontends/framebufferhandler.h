@@ -70,14 +70,15 @@ public:
   bool paint(const Texture<T, D>& target) {
     if (initialized) {
 
-      for (unsigned y = 0; y < target.get_height(); y++) {
-        for (unsigned x = 0; x < target.get_width(); x++) {
+      for (unsigned y = 0; y < target.height(); y++) {
+        for (unsigned x = 0; x < target.width(); x++) {
           location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
                      (y+vinfo.yoffset) * finfo.line_length;
 
-          unsigned m_d = D - 1;
+          unsigned m_d = 2;
+          // B G R
           for (int i = m_d; i >= 0; i--) {
-            *(fbp + location + (m_d - i)) = target.get(x, y, i);  // B
+            *(fbp + location + (m_d - i)) = target.get(x, y, i);
           }
         }
       }

@@ -14,9 +14,6 @@ void NormalMapping::operator ()(unsigned pixel_index) {
   x -= (2.0 * double(c.r) - 255) / 255;
   y -= (2.0 * double(c.g) - 255) / 255;
 
-  x = std::min(1.0, std::max(-1.0, x));
-  y = std::min(1.0, std::max(-1.0, y));
-
   unsigned char r = 128 + std::round(127.0 * x);
   unsigned char g = 128 + std::round(127.0 * y);
 
