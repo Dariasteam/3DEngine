@@ -15,22 +15,7 @@ bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
 
   auto& tmp_triangle = buffers.triangles[index];
 
-  //Triangle2 tmp_triangle;
-
-  // ONLY USEFUL IF USING DOUBLE FACES
-  // 1. Check face is not behind camera. Since we are using camera basis
-  // we only need z value of the plane. Also each point coordinate is also
-  // it's vector
-
-  // FIXME: this should not exist
-  /*
-  auto plane_distance = camera->get_plane_point().z();
-  if (face.a.z() < plane_distance &&
-      face.b.z() < plane_distance &&
-      face.c.z() < plane_distance) return false;
-      */
-
-  // 2. Check normal of the face is towards camera, do not check angle,
+  // 1. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º instead
   bool angle_normal = (face.normal * face.a) < 0
                     | (face.normal * face.b) < 0

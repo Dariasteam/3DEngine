@@ -15,15 +15,14 @@ inline bool ParallelCamera::calculate_mesh_projection(const Face& face,
 
   auto& tmp_triangle = buffers.triangles[index];
 
-  // 1. Face to 2D triangle
-  // FIXME: -x to prevent inverted image, is the error here or in perspective camera?
-  tmp_triangle.a.X = -face.a.X;
+  // 1. Face to 2D triangle  
+  tmp_triangle.a.X = face.a.X;
   tmp_triangle.a.Y = face.a.Y;
 
-  tmp_triangle.b.X = -face.b.X;
+  tmp_triangle.b.X = face.b.X;
   tmp_triangle.b.Y = face.b.Y;
 
-  tmp_triangle.c.X = -face.c.X;
+  tmp_triangle.c.X = face.c.X;
   tmp_triangle.c.Y = face.c.Y;
 
   // 2. Check triangle between camera bounds

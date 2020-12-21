@@ -65,8 +65,6 @@ public:
     MatrixOps::generate_basis_change_matrix(b, basis, m);
     Point3Ops::change_basis(m, local_vector_plane, global_vector_plane);
     Point3Ops::change_basis(m, local_point_plane, global_point_plane);
-
-//    global_vector_plane = local_vector_plane;
   }
 };
 

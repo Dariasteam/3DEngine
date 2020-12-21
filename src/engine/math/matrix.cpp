@@ -247,8 +247,7 @@ void MatrixOps::generate_basis_change_matrix(const Matrix &A,
   }  
 }
 
-Matrix MatrixOps::change_basis(const Matrix& basis, const Matrix &element) {
-  //return (basis * element.get_transpose()).get_transpose();
+Matrix MatrixOps::change_basis(const Matrix& basis, const Matrix &element) {  
   return element * basis;
 }
 

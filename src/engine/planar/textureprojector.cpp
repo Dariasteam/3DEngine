@@ -15,11 +15,11 @@ void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
 
   // Projected triangle vertices as base of the screen (origin)
   Basis2 screen_basis ({
-               {double(projected_triangle.b.X - projected_triangle.a.X),
-                  double(projected_triangle.b.Y - projected_triangle.a.Y)},
+               {projected_triangle.b.X - projected_triangle.a.X,
+                projected_triangle.b.Y - projected_triangle.a.Y},
 
-               {double(projected_triangle.c.X - projected_triangle.a.X),
-                  double(projected_triangle.c.Y - projected_triangle.a.Y)},
+               {projected_triangle.c.X - projected_triangle.a.X,
+                projected_triangle.c.Y - projected_triangle.a.Y},
              });
 
   // Generate matrix to change between basis

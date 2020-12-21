@@ -78,7 +78,8 @@ public:
           unsigned m_d = 2;
           // B G R
           for (int i = m_d; i >= 0; i--) {
-            *(fbp + location + (m_d - i)) = target.get(x, y, i);
+            auto a = target.get(x, y, i);
+            *(fbp + location + (m_d - i)) = a;
           }
         }
       }

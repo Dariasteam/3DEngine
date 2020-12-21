@@ -28,7 +28,7 @@ public:
 
   // FIXME: This causes an error
   ~Texture() {
-    //delete[] content;
+    delete[] content;
   }
 
   void load(const std::string& filename);

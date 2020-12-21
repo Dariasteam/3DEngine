@@ -25,13 +25,6 @@ struct Spatial {
   Point3 position {0, 0, 0};
 
   void set_position_global (const Vector3& v) {
-
-    // FIXME: is this usefull for nested meshes?
-/*
-    Matrix3 m;
-    MatrixOps::generate_basis_change_matrix(basis, canonical_base, m);
-    Point3Ops::change_basis(m, position, position);
-*/
     position = v;
   }
 

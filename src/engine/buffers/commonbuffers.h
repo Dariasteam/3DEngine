@@ -32,8 +32,8 @@ public:
   CommonBuffers (MultithreadManager const &) = delete;
   void operator= (CommonBuffers const &) = delete;
 
-  Texture<unsigned long, 1> triangle_index_buffer;
-  Texture<unsigned long, 1> l_triangle_index_buffer;
+  Texture<unsigned long, 1> triangle_index_surface;
+  Texture<unsigned long, 1> l_triangle_index_surface;
 
   Texture<double, 1> z_buffer;
 
@@ -43,8 +43,8 @@ public:
 
   void set_dimension (unsigned w, unsigned h);;
 
-  inline unsigned get_height() { return triangle_index_buffer.height(); }
-  inline unsigned get_width() { return triangle_index_buffer.width(); }
+  inline unsigned get_height() { return triangle_index_surface.height(); }
+  inline unsigned get_width() { return triangle_index_surface.width(); }
 
   std::vector<Triangle> triangles;
   std::vector<Triangle> light_triangles;

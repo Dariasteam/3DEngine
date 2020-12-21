@@ -19,8 +19,6 @@
 #include <algorithm>
 #include <list>
 
-// FIXME: Generate all texture projection matrixes previously
-
 class FragmentOperation {
 protected:
 
@@ -36,7 +34,7 @@ protected:
   }
 
   inline unsigned get_triangle_index_at_pixel_index (unsigned pixel_index) {
-    return buffers.triangle_index_buffer.get(pixel_index);
+    return buffers.triangle_index_surface.get(pixel_index);
   }
 
 

@@ -4,7 +4,7 @@ FragmentShader::FragmentShader() :
   buffers(CommonBuffers::get())
 {
   // FIXME: Asociate textures per mesh
-  FragmentOperation::texture.load("/home/darias/Desarrollo/3D/texture.ppm");
+  FragmentOperation::texture.load("/home/darias/Desarrollo/3D/star_texture.ppm");
   FragmentOperation::normal_map.load("/home/darias/Desarrollo/3D/normal.ppm");
 }
 
@@ -15,14 +15,13 @@ void FragmentShader::operator()() {
   generate_texture_projectors();
   generate_light_projectors();
 
-
   // Begin shading process  
   MultithreadManager::get_instance().calculate_threaded(n_pixels,
                                                         [&](unsigned pixel_index) {
 
     // If too far away, paint sky color
     if (buffers.z_buffer.get(pixel_index) >= INFINITY_DISTANCE) {
-      buffers.screen_buffer.set(pixel_index * 3 + 0, 25);
+      buffers.screen_buffer.set(pixel_index * 3 + 0, 255);
       buffers.screen_buffer.set(pixel_index * 3 + 1, 255);
       buffers.screen_buffer.set(pixel_index * 3 + 2, 255);
       return;
@@ -71,7 +70,7 @@ void FragmentShader::generate_light_projectors() {
       fakeuv.v = t.c;
 
       // Normalize UV to the lightmap size
-      unsigned lightmap_size = buffers.l_triangle_index_buffer.height();
+      unsigned lightmap_size = buffers.l_triangle_index_surface.height();
       fakeuv.p.X /= lightmap_size;
       fakeuv.p.Y /= lightmap_size;
       fakeuv.u.X /= lightmap_size;

@@ -14,23 +14,6 @@ void Mesh::change_basis_part (const Matrix3& basis_changer,
   }
 }
 
-/*
-void Mesh::apply_translation_part (const Vector3& translation,
-                                   unsigned from, unsigned to) {
-  for (unsigned k = from; k < to; k++) {
-    auto& face = global_coordenates_faces[k];
-    for (unsigned j = 0; j < 3; j++) {
-      face[j] += translation;
-    }
-  }
-}
-
-void Mesh::apply_rotations() {
-  Matrix3 rotation_basis_changer;
-  MatrixOps::generate_basis_change_matrix(canonical_base, basis, rotation_basis_changer);
-}
-*/
-
 // Multithreaded change basis
 void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
                                       const Basis3& new_basis,
@@ -38,29 +21,6 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
 
   Matrix3 camera_basis_changer;
   MatrixOps::generate_basis_change_matrix(basis, new_basis, camera_basis_changer);
-  /*
-   *
-  Vector3 aux_pos {0, 0, 0};
-  if (update_rotation || update_translation) {
-    Matrix3 basis_changer_2;
-    MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
-
-    if (update_rotation)
-      Point3Ops::change_basis(basis_changer_2, position, aux_pos);
-    else if (position_changed)
-      Point3Ops::change_basis(basis_changer_2, translation, aux_pos);
-
-    aux_pos -= camera_translation;
-  } else {
-    return;
-  }
-  */
-/*
-  Matrix3 position_basis_changer;
-  MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, position_basis_changer);
-  Point3Ops::change_basis(position_basis_changer, position, aux_pos);
-  aux_pos -= pos;
-*/
 
   Vector3 aux_pos;  
   Point3Ops::change_basis(new_basis, (position - pos), aux_pos);
@@ -98,53 +58,6 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
 
   return mesh_list;
 }
-
-/*
-void Mesh::change_basis(const std::list<Mesh *> mesh_list,
-                        const Basis3 &new_basis,
-                        const Point3 &camera_translation,
-                        bool camera_rotated,
-                        bool camera_translated) {
-
-  bool update_rotation    = basis_changed    | camera_rotated;
-  bool update_translation = position_changed | camera_translated;
-
-  Matrix3 basis_changer_1;
-  MatrixOps::generate_basis_change_matrix(basis, new_basis, basis_changer_1);
-
-  Vector3 aux_pos {0, 0, 0};
-  if (update_rotation || update_translation) {
-    Matrix3 basis_changer_2;
-    MatrixOps::generate_basis_change_matrix(canonical_base, new_basis, basis_changer_2);
-
-    if (update_rotation)
-      Point3Ops::change_basis(basis_changer_2, position, aux_pos);
-    else if (position_changed)
-      Point3Ops::change_basis(basis_changer_2, translation, aux_pos);
-
-    aux_pos -= camera_translation;
-  } else {
-    return;
-  }
-
-  if (update_rotation) {
-    global_coordenates_faces = local_coordenates_faces;
-
-    for (const auto& mesh : mesh_list) {
-      mesh->change_basis_part(basis_changer_1, aux_pos, 0,
-                              mesh->local_coordenates_faces.size());
-    }
-  } else if (update_translation) {
-    for (const auto& mesh : mesh_list) {
-      mesh->apply_translation_part(aux_pos, 0,
-                                   mesh->local_coordenates_faces.size());
-    }
-  }
-
-  basis_changed = false;
-  position_changed = false;
-}
-*/
 
 std::vector<Vector3*> Mesh::get_adjacent_vertices(Point3& p, unsigned from, std::vector<bool>& vertex_normals) {
   std::vector<Vector3*> adjacents;

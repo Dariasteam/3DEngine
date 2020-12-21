@@ -4,8 +4,8 @@ void AbstractRasteriserCPU::triangle_to_surface_space(Triangle &triangle) const 
   double v_factor = camera->get_bounds().height * 2;
   double h_factor = camera->get_bounds().height * 2;
 
-  unsigned y_offset = camera->get_bounds().height;
-  unsigned x_offset = camera->get_bounds().width;
+  unsigned y_offset = std::round(camera->get_bounds().height);
+  unsigned x_offset = std::round(camera->get_bounds().width);
 
   triangle.a.set_x(std::round((triangle.a.x() + x_offset ) * height / v_factor));
   triangle.a.set_y(std::round((triangle.a.y() + y_offset ) * width  / h_factor));

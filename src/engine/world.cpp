@@ -10,8 +10,6 @@ World::World() :
 {
   ObjParser parser;
   Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
-
-  // temporary since we don't have real uvs
   mesh_1->uv_per_face.resize(mesh_1->local_coordenates_faces.size());
   unsigned size = mesh_1->uv_per_face.size();
   for (unsigned i = 0; i < size; i++) {
@@ -22,26 +20,12 @@ World::World() :
     };
   }
 
-//  mesh_1->rotate_y(2);
   mesh_1->rotate_z(1);
   mesh_1->set_position_global({0, -2.5, 35});
-
-  Texture <unsigned char, 3> tex;
-  tex.load ("/home/darias/Desarrollo/3D/line_texture.ppm");
-  mesh_1->texture = tex;
   add_mesh(mesh_1);
 
   principal_camera.set_position_global({-11, -3, 27});
   principal_camera.rotate_y(-0.8);
-/*
-  sun.set_position_global({0, -60, 0});
-  sun.rotate_x(1);
-  */
-/*
-  sun.set_position_global({-60, -60, 0});
-  sun.rotate_x(1);
-  sun.rotate_y(-1);
-  */
 
   sun.set_position_global({40, 10, 0});
   sun.rotate_y(.8);
@@ -67,9 +51,8 @@ void World::delete_mesh(Mesh* mesh) {
 void World::calculate_next_frame() {
   meshes.front()->rotate_y(-0.01);
 //  meshes.front()->position += Point3{0, 0, 1};
-//  meshes.front()->rotate_x(-0.01);
+  meshes.front()->rotate_x(-0.01);
 //  meshes.front()->rotate_z(-0.02);
-
 
   sun.express_in_parent_basis(get_camera().basis);
 
