@@ -21,8 +21,8 @@ void FragmentShader::operator()() {
 
     // If too far away, paint sky color
     if (buffers.z_buffer.get(pixel_index) >= INFINITY_DISTANCE) {
-      buffers.screen_buffer.set(pixel_index * 3 + 0, 255);
-      buffers.screen_buffer.set(pixel_index * 3 + 1, 255);
+      buffers.screen_buffer.set(pixel_index * 3 + 0, 25);
+      buffers.screen_buffer.set(pixel_index * 3 + 1, 0);
       buffers.screen_buffer.set(pixel_index * 3 + 2, 255);
       return;
     }    

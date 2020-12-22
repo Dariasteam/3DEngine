@@ -42,6 +42,17 @@ protected:
     return buffers.triangles[get_triangle_index_at_pixel_index(pixel_index)];
   }
 
+  template <typename T>
+  inline void clamp (T& c) const {
+    c = std::max ((T)0, std::min(c, (T)255));
+  }
+
+  inline void clamp_color (Color& color) const {
+    color.set_x(std::max (0.0, std::min(color.x(), 255.0)));
+    color.set_y(std::max (0.0, std::min(color.y(), 255.0)));
+    color.set_z(std::max (0.0, std::min(color.z(), 255.0)));
+  }
+
 public:
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<TextureProjector> lightness_projectors;  

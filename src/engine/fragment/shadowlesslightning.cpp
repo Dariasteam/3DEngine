@@ -1,6 +1,6 @@
-#include "lightness.h"
+#include "shadowlesslightning.h"
 
-void Lightness::operator ()(unsigned pixel_index) {    
+void ShadowlessLightning::operator ()(unsigned pixel_index) {
   unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
 
   Color base_color {
@@ -36,8 +36,8 @@ void Lightness::operator ()(unsigned pixel_index) {
   incidence = lightVec * normalVec;
 
   // Check the triangle exist in the lightmapper
-  if (l_matrices[t_index] && incidence > 0) {            
-    // Get the point in the light    
+  if (l_matrices[t_index] && incidence > 0) {
+    // Get the point in the light
     // Check the triangle index in the lightmapper equals the one at this pixel
 
     Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
@@ -46,14 +46,12 @@ void Lightness::operator ()(unsigned pixel_index) {
     std::vector<unsigned> indices;
     indices.push_back(buffers.l_triangle_index_surface.get(p_l.X, p_l.Y));
 
-    if (std::find(indices.begin(), indices.end(), t_index) != indices.end()) {
-      double intensity = light.get_intensity();
-      Color light_color = light.get_color();
+    double intensity = light.get_intensity();
+    Color light_color = light.get_color();
 
-      light_contribution.X = (incidence * light_color.X * intensity);
-      light_contribution.Y = (incidence * light_color.Y * intensity);
-      light_contribution.Z = (incidence * light_color.Z * intensity);
-    }
+    light_contribution.X = (incidence * light_color.X * intensity);
+    light_contribution.Y = (incidence * light_color.Y * intensity);
+    light_contribution.Z = (incidence * light_color.Z * intensity);
   }
 
   buffers.screen_buffer.set (pixel_index * 3 + 0, std::min(255.0, base_color.X * incidence * light_contribution.X));

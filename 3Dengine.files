@@ -16,6 +16,8 @@ src/engine/fragment/lightness.cpp
 src/engine/fragment/lightness.h
 src/engine/fragment/normalmapping.cpp
 src/engine/fragment/normalmapping.h
+src/engine/fragment/shadowlesslightning.cpp
+src/engine/fragment/shadowlesslightning.h
 src/engine/fragment/smoothnormals.cpp
 src/engine/fragment/smoothnormals.h
 src/engine/fragment/texturepainter.cpp

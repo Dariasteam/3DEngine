@@ -23,6 +23,7 @@
 #include "fragment/smoothnormals.h"
 #include "fragment/normalmapping.h"
 #include "fragment/texturepainter.h"
+#include "fragment/shadowlesslightning.h"
 #include "fragment/lightness.h"
 
 #include "../frontends/framebufferhandler.h"
