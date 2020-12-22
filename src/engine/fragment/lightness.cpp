@@ -38,11 +38,12 @@ void Lightness::operator ()(unsigned pixel_index) {
   incidence = lightVec * normalVec;
 
   // Check the triangle exist in the lightmapper
-  if (l_matrices[t_index] && incidence > 0) {
-    // Get the point in the light
-    Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
-                                                                buffers.get().l_triangle_index_surface);
+  if (l_matrices[t_index] && incidence > 0) {            
+    // Get the point in the light    
     // Check the triangle index in the lightmapper equals the one at this pixel
+
+    Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
+                                                               buffers.l_triangle_index_surface);
 
     std::vector<unsigned> indices;
     indices.push_back(buffers.l_triangle_index_surface.get(p_l.X, p_l.Y));

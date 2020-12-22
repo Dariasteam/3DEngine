@@ -9,15 +9,15 @@ struct RectF {
   double height;
   double width;
 
-  double size_x () {
+  double size_x () const {
     return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
   }
 
-  double size_y () {
+  double size_y () const {
     return std::sqrt(std::pow(x, 2) + std::pow(width, 2));
   }
 
-  double area () {
+  double area () const {
     return size_x() * size_y();
   }
 };

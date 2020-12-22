@@ -24,7 +24,7 @@ World::World() :
   mesh_1->set_position_global({0, -2.5, 35});
   add_mesh(mesh_1);
 
-  principal_camera.set_position_global({-11, -3, 27});
+  principal_camera.set_position_global({-8.8, -2, 27});
   principal_camera.rotate_y(-0.8);
 
   sun.set_position_global({40, 10, 0});
@@ -50,8 +50,7 @@ void World::delete_mesh(Mesh* mesh) {
 
 void World::calculate_next_frame() {
   meshes.front()->rotate_y(-0.01);
-//  meshes.front()->position += Point3{0, 0, 1};
-  meshes.front()->rotate_x(-0.01);
+//  meshes.front()->position += Point3{0, 0, 1};  
 //  meshes.front()->rotate_z(-0.02);
 
   sun.express_in_parent_basis(get_camera().basis);

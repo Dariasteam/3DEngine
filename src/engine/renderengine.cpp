@@ -6,7 +6,9 @@ RenderEngine::RenderEngine() :
   {
   CommonBuffers::get().set_dimension(1000, 1000);
 
-  fragmentShader.push_operation(new FlatNormals());
+//  fragmentShader.push_operation(new FlatNormals());
+//  fragmentShader.push_operation(new NormalMapping());
+  fragmentShader.push_operation(new SmoothNormals());
   fragmentShader.push_operation(new TexturePainter());
   fragmentShader.push_operation(new Lightness());
 }
@@ -15,10 +17,10 @@ void RenderEngine::render_loop () {
   while (1) {
     world.calculate_next_frame();
 
-    auto& buffers = CommonBuffers::get();
-    unsigned screen_sz = buffers.get_height();
+    auto& buffers = CommonBuffers::get();    
 
     projector.project_camera(world.get_light());
+
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
                          buffers.z_buffer);
@@ -41,6 +43,6 @@ void RenderEngine::render_loop () {
     fragmentShader();
     fps_render.update();    
 
-    canvas.paint(buffers.screen_buffer);
+    canvas.paint(buffers.normal_buffer);
   }
 }

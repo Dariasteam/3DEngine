@@ -20,6 +20,7 @@
 
 #include "fragment/fragmentshader.h"
 #include "fragment/flatnormals.h"
+#include "fragment/smoothnormals.h"
 #include "fragment/normalmapping.h"
 #include "fragment/texturepainter.h"
 #include "fragment/lightness.h"

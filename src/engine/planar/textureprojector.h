@@ -5,6 +5,7 @@
 #include "texture.h"
 #include "triangle.h"
 #include "vertex.h"
+#include "rect.h"
 
 #include <algorithm>
 #include <iostream>
@@ -53,9 +54,25 @@ public:
       x_tex = std::min({x_tex, texture.width()});
       x_tex = std::max({x_tex, 0});
 
+//      std::cout << "Drama" << std::endl;
+
       y_tex = std::min({y_tex, texture.height()});
       y_tex = std::max({y_tex, 0});
     }
+
+    return {x_tex, y_tex};
+  }
+
+  inline Point2 get_point_f_on_uv  (const int x,
+                                    const int y,
+                                    const RectF& bounds) const {
+
+    Matrix m ({{double(x - t_origin.X), double(y - t_origin.Y)}});
+
+    auto m2 = m * basis_changer;
+
+    double x_tex = (uv_origin.X + m2[0][0]);
+    double y_tex = (uv_origin.Y + m2[0][1]);
 
     return {x_tex, y_tex};
   }
