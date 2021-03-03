@@ -4,7 +4,7 @@ TextureProjector::TextureProjector() {}
 
 void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
                                              const UV& uv) {
-  t_origin  = projected_triangle.a;
+  t_origin  = Vector2(projected_triangle.a.X, projected_triangle.a.Y);
   uv_origin = uv.p;
 
   // UV of the triangle as Texture basis (destination)
@@ -28,8 +28,10 @@ void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
                                           basis_changer);  
 }
 
-Color888 TextureProjector::get_color_on_uv(const int x, const int y,
-                                           const Texture<unsigned char, 3>& tex) const {
+Color888 TextureProjector::get_color_on_uv(const unsigned x,
+                                           const unsigned y,
+                                           const Texture<unsigned char, 3>& tex)
+                                           const {
 
   const auto& point = get_point_on_uv(x, y, tex);
   return {

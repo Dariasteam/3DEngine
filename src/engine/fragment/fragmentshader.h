@@ -43,8 +43,8 @@ protected:
   }
 
   template <typename T>
-  inline void clamp (T& c) const {
-    c = std::max ((T)0, std::min(c, (T)255));
+  inline unsigned char clamp (const T& c) const {
+    return static_cast<unsigned char> (std::max ((T)0, std::min(c, (T)255)));
   }
 
   inline void clamp_color (Color& color) const {

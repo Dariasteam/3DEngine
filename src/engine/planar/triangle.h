@@ -8,44 +8,43 @@
 #include "../math/vector3.h"
 
 struct Triangle {
-  Point2 a;
-  Point2 b;
-  Point2 c;  
+  Point3 a;
+  Point3 b;
+  Point3 c;
 
   Vector3 normal;
 
-  Vector3 normal_a;
-  Vector3 normal_b;
-  Vector3 normal_c;
+  Vector2 normal_a;
+  Vector2 normal_b;
+  Vector2 normal_c;
 
-  double z_value;   // distance to camera
+  double plane_eq_d;
 
   Triangle (const Triangle& t) :
     a (t.a),
     b (t.b),
     c (t.c),
+
     normal  (t.normal),
+
     normal_a(t.normal_a),
     normal_b(t.normal_b),
     normal_c(t.normal_c),
-    z_value (t.z_value)
+
+    plane_eq_d (t.plane_eq_d)
   {}
 
   UV uv = {};
 
   Triangle () {}
 
-  Triangle (const Point2& aa,
-              const Point2& bb,
-              const Point2& cc,
-              const double z) :
-    a (aa),
-    b (bb),
-    c (cc),
-    z_value (z)
-  {}
+  void calculate_plane_equation_d () {
+    plane_eq_d = -normal.X * a.X
+                 -normal.Y * a.Y
+                 -normal.Z * a.Z;
+  }
 };
-
+/*
 struct Triangle2i {
   Point2i a;
   Point2i b;
@@ -65,8 +64,7 @@ struct Triangle2i {
   Triangle2i (const Triangle& t) :
     a (t.a),
     b (t.b),
-    c (t.c),
-    z_value (t.z_value)
+    c (t.c)
   {}
 
   Triangle2i () {}
@@ -81,5 +79,5 @@ struct Triangle2i {
     z_value (z)
   {}
 };
-
+*/
 #endif // TRIANGLE_H

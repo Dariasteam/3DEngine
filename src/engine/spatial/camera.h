@@ -21,7 +21,7 @@ protected:
 
   CommonBuffers& buffers;
 
-  inline bool is_point_between_bounds (const Point2& p) const {
+  inline bool is_point_between_bounds (const Point3& p) const {
     return p.x() >= get_bounds().x       &
            p.x() <= get_bounds().width   &
            p.y() >= get_bounds().y       &
@@ -35,7 +35,7 @@ protected:
   };
 
 
-  virtual bool calculate_mesh_projection (const Face& face,
+  virtual bool calculate_face_projection (const Face& face,
                                           const UV& uv,
                                           unsigned thread_index) const = 0;
 public:

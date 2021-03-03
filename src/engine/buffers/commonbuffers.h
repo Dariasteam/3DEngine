@@ -36,6 +36,7 @@ public:
   Texture<unsigned long, 1> l_triangle_index_surface;
 
   Texture<double, 1> z_buffer;
+  Texture<double, 1> z_light;
 
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;

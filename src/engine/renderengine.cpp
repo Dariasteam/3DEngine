@@ -7,10 +7,10 @@ RenderEngine::RenderEngine() :
   CommonBuffers::get().set_dimension(1000, 1000);
 
 //  fragmentShader.push_operation(new FlatNormals());
-  fragmentShader.push_operation(new SmoothNormals());
-  fragmentShader.push_operation(new NormalMapping());
-  fragmentShader.push_operation(new TexturePainter());
-  fragmentShader.push_operation(new ShadowlessLightning());
+//  fragmentShader.push_operation(new SmoothNormals());
+//  fragmentShader.push_operation(new NormalMapping());
+//  fragmentShader.push_operation(new TexturePainter());
+//  fragmentShader.push_operation(new ShadowlessLightning());
 //  fragmentShader.push_operation(new Lightness());
 }
 
@@ -24,7 +24,7 @@ void RenderEngine::render_loop () {
 
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
-                         buffers.z_buffer);
+                         buffers.z_light);
 
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;
@@ -44,6 +44,6 @@ void RenderEngine::render_loop () {
     fragmentShader();
     fps_render.update();    
 
-    canvas.paint(buffers.screen_buffer);
+    canvas.paint(buffers.z_buffer);
   }
 }

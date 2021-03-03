@@ -42,7 +42,7 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
       unsigned to = std::round(local_segment   * (thread_indx + 1));
 
       for (unsigned j = from; j < to; j++) {
-        bool b = calculate_mesh_projection(faces[j],
+        bool b = calculate_face_projection(faces[j],
                                            mesh->uv_per_face[j],
                                            triangle_index);
         if (b)

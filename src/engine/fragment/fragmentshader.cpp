@@ -21,8 +21,8 @@ void FragmentShader::operator()() {
 
     // If too far away, paint sky color
     if (buffers.z_buffer.get(pixel_index) >= INFINITY_DISTANCE) {
-      buffers.screen_buffer.set(pixel_index * 3 + 0, 25);
-      buffers.screen_buffer.set(pixel_index * 3 + 1, 0);
+      buffers.screen_buffer.set(pixel_index * 3 + 0, 255);
+      buffers.screen_buffer.set(pixel_index * 3 + 1, 255);
       buffers.screen_buffer.set(pixel_index * 3 + 2, 255);
       return;
     }    
@@ -62,21 +62,14 @@ void FragmentShader::generate_light_projectors() {
     if (std::find(it1, it2, t_index) != it2) {
 
       FragmentOperation::l_matrices[t_index] = true;
+      unsigned lightmap_size = buffers.l_triangle_index_surface.height();
       const Triangle& t = buffers.light_triangles[t_index];
       UV fakeuv;
 
-      fakeuv.p = t.a;
-      fakeuv.u = t.b;
-      fakeuv.v = t.c;
-
       // Normalize UV to the lightmap size
-      unsigned lightmap_size = buffers.l_triangle_index_surface.height();
-      fakeuv.p.X /= lightmap_size;
-      fakeuv.p.Y /= lightmap_size;
-      fakeuv.u.X /= lightmap_size;
-      fakeuv.u.Y /= lightmap_size;
-      fakeuv.v.X /= lightmap_size;
-      fakeuv.v.Y /= lightmap_size;
+      fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
+      fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
+      fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
 
       FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
                                                buffers.triangles[t_index],

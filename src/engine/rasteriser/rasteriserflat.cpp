@@ -15,34 +15,47 @@
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
+void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
                                             unsigned t_index) const {
-  auto v1 = triangle.a;
-  auto v2 = triangle.b;
-  auto v3 = triangle.c;
+  auto u1 = triangle.a;
+  auto u2 = triangle.b;
+  auto u3 = triangle.c;
 
-  if (v3.y() == v1.y()) return; // we already know v2 = v3, triangle would be a line
+  if (u3.y() == u1.y()) return; // we already know v2 = v3, triangle would be a line
 
-  if (v2.x() > v3.x()) // order from left to right
-    std::swap(v2, v3);
+  if (u2.x() > u3.x()) // order from left to right
+    std::swap(u2, u3);
 
-  double invslope1 = double(v2.x()  - v1.x()) / (v2.y() - v1.y());
-  double invslope2 = double(v3.x()  - v1.x()) / (v3.y() - v1.y());
+  double invslope1 = double(u2.x()  - u1.x()) / (u2.y() - u1.y());
+  double invslope2 = double(u3.x()  - u1.x()) / (u3.y() - u1.y());
 
-  double curx1 = v1.x();
+  double curx1 = u1.x();
   double curx2 = curx1;
 
-  int y1 = v1.y();
-  int y2 = v2.y();
+  const unsigned y1 = std::round(u1.y());
+  const unsigned y2 = std::round(u2.y());
 
-  for (int y = y1; y <= y2; y++) {
-    int min_x = static_cast<int>(std::round(curx1));
-    int max_x = static_cast<int>(std::round(curx2));
+  for (unsigned y = y1; y <= y2; y++) {
+    const unsigned min_x = std::round(curx1);
+    const unsigned max_x = std::round(curx2);
 
-    // FIXME: Find the real z_value of the pixel instead of using the one of the triangle
-    for (int x = min_x; x <= max_x; x++) {
-     update_buffers(x, y, triangle.z_value, t_index);
+    const auto v13 = u1 - u3;
+    const auto v12 = u1 - u2;
+
+    const double z_left  = (((double(y) - u1.y()) * v13.Z) / v13.y()) + u1.z();
+    const double z_right = (((double(y) - u1.y()) * v12.Z) / v12.y()) + u1.z();
+
+    const auto uL = Vector3{double(min_x), double(y), z_left};
+    const auto uR = Vector3{double(max_x), double(y), z_right};
+
+    const auto vLR = uL - uR;
+
+    for (unsigned x = min_x; x <= max_x; x++) {
+
+     const double z = (((double(x) - uL.x()) * vLR.Z) / vLR.x()) + uL.z();
+     update_buffers(x, y, z, t_index);
     }
+
     curx1 += invslope1;
     curx2 += invslope2;
   }
@@ -64,33 +77,45 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle2i& triangle,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
+void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
                                          unsigned t_index) const {
-  auto v1 = triangle.a;
-  auto v2 = triangle.b;
-  auto v3 = triangle.c;
+  auto u1 = triangle.a;
+  auto u2 = triangle.b;
+  auto u3 = triangle.c;
 
-  if (v3.y() == v1.y()) return; // we already know v2 = v1, triangle would be a line
+  if (u3.y() == u1.y()) return; // we already know v2 = v1, triangle would be a line
 
-  if (v1.x() > v2.x()) // order from left to right
-    std::swap(v1, v2);
+  if (u1.x() > u2.x()) // order from left to right
+    std::swap(u1, u2);
 
-  double invslope1 = double(v3.x() - v1.x()) / (v3.y() - v1.y());
-  double invslope2 = double(v3.x() - v2.x()) / (v3.y() - v2.y());
+  double invslope1 = double(u3.x() - u1.x()) / (u3.y() - u1.y());
+  double invslope2 = double(u3.x() - u2.x()) / (u3.y() - u2.y());
 
-  double curx1 = v3.x();
+  double curx1 = u3.x();
   double curx2 = curx1;
 
-  int y3 = v3.y();
-  int y1 = v1.y();
+  const unsigned y3 = std::round(u3.y());
+  const unsigned y1 = std::round(u1.y());
 
-  for (int y = y3; y >= y1; y--) {
-    int min_x = static_cast<int>(std::round(curx1));
-    int max_x = static_cast<int>(std::round(curx2));
+  for (unsigned y = y3; y >= y1; y--) {
+    const unsigned min_x = std::round(curx1);
+    const unsigned max_x = std::round(curx2);
 
-    // FIXME: Find the real z_value of the pixel instead of using the one of the triangle
-    for (int x = min_x; x <= max_x; x++) {
-      update_buffers(x, y, triangle.z_value, t_index);
+    const auto v31 = u3 - u1;
+    const auto v32 = u3 - u2;
+
+    const double z_left  = (((double(y) - u3.y()) * v31.Z) /  v31.y()) + u3.z();
+    const double z_right = (((double(y) - u3.y()) * v32.Z) /  v32.y()) + u3.z();
+
+    const auto uL = Vector3{double(min_x), double(y), z_left};
+    const auto uR = Vector3{double(max_x), double(y), z_right};
+
+    const auto vLR = uL - uR;
+
+    for (unsigned x = min_x; x <= max_x; x++) {
+      const double z = (((double(x) - uL.x()) * vLR.Z) /  vLR.x()) + uL.z();
+
+      update_buffers(x, y, z, t_index);
     }
     curx1 -= invslope1;
     curx2 -= invslope2;
@@ -98,23 +123,23 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle2i& triangle,
 }
 
 void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) const {
-  triangle_to_surface_space(triangle);
+  triangle_to_surface_space(triangle);  
 
   // Sort vertices by Y
-  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
+  std::vector<Point3> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point3& a, const Point3& b) {
     return std::isless(a.y(), b.y());
   });  
 
-  Triangle2i tmp_triangle;
-  tmp_triangle.a = Point2i(aux_vec[0]);
-  tmp_triangle.b = Point2i(aux_vec[1]);
-  tmp_triangle.c = Point2i(aux_vec[2]);
-  tmp_triangle.z_value = triangle.z_value;
+  Triangle tmp_triangle {triangle};
 
-  const Point2i& v1 = aux_vec[0];
-  const Point2i& v2 = aux_vec[1];
-  const Point2i& v3 = aux_vec[2];
+  tmp_triangle.a = aux_vec[0];
+  tmp_triangle.b = aux_vec[1];
+  tmp_triangle.c = aux_vec[2];  
+
+  const Point3& v1 = aux_vec[0];
+  const Point3& v2 = aux_vec[1];
+  const Point3& v3 = aux_vec[2];
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {
@@ -129,10 +154,13 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
     double ratio = b / a;
     double x = v1.x() + (ratio * (v2.y() - v1.y()));
 
-    Point2i v4 (static_cast<int>(std::round(x)), v2.y());
+    const auto v3v1 = (v3 - v1);
+    double z = (((x - v3.x()) * v3v1.z()) / v3v1.x()) + v3.z();
 
-    Triangle2i aux_t1 {tmp_triangle};
-    Triangle2i aux_t2 {tmp_triangle};
+    Point3 v4 (x, v2.y(), z);
+
+    Triangle aux_t1 {tmp_triangle};
+    Triangle aux_t2 {tmp_triangle};
 
     aux_t1.c = v4;
 

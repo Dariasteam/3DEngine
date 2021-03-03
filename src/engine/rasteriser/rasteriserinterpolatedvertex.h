@@ -3,23 +3,14 @@
 
 #include "abstractrasteriserCPU.h"
 
-class RasteriserInterpolatedVertex : public AbstractRasteriserCPU{
+class RasteriserInterpolatedVertex : public AbstractRasteriserCPU {
 private:
+  inline void fillTopFlatTriangle(const Triangle& triangle, unsigned t_index) const;
+  inline void fillBottomFlatTriangle(const Triangle& triangle, unsigned t_index) const;
 
-  inline void fillTopFlatTriangle(const Triangle2i& triangle);
-  inline void fillBottomFlatTriangle(const Triangle2i& triangle);
-
-  inline void paintLine (const Triangle2i& triangle,
-                         const int min_x,
-                         const int max_x,
-                         const int y,
-                         const Color& gradient,
-                         const Color& color);
-
-  void rasterize_triangle (Triangle2i& triangle);
-
+  void rasterize_triangle (Triangle& triangle, unsigned t_index) const;
 public:
-  RasteriserInterpolatedVertex(World* w, FrameBufferHandler* cv) : AbstractRasteriserCPU (w, cv) {}
+  RasteriserInterpolatedVertex() {}
 };
 
 #endif // RASTERISERINTERPOLATEDVERTEX_H

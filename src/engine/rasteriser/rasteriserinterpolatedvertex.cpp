@@ -57,7 +57,8 @@ inline void RasteriserInterpolatedVertex::paintLine (const Triangle2i& triangle,
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& triangle) {
+void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle& triangle,
+                                                          unsigned t_index) const {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -123,7 +124,8 @@ void RasteriserInterpolatedVertex::fillBottomFlatTriangle(const Triangle2i& tria
  * Finally, we find the color of l3[y][x]
  *
  * */
-void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle2i& triangle) {
+void RasteriserInterpolatedVertex::fillTopFlatTriangle(const Triangle& triangle,
+                                                       unsigned t_index) const {
   auto v1 = triangle.a;
   auto v2 = triangle.b;
   auto v3 = triangle.c;
@@ -178,20 +180,24 @@ inline bool is_equal (double a, double b) {
   return std::isless(std::abs(a - b), 0.00001);
 }
 
-void RasteriserInterpolatedVertex::rasterize_triangle (Triangle2i& triangle) {  
+void RasteriserInterpolatedVertex::rasterize_triangle (Triangle& triangle,
+                                                       unsigned t_index) const {
+  triangle_to_surface_space(triangle);
+
   // Sort vertices by Y
-  std::vector<Point2i> aux_vec = {triangle.a, triangle.b, triangle.c};
-  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2i& a, const Point2i& b) {
+  std::vector<Point2> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point2& a, const Point2& b) {
     return std::isless(a.y(), b.y());
   });
 
-  triangle.a = aux_vec[0];
-  triangle.b = aux_vec[1];
-  triangle.c = aux_vec[2];
+  Triangle tmp_triangle {triangle};
+  tmp_triangle.a = aux_vec[0];
+  tmp_triangle.b = aux_vec[1];
+  tmp_triangle.c = aux_vec[2];
 
-  const Point2i& v1 = aux_vec[0];
-  const Point2i& v2 = aux_vec[1];
-  const Point2i& v3 = aux_vec[2];  
+  const Point2& v1 = aux_vec[0];
+  const Point2& v2 = aux_vec[1];
+  const Point2& v3 = aux_vec[2];
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
   if (v2.y() == v3.y()) {

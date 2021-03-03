@@ -1,10 +1,8 @@
 #ifndef FRAMEBUFFERHANDLER_H
 #define FRAMEBUFFERHANDLER_H
 
-//#include "../engine/math/point2d.h"
-//#include "../engine/planar/rect.h"
-//#include "../engine/planar/triangle.h"
 #include "../engine/planar/texture.h"
+#include "../engine/buffers/commonbuffers.h"
 
 #include <vector>
 #include <algorithm>
@@ -76,10 +74,22 @@ public:
                      (y+vinfo.yoffset) * finfo.line_length;
 
           unsigned m_d = 2;
-          // B G R
-          for (int i = m_d; i >= 0; i--) {
-            auto a = target.get(x, y, i);
-            *(fbp + location + (m_d - i)) = a;
+          if constexpr (D == 3) {
+            // B G R
+            for (int i = m_d; i >= 0; i--) {
+              auto a = target.get(x, y, i);
+              *(fbp + location + (m_d - i)) = a;
+            }
+          } else {
+            for (int i = m_d; i >= 0; i--) {
+              auto a = (target.get(x, y, i));
+              if (a < INFINITY_DISTANCE) {
+                a *= 15;
+              } else {
+                a = 0;
+              }
+              *(fbp + location + (m_d - i)) = static_cast<unsigned char>(a);
+            }
           }
         }
       }

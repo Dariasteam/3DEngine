@@ -9,42 +9,47 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
   Camera (cam)
 {}
 
-bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
+bool PerspectiveCamera::calculate_face_projection(const Face& face,
                                                   const UV& uv,
                                                   unsigned index) const {
 
   auto& tmp_triangle = buffers.triangles[index];
+/*
+  // 1. Face to triangle
+  tmp_triangle.a = face.a;
+  tmp_triangle.b = face.b;
+  tmp_triangle.c = face.c;
+*/
 
   // 1. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º instead
+  // only if it's bigger than 90º insteads
   bool angle_normal = (face.normal * face.a) < 0
                     | (face.normal * face.b) < 0
                     | (face.normal * face.c) < 0;
   if (!angle_normal) return false;
 
   // 2. Calculate distance to camera
-  double mod_v1 = Vector3::vector_module(face.a);
-  double mod_v2 = Vector3::vector_module(face.b);
-  double mod_v3 = Vector3::vector_module(face.c);
+  tmp_triangle.a.Z = Vector3::vector_module(face.a);
+  tmp_triangle.b.Z = Vector3::vector_module(face.b);
+  tmp_triangle.c.Z = Vector3::vector_module(face.c);
 
-  double z_min = std::min({mod_v1, mod_v2, mod_v3});
-  //double z_max = std::max({mod_v1, mod_v2, mod_v3});
-  if (z_min > INFINITY_DISTANCE) return false;
+  double z_min = std::min({tmp_triangle.a.Z,
+                           tmp_triangle.b.Z,
+                           tmp_triangle.c.Z});
+  if (z_min >= INFINITY_DISTANCE) return false;
 
   // 3. Calculate intersection points with the plane
   calculate_cut_point(face.a, tmp_triangle.a);
   calculate_cut_point(face.b, tmp_triangle.b);
   calculate_cut_point(face.c, tmp_triangle.c);
 
-  tmp_triangle.z_value = z_min;
-
   if (!triangle_inside_camera(tmp_triangle)) return false;
 
-  // 4. Copy normals FIXME: Use only vertex normals, not the global one
-  tmp_triangle.normal   = face.normal;
-  tmp_triangle.normal_a = face.normal_a;
-  tmp_triangle.normal_b = face.normal_b;
-  tmp_triangle.normal_c = face.normal_c;
+  // 4. Copy normals. Global normal used to calculate depth of each pixel with plane equation
+  //tmp_triangle.normal   = face.normal;
+  tmp_triangle.normal_a = {face.normal_a.X, face.normal_a.Y};
+  tmp_triangle.normal_b = {face.normal_b.X, face.normal_b.Y};
+  tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};
 
   // Set uv
   tmp_triangle.uv = uv;
@@ -66,17 +71,14 @@ bool PerspectiveCamera::calculate_mesh_projection(const Face& face,
  *
  * */
 void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
-                                            Point2& result) const {
+                                            Point3& result) const {
   const Vector3& dir_v = vertex;            // Since we are in camera space, the vertex is also the director vector of the line
 
   // Calc cut point line - plane
-  const double A = get_plane_vector().x();  // Since we are in camera space this should be always (0, 0, 1)
-  const double B = get_plane_vector().y();
+  // Since we are in camera space plane normal vector is (0, 0, 1)
   const double C = get_plane_vector().z();
 
-  const double D = -(get_plane_point().x() * A +
-                     get_plane_point().y() * B +
-                     get_plane_point().z() * C);
+  const double D = get_plane_point().z() * C;
 
   const double& a = vertex.x();
   const double& c = vertex.y();
@@ -86,12 +88,11 @@ void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
   const double& d = dir_v.y();
   const double& f = dir_v.z();
 
-  double T1 {-D + A*a + B*c + C*e};
-  double T2 {- A*b - B*d - C*f};
-  double parameter = T1 / T2;
+  double T1 {- D + C*e};
+  double T2 {- C*f};
+  double beta = T1 / T2;
 
   // Intersection in camera coordinates
-  result.set_x(a + b * parameter);
-  result.set_y(-(c + d * parameter));
-  //point.set_z(e + f * parameter);
+  result.set_x(a + b * beta);
+  result.set_y(-(c + d * beta));    
 }

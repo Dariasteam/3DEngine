@@ -20,8 +20,8 @@ World::World() :
     };
   }
 
-  mesh_1->rotate_z(1);
-  mesh_1->set_position_global({0, -2.5, 35});
+//  mesh_1->rotate_z(1);
+  mesh_1->set_position_global({0, -4, 35});
   add_mesh(mesh_1);
 
   principal_camera.set_position_global({-8.8, -2, 27});

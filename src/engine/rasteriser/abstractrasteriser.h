@@ -22,6 +22,7 @@ protected:
                              unsigned y,
                              double z_value,
                              unsigned long t_index) const {
+
     if (z_value < z_target_surface->get(x, y)) {
       z_target_surface->set(x, y, z_value);
       indices_target_surface->set(x, y, t_index);

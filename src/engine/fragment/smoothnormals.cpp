@@ -1,14 +1,15 @@
 #include "smoothnormals.h"
 
 // x cut point between point-v1 line and v2-v3 line
-Vector2 cut_point(const Point2& p, const Point2& v1,
-                  const Point2& v2, const Point2& v3) {
+Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,
+                  const Point3& v2, const Point3& v3) const {
 
   // Director vector for point to v1 line
-  Vector2 dir_1 = v1 - p;
+  Vector2 dir_1 = Point2(v1.x(), v1.y()) - p;
 
   // Director vector for v2 to v3 line
-  Vector2 dir_2 = v2 - v3;
+  const auto A = v2 - v3;
+  Vector2 dir_2 = {A.x(), A.y()};
 
   dir_1 += {0.0000001, 0.000001};
   dir_2 += {0.0000001, 0.000001};
@@ -25,6 +26,16 @@ Vector2 cut_point(const Point2& p, const Point2& v1,
   return {X, Y};
 }
 
+/* 1. Create vectors from each vertex to the point (vec1)
+ * 2. Create vectors from each vertex to the opposite edge passing through the point (vec2)
+ *
+ * 3. Assign a weight as normalice(vec1) / normalice(vec2) to each vertex
+ *
+ *
+ * 4. Calculate the influece of each vertex normal with the weights and assign
+ * to the current point
+ */
+
 void SmoothNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
   Point2i p1 = pixel_index_to_screen_coordenates(pixel_index);
@@ -36,14 +47,14 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   Vector2 cp_ab = cut_point(p, triangle.c, triangle.a, triangle.b);
 
   // Modules of the vectors of each vertex to the opposite cut point
-  double max_distance_A = Point2::vector_module(triangle.a - ap_bc);
-  double max_distance_B = Point2::vector_module(triangle.b - bp_ac);
-  double max_distance_C = Point2::vector_module(triangle.c - cp_ab);
+  double max_distance_A = Point2::vector_module(Vector2{triangle.a.x(), triangle.a.y()} - ap_bc);
+  double max_distance_B = Point2::vector_module(Vector2{triangle.b.x(), triangle.b.y()} - bp_ac);
+  double max_distance_C = Point2::vector_module(Vector2{triangle.c.x(), triangle.c.y()} - cp_ab);
 
   // Vectors from the vertices to p
-  Vector2 A = triangle.a - p;
-  Vector2 B = triangle.b - p;
-  Vector2 C = triangle.c - p;
+  Vector2 A = Vector2{triangle.a.x(), triangle.a.y()} - p;
+  Vector2 B = Vector2{triangle.b.x(), triangle.b.y()} - p;
+  Vector2 C = Vector2{triangle.c.x(), triangle.c.y()} - p;
 
   // Influence of each vertex (proximity of each vertex to p)
   double A_d = 1.0 - Point2::vector_module(A) / max_distance_A;
@@ -63,32 +74,6 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   double x = final_vec.X;
   double y = final_vec.Y;
 
-
-/*
-  double min_x = std::min({triangle.a.X, triangle.b.X, triangle.c.X});
-  double max_x = std::max({triangle.a.X, triangle.b.X, triangle.c.X});
-  double min_y = std::min({triangle.a.Y, triangle.b.Y, triangle.c.Y});
-  double max_y = std::max({triangle.a.Y, triangle.b.Y, triangle.c.Y});
-
-  double y_distance = max_y - min_y;
-  double x_distance = max_x - min_x;
-
-  Vector2 distances {x_distance, y_distance};
-
-
-
-
-
-  // Influence of each vertex (proximity to p)
-  double A_d = Point2::vector_module(A) ;
-  double B_d = Point2::vector_module(B) ;
-  double C_d = Point2::vector_module(C) ;
-
-  Vector2 final_vec = (n_a / A_d) + (n_b / B_d) + (n_c / C_d);
-
-  double x = final_vec.X;
-  double y = final_vec.Y;
-*/
   unsigned char r = 128 + std::round(127.0 * x);
   unsigned char g = 128 + std::round(127.0 * y);
 
