@@ -20,12 +20,12 @@ void RenderEngine::render_loop () {
 
     auto& buffers = CommonBuffers::get();    
 
+    /*
     projector.project_camera(world.get_light());
 
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
                          buffers.z_light);
-
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;
     auto& m = MultithreadManager::get_instance();
@@ -35,11 +35,11 @@ void RenderEngine::render_loop () {
       buffers.light_triangles[t_index] = buffers.triangles[t_index];
     });
 
+*/
     projector.project_camera(world.get_camera());
     rasteriser.rasterise(world.get_camera(),
                          buffers.triangle_index_surface,
                          buffers.z_buffer);
-
 
     fragmentShader();
     fps_render.update();    

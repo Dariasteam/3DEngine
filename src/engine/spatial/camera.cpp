@@ -54,7 +54,9 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
   });  
 
   // Create a continuos vector of relevant indices
+
   buffers.n_renderable_triangles = 0;
+
   auto it = buffers.triangle_indices.begin();
   for (unsigned i = 0; i < N_THREADS; i++) {
     std::copy(relevant_triangle_indices[i].begin(),
@@ -63,5 +65,5 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
 
     it += relevant_triangle_indices[i].size();
     buffers.n_renderable_triangles += relevant_triangle_indices[i].size();
-  }  
+  }     
 }

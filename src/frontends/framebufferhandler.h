@@ -84,7 +84,9 @@ public:
             for (int i = m_d; i >= 0; i--) {
               auto a = (target.get(x, y, i));
               if (a < INFINITY_DISTANCE) {
-                a *= 15;
+                const double slope_parameter = 0.2;
+                a = -1/(slope_parameter * a + 1) + 1;
+                a *= 255;
               } else {
                 a = 0;
               }

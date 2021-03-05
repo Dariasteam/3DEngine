@@ -9,7 +9,7 @@
 #include "../math/point3d.h"
 #include "../planar/triangle.h"
 
-#define INFINITY_DISTANCE 10000000
+#define INFINITY_DISTANCE 10000
 
 class CommonBuffers {
 private:

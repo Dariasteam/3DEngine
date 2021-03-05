@@ -104,8 +104,8 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
     const auto v31 = u3 - u1;
     const auto v32 = u3 - u2;
 
-    const double z_left  = (((double(y) - u3.y()) * v31.Z) /  v31.y()) + u3.z();
-    const double z_right = (((double(y) - u3.y()) * v32.Z) /  v32.y()) + u3.z();
+    const double z_left  = (((double(y) - u3.y()) * v31.Z) / v31.y()) + u3.z();
+    const double z_right = (((double(y) - u3.y()) * v32.Z) / v32.y()) + u3.z();
 
     const auto uL = Vector3{double(min_x), double(y), z_left};
     const auto uR = Vector3{double(max_x), double(y), z_right};
@@ -114,9 +114,9 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
 
     for (unsigned x = min_x; x <= max_x; x++) {
       const double z = (((double(x) - uL.x()) * vLR.Z) /  vLR.x()) + uL.z();
-
       update_buffers(x, y, z, t_index);
     }
+
     curx1 -= invslope1;
     curx2 -= invslope2;
   }
@@ -137,34 +137,35 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
   tmp_triangle.b = aux_vec[1];
   tmp_triangle.c = aux_vec[2];  
 
-  const Point3& v1 = aux_vec[0];
-  const Point3& v2 = aux_vec[1];
-  const Point3& v3 = aux_vec[2];
+  const Point3& u1 = aux_vec[0];
+  const Point3& u2 = aux_vec[1];
+  const Point3& u3 = aux_vec[2];
 
   // aux_triangle is ordered by y (v1 < v2 < v3)
-  if (v2.y() == v3.y()) {
+  if (u2.y() == u3.y()) {
     fillBottomFlatTriangle(tmp_triangle, t_index);
-  } else if (v1.y() == v2.y()) {
+  } else if (u1.y() == u2.y()) {
     fillTopFlatTriangle(tmp_triangle, t_index);
   } else {
 
-    double a = v3.y() - v1.y();
-    double b = v3.x() - v1.x();
+    double a = u3.y() - u1.y();
+    double b = u3.x() - u1.x();
 
     double ratio = b / a;
-    double x = v1.x() + (ratio * (v2.y() - v1.y()));
+    double x = u1.x() + (ratio * (u2.y() - u1.y()));
 
-    const auto v3v1 = (v3 - v1);
-    double z = (((x - v3.x()) * v3v1.z()) / v3v1.x()) + v3.z();
+    double y = u2.y();
+    const auto v31 = u3 - u1;
+    double z = (((y - u1.y()) * v31.z()) / v31.y()) + u1.z();
 
-    Point3 v4 (x, v2.y(), z);
+    Point3 v4 (x, y, z);
 
     Triangle aux_t1 {tmp_triangle};
     Triangle aux_t2 {tmp_triangle};
 
     aux_t1.c = v4;
 
-    aux_t2.a = v2;
+    aux_t2.a = u2;
     aux_t2.b = v4;
 
     fillBottomFlatTriangle (aux_t1, t_index);
