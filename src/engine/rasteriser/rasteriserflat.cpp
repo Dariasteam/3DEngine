@@ -46,12 +46,11 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
     const double z_right = (((double(y) - u1.y()) * v12.Z) / v12.y()) + u1.z();
 
     const auto uL = Vector3{double(min_x), double(y), z_left};
-    const auto uR = Vector3{double(max_x), double(y), z_right};
+    const auto uR = Vector3{double(max_x + 0.000001), double(y), z_right};
 
     const auto vLR = uL - uR;
 
-    for (unsigned x = min_x; x <= max_x; x++) {
-
+    for (unsigned x = min_x; x <= max_x; x++) {      
      const double z = (((double(x) - uL.x()) * vLR.Z) / vLR.x()) + uL.z();
      update_buffers(x, y, z, t_index);
     }
@@ -107,13 +106,14 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
     const double z_left  = (((double(y) - u3.y()) * v31.Z) / v31.y()) + u3.z();
     const double z_right = (((double(y) - u3.y()) * v32.Z) / v32.y()) + u3.z();
 
+    // FIXME: +0.0000001 for the pure vertices case where xmin = xmax = 0
     const auto uL = Vector3{double(min_x), double(y), z_left};
-    const auto uR = Vector3{double(max_x), double(y), z_right};
+    const auto uR = Vector3{double(max_x) + 0.000001, double(y), z_right};
 
     const auto vLR = uL - uR;
 
     for (unsigned x = min_x; x <= max_x; x++) {
-      const double z = (((double(x) - uL.x()) * vLR.Z) /  vLR.x()) + uL.z();
+      const double z = (((double(x) - uL.x()) * vLR.Z) / vLR.x()) + uL.z();
       update_buffers(x, y, z, t_index);
     }
 
