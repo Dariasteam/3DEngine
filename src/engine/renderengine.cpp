@@ -6,12 +6,12 @@ RenderEngine::RenderEngine() :
   {
   CommonBuffers::get().set_dimension(1000, 1000);
 
-//  fragmentShader.push_operation(new FlatNormals());
-//  fragmentShader.push_operation(new SmoothNormals());
-//  fragmentShader.push_operation(new NormalMapping());
-//  fragmentShader.push_operation(new TexturePainter());
-//  fragmentShader.push_operation(new ShadowlessLightning());
-//  fragmentShader.push_operation(new Lightness());
+  fragmentShader.push_operation(new FlatNormals());
+  fragmentShader.push_operation(new SmoothNormals());
+  //fragmentShader.push_operation(new NormalMapping());
+  fragmentShader.push_operation(new TexturePainter());
+  fragmentShader.push_operation(new ShadowlessLightning());
+  fragmentShader.push_operation(new Lightness());
 }
 
 void RenderEngine::render_loop () {
@@ -20,7 +20,6 @@ void RenderEngine::render_loop () {
 
     auto& buffers = CommonBuffers::get();    
 
-    /*
     projector.project_camera(world.get_light());
 
     rasteriser.rasterise(world.get_light(),
@@ -35,7 +34,6 @@ void RenderEngine::render_loop () {
       buffers.light_triangles[t_index] = buffers.triangles[t_index];
     });
 
-*/
     projector.project_camera(world.get_camera());
     rasteriser.rasterise(world.get_camera(),
                          buffers.triangle_index_surface,
@@ -44,6 +42,6 @@ void RenderEngine::render_loop () {
     fragmentShader();
     fps_render.update();    
 
-    canvas.paint(buffers.z_buffer);
+    canvas.paint(buffers.screen_buffer);
   }
 }

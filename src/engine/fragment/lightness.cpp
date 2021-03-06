@@ -40,47 +40,13 @@ void Lightness::operator ()(unsigned pixel_index) {
     // Get the point in the light    
     // Check the triangle index in the lightmapper equals the one at this pixel
 
-    Point2i p_l1 = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
+    Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
                                                                buffers.l_triangle_index_surface);
 
-    Point2i p_l2 = lightness_projectors[t_index].get_point_on_uv(p.X + 1, p.Y,
-                                                               buffers.l_triangle_index_surface);
+    unsigned i2 = buffers.l_triangle_index_surface.get(p_l.X, p_l.Y);
 
-    Point2i p_l3 = lightness_projectors[t_index].get_point_on_uv(p.X - 1, p.Y,
-                                                               buffers.l_triangle_index_surface);
-
-    Point2i p_l4 = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y + 1,
-                                                               buffers.l_triangle_index_surface);
-
-    Point2i p_l5 = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y - 1,
-                                                               buffers.l_triangle_index_surface);
-
-
-    Point2i p_l6 = lightness_projectors[t_index].get_point_on_uv(p.X + 1, p.Y + 1,
-                                                               buffers.l_triangle_index_surface);
-
-    Point2i p_l7 = lightness_projectors[t_index].get_point_on_uv(p.X + 1, p.Y - 1,
-                                                               buffers.l_triangle_index_surface);
-
-    Point2i p_l8 = lightness_projectors[t_index].get_point_on_uv(p.X - 1, p.Y + 1,
-                                                               buffers.l_triangle_index_surface);
-
-    Point2i p_l9 = lightness_projectors[t_index].get_point_on_uv(p.X - 1, p.Y - 1,
-                                                               buffers.l_triangle_index_surface);
-
-    std::vector<unsigned> indices;
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l1.X, p_l1.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l2.X, p_l2.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l3.X, p_l3.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l4.X, p_l4.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l5.X, p_l5.Y));
-
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l6.X, p_l6.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l7.X, p_l7.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l8.X, p_l8.Y));
-    indices.push_back(buffers.l_triangle_index_surface.get(p_l9.X, p_l9.Y));
-
-    if (std::find(indices.begin(), indices.end(), t_index) != indices.end()) {
+    if (i2 == t_index ||
+       fabs(buffers.z_light.get(t_index) - buffers.z_light.get(i2)) < 0.1) {
       double intensity = light.get_intensity();
       Color light_color = light.get_color();
 
