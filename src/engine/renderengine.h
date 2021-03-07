@@ -51,7 +51,7 @@ public:
                                  (start - last_time).count();
     if (elapsed_seconds > 1000.0) {
       double calc = double(frame_counter) / (double(elapsed_seconds) / 1000);
-      std::cout << "FPS " << text << ": " << calc << std::endl;
+      std::cout << "\rFPS " << text << ": " << calc << std::flush;
       frame_counter = 0;
       last_time = std::chrono::system_clock::now();
     }

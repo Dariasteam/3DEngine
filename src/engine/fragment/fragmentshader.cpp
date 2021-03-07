@@ -52,28 +52,38 @@ void FragmentShader::generate_light_projectors() {
             FragmentOperation::l_matrices.end(),
             false);
 
-  MultithreadManager::get_instance().calculate_threaded(buffers.n_l_renderable_triangles,
+
+  // FIXME: Work in screen space, only calculate for visible triangles
+  MultithreadManager::get_instance().calculate_threaded(N_THREADS,
                                                         [&](unsigned i) {
-    unsigned t_index = buffers.l_triangle_indices[i];
 
-    auto it1 = buffers.triangle_indices.begin();
-    auto it2 = buffers.triangle_indices.begin() + buffers.n_renderable_triangles;
+    double segment = double(buffers.l_triangle_index_surface.width()) / N_THREADS;
 
-    if (std::find(it1, it2, t_index) != it2) {
+    for (int x = segment * i; x < segment * (i + 1); x++){
+      for (int y = 0; y < buffers.l_triangle_index_surface.height(); y++) {
 
-      FragmentOperation::l_matrices[t_index] = true;
-      unsigned lightmap_size = buffers.l_triangle_index_surface.height();
-      const Triangle& t = buffers.light_triangles[t_index];
-      UV fakeuv;
+        if (buffers.z_light.get(x, y) != INFINITY_DISTANCE) {
 
-      // Normalize UV to the lightmap size
-      fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
-      fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
-      fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
+          unsigned t_index = buffers.l_triangle_index_surface.get(x, y);
 
-      FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
-                                               buffers.triangles[t_index],
-                                               fakeuv);
+          if (!FragmentOperation::l_matrices[t_index]) {
+            FragmentOperation::l_matrices[t_index] = true;
+            unsigned lightmap_size = buffers.l_triangle_index_surface.height();
+            const Triangle& t = buffers.light_triangles[t_index];
+            UV fakeuv;
+
+            // Normalize UV to the lightmap size
+            fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
+            fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
+            fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
+
+            FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
+                                                     buffers.triangles[t_index],
+                                                     fakeuv);
+
+          }
+        }
+      }
     }
   });
 }

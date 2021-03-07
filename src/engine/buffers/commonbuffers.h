@@ -9,7 +9,7 @@
 #include "../math/point3d.h"
 #include "../planar/triangle.h"
 
-#define INFINITY_DISTANCE 10000
+#define INFINITY_DISTANCE 10000000
 
 class CommonBuffers {
 private:
@@ -19,6 +19,8 @@ private:
 
     triangle_indices (50000),
     l_triangle_indices (50000),
+
+    is_triangle_ocluded (50000),
 
     n_renderable_triangles (0),
     n_l_renderable_triangles (0)
@@ -52,6 +54,8 @@ public:
 
   std::vector<unsigned long> triangle_indices;
   std::vector<unsigned long> l_triangle_indices;
+
+  std::vector<bool> is_triangle_ocluded;
 
   void reset_z_buffer();
 

@@ -18,16 +18,10 @@ class AbstractRasteriser {
 protected:
   CommonBuffers& buffers;
 
-  inline void update_buffers(unsigned x,
-                             unsigned y,
-                             double z_value,
-                             unsigned long t_index) const {
-
-    if (z_value < z_target_surface->get(x, y)) {
-      z_target_surface->set(x, y, z_value);
-      indices_target_surface->set(x, y, t_index);
-    }
-  }
+   void update_buffers(unsigned x,
+                       unsigned y,
+                       double z_value,
+                       unsigned long t_index) const;
 
   Texture<unsigned long, 1>* indices_target_surface;
   Texture<double, 1>* z_target_surface;
