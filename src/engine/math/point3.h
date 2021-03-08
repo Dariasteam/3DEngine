@@ -67,7 +67,9 @@ struct Point3 {
   }
 
   inline Point3 operator/ (const double d) const {
-    return {x() / d, y() / d, z() / d};
+    return {x() / d,
+            y() / d,
+            z() / d};
   }
 
 

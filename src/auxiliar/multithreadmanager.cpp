@@ -6,7 +6,7 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
       f(i);
   };
 
-  unsigned segment = size / N_THREADS;
+  double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
   active = false;
@@ -22,13 +22,11 @@ void MultithreadManager::calculate_threaded(unsigned size, std::function<void (u
     }
   };
 
-  for (unsigned i = 0; i < N_THREADS - 1; i++)
-    threads[i].send_function(std::bind(lambda, i * segment, (i + 1) * segment), callback);
-  threads.back().send_function(std::bind(lambda, (N_THREADS - 1) * segment, size), callback);
+  for (unsigned i = 0; i < N_THREADS; i++)
+    threads[i].send_function(std::bind(lambda, std::round(i * segment), std::round((i + 1) * segment)), callback);
 
   std::unique_lock<std::mutex> lck(mtx); // wake up thread
   cv.wait(lck, [&]{return active;});
-
 }
 
 CallableThread::CallableThread() :

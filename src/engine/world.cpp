@@ -49,8 +49,8 @@ void World::delete_mesh(Mesh* mesh) {
 }
 
 void World::calculate_next_frame() {
-  meshes.front()->rotate_y(-0.01);
-  meshes.front()->rotate_x(-0.001);
+  meshes.front()->rotate_y(-0.02);
+  meshes.front()->rotate_x(-0.01);
 //  meshes.front()->position += Point3{0, 0, 1};  
 //  meshes.front()->rotate_z(-0.02);
 

@@ -1,13 +1,13 @@
 #include "rasteriserflat.h"
 
 /* Considering a triangle with the form
- *      v1
+ *      u1
  *    /   \
  *   /     \
- *  v2 _____v3
+ *  u2 _____u3
  *
- * First we calculate the gradient ratio of the lines l1 = v1 - v2,
- * and l2 = v1 - v3
+ * First we calculate the gradient ratio of the lines l1 = u1 - u2,
+ * and l2 = u1 - u3
  *
  * Then in base of the Y of the point, we calculate the linear grading of
  * l3 = l1[y] - l2[y]
@@ -19,7 +19,7 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
                                             unsigned t_index) const {
   auto u1 = triangle.a;
   auto u2 = triangle.b;
-  auto u3 = triangle.c;
+  auto u3 = triangle.c;    
 
   if (u3.y() == u1.y()) return; // we already know v2 = v3, triangle would be a line
 
@@ -62,13 +62,13 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
 
 /* Considering a triangle with the form
  *
- *  v1 _____v2
+ *  u1 _____u2
  *   \    /
  *    \  /
- *     v3
+ *     u3
  *
- * First we calculate the gradient ratio of the lines l1 = v3 - v1,
- * and l2 = v3 - v2
+ * First we calculate the gradient ratio of the lines l1 = u3 - u1,
+ * and l2 = u3 - u2
  *
  * Then in base of the Y of the point, we calculate the linear grading of
  * l3 = l1[y] - l2[y]
@@ -126,10 +126,16 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
   triangle_to_surface_space(triangle);  
 
   // Sort vertices by Y
-  std::vector<Point3> aux_vec = {triangle.a, triangle.b, triangle.c};
+  std::vector<Point3> aux_vec = {triangle.a,
+                                 triangle.b,
+                                 triangle.c};
+
+//  std::cout << triangle.a.Z << "A " << triangle.b.Z << " " << triangle.c.Z << std::endl;
   std::sort (aux_vec.begin(), aux_vec.end(), [&](const Point3& a, const Point3& b) {
     return std::isless(a.y(), b.y());
-  });  
+  });
+
+//  std::cout << aux_vec[0].Z << "V " << aux_vec[1].Z << " " << aux_vec[2].Z << std::endl;
 
   Triangle tmp_triangle {triangle};
 
@@ -137,17 +143,16 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
   tmp_triangle.b = aux_vec[1];
   tmp_triangle.c = aux_vec[2];  
 
-  const Point3& u1 = aux_vec[0];
-  const Point3& u2 = aux_vec[1];
+   Point3& u1 = aux_vec[0];
+   Point3& u2 = aux_vec[1];
   const Point3& u3 = aux_vec[2];
 
-  // aux_triangle is ordered by y (v1 < v2 < v3)
+  // aux_triangle is ordered by y (u1 < u2 < u3)
   if (u2.y() == u3.y()) {
     fillBottomFlatTriangle(tmp_triangle, t_index);
   } else if (u1.y() == u2.y()) {
     fillTopFlatTriangle(tmp_triangle, t_index);
   } else {
-
     double a = u3.y() - u1.y();
     double b = u3.x() - u1.x();
 
@@ -158,17 +163,21 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
     const auto v31 = u3 - u1;
     double z = (((y - u1.y()) * v31.z()) / v31.y()) + u1.z();
 
-    Point3 v4 (x, y, z);
+    const Point3 u4 (x, y, z);
 
-    Triangle aux_t1 {tmp_triangle};
-    Triangle aux_t2 {tmp_triangle};
+    Triangle aux_t_bttm {tmp_triangle};
+    Triangle aux_t_top {tmp_triangle};
 
-    aux_t1.c = v4;
+    aux_t_bttm.c = u4;
 
-    aux_t2.a = u2;
-    aux_t2.b = v4;
+    aux_t_top.a = u2;
+    aux_t_top.b = u4;
 
-    fillBottomFlatTriangle (aux_t1, t_index);
-    fillTopFlatTriangle    (aux_t2, t_index);
+    double aux_z = aux_t_top.b.z();
+    aux_t_top.b.Z = aux_t_top.a.Z;
+    aux_t_top.a.Z = aux_z;
+
+    fillBottomFlatTriangle (aux_t_bttm, t_index);
+    fillTopFlatTriangle    (aux_t_top, t_index);
   }
 }

@@ -3,6 +3,7 @@
 
 #include "../engine/planar/texture.h"
 #include "../engine/buffers/commonbuffers.h"
+#include "../auxiliar/multithreadmanager.h"
 
 #include <vector>
 #include <algorithm>
@@ -19,14 +20,20 @@
 
 #define SCREEN_SIZE 1000
 
+template <typename T,unsigned D>
 class FrameBufferHandler {
 private:
+  std::condition_variable cv[N_THREADS];
+  bool painters [N_THREADS];
+
   int fbfd = 0;
   struct fb_var_screeninfo vinfo;
   struct fb_fix_screeninfo finfo;
   long int screensize = 0;
   char *fbp = 0;  
-  long int location = 0;
+
+  char* fup[N_THREADS];
+
 
   bool initialized {false};
 
@@ -38,67 +45,115 @@ private:
 
   unsigned n_triangles {0};
 
-  const unsigned char* b_a {nullptr};
-  const unsigned char* b_b {nullptr};
+  std::thread* threads [N_THREADS];
 
-  std::mutex mtx;
-  bool reading_buffer_a = false;
+//  CallableThread painting_threads [N_THREADS];
+
+
 public:
-  FrameBufferHandler();
+  Texture<T, D>* target;
+
   ~FrameBufferHandler() {
     munmap(fbp, screensize);
     close(fbfd);
-  }  
-  void set_screen_buffers (const unsigned char* b_a,
-                           const unsigned char* b_b);
-
-  inline bool reading_from_buffer_a () {
-    return reading_buffer_a;
   }
 
-  inline void lock_buffer_mutex () {
-    mtx.lock();
-  }
+  FrameBufferHandler() {
+    // Open the file for reading and writing
+    fbfd = open("/dev/fb0", O_RDWR);
+    if (fbfd == -1) {
+        perror("Error: cannot open framebuffer device");
+        exit(1);
+    }
+    printf("The framebuffer device was opened successfully.\n");
 
-  inline void unlock_buffer_mutex () {
-    mtx.unlock();
-  }
+    // Get fixed screen information
+    if (ioctl(fbfd, FBIOGET_FSCREENINFO, &finfo) == -1) {
+        perror("Error reading fixed information");
+        exit(2);
+    }
 
-  template <typename T,unsigned D>
-  bool paint(const Texture<T, D>& target) {
-    if (initialized) {
+    // Get variable screen information
+    if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo) == -1) {
+        perror("Error reading variable information");
+        exit(3);
+    }
 
-      for (unsigned y = 0; y < target.height(); y++) {
-        for (unsigned x = 0; x < target.width(); x++) {
-          location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
-                     (y+vinfo.yoffset) * finfo.line_length;
+    printf("%dx%d, %dbpp\n", vinfo.xres, vinfo.yres, vinfo.bits_per_pixel);
 
-          unsigned m_d = 2;
-          if constexpr (D == 3) {
-            // B G R
-            for (int i = m_d; i >= 0; i--) {
-              auto a = target.get(x, y, i);
-              *(fbp + location + (m_d - i)) = a;
-            }
-          } else {
-            for (int i = m_d; i >= 0; i--) {
-              auto a = (target.get(x, y, i));
-              if (a < INFINITY_DISTANCE) {
-                const double slope_parameter = 0.12;
-                a = -1/(slope_parameter * a + 1) + 1;
-                a = 1 - a;
-                a *= 255;
-              } else {
-                a = 0;
-              }
-              *(fbp + location + (m_d - i)) = static_cast<unsigned char>(a);
+    // Figure out the size of the screen in bytes
+    screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
+
+    // Map the device to memory
+    fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
+
+    if ((long int)fbp == -1) {
+        perror("Error: failed to map framebuffer device to memory");
+        exit(4);
+    }
+    printf("The framebuffer device was mapped to memory successfully.\n");
+
+
+    double segment = double(1000 / N_THREADS);
+
+    for (unsigned k = 0; k < N_THREADS; k++) {                  
+      threads[k] = new std::thread([&, k, segment]() -> void {
+
+        fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);        
+
+        while (1) {
+         std::mutex mtx;
+         std::unique_lock<std::mutex> lck(mtx); // wake up thread
+         cv[k].wait(lck, [&]{return painters[k];});
+
+//         std::cout << "SET" << std::endl;
+
+            painters[k] = false;
+
+            for (unsigned y = std::round(segment * k); y < std::round(segment * (k + 1)); y++) {
+              for (unsigned x = 0; x < target->width(); x++) {
+                long int  location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
+                           (y+vinfo.yoffset) * finfo.line_length;
+
+                unsigned m_d = 2;
+                if constexpr (D == 3) {
+                  // B G R Alpha
+                 for (int i = m_d; i >= 0; i--) {
+                    auto a = target->get(x, y, i);
+                    *(fbp + location + m_d - i) = a;
+                  }
+
+                } else {
+
+                  for (int i = 0; i < 3; i++) {
+                    auto a = (target->get(x, y, i));
+
+                    if (a < INFINITY_DISTANCE) {
+                      const double slope_parameter = 0.12;
+                      a = -1/(slope_parameter * a - .1) + 1;
+                      a = 1 - a;
+                      a *= 255;
+                    } else {
+                      a = 0;
+                    }
+                    *(fbp + location + i) = static_cast<unsigned char>(a);
+                  }
+                }
+
             }
           }
         }
-      }
-      return true;
-    } else {
-      return false;
+      });
+
+      threads[k]->detach();
+    }
+  }
+
+
+  void paint() {
+    for (unsigned i = 0; i < N_THREADS; i++) {
+      painters[i] = (true);
+      cv[i].notify_one();
     }
   }
 };

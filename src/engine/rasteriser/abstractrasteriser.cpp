@@ -9,7 +9,6 @@
 
   bool occlusion = false;
 
-
   if (fabs(z_value - current_z) > .35 &&
     current_z != INFINITY_DISTANCE) {
     occlusion = true;

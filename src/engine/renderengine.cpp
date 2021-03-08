@@ -8,18 +8,19 @@ RenderEngine::RenderEngine() :
 
   fragmentShader.push_operation(new FlatNormals());
   fragmentShader.push_operation(new SmoothNormals());
-  //fragmentShader.push_operation(new NormalMapping());
+//  fragmentShader.push_operation(new NormalMapping());
   fragmentShader.push_operation(new TexturePainter());
 //  fragmentShader.push_operation(new ShadowlessLightning());
   fragmentShader.push_operation(new Lightness());
 }
 
 void RenderEngine::render_loop () {
+  auto& buffers = CommonBuffers::get();
+  canvas.target = &buffers.screen_buffer;
+
+
   while (1) {
-    world.calculate_next_frame();
-
-    auto& buffers = CommonBuffers::get();    
-
+    world.calculate_next_frame();      
 
     std::fill(buffers.is_triangle_ocluded.begin(),
               buffers.is_triangle_ocluded.end(),
@@ -56,6 +57,6 @@ void RenderEngine::render_loop () {
     fragmentShader();
     fps_render.update();    
 
-    canvas.paint(buffers.screen_buffer);
+    canvas.paint();
   }
 }

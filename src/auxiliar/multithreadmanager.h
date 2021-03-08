@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <future>
+#include <cmath>
 
 #define N_THREADS 16
 
