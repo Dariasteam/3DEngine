@@ -11,6 +11,12 @@
 
 #define INFINITY_DISTANCE 10000000
 
+struct RasterTarget {
+  std::vector<Triangle> triangles;
+  std::vector<unsigned long> triangle_indices;
+  unsigned n_renderable_triangles;
+};
+
 class CommonBuffers {
 private:
   CommonBuffers () :
@@ -42,7 +48,6 @@ public:
 
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
-//  Texture<bool, 1> lightmap_buffer;
 
   void set_dimension (unsigned w, unsigned h);;
 
@@ -55,6 +60,9 @@ public:
   std::vector<unsigned long> triangle_indices;
   std::vector<unsigned long> l_triangle_indices;
 
+  // We can share this between directional light and camera
+  // since the ocluded objects in directional_light space will be
+  // black and the ones in camera space won't be rendered anyway
   std::vector<bool> is_triangle_ocluded;
 
   void reset_z_buffer();

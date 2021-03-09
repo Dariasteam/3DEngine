@@ -3,7 +3,6 @@
 
 #include "camera.h"
 
-
 class PerspectiveCamera : public Camera {
 protected:
   bool calculate_face_projection (const Face& face,

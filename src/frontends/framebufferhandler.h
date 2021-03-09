@@ -46,10 +46,6 @@ private:
   unsigned n_triangles {0};
 
   std::thread* threads [N_THREADS];
-
-//  CallableThread painting_threads [N_THREADS];
-
-
 public:
   Texture<T, D>* target;
 
@@ -96,50 +92,54 @@ public:
 
     double segment = double(1000 / N_THREADS);
 
-    for (unsigned k = 0; k < N_THREADS; k++) {                  
+    for (unsigned k = 0; k < N_THREADS; k++) {
+      painters[k] = false;
+
+
       threads[k] = new std::thread([&, k, segment]() -> void {
 
         fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);        
 
+        std::mutex mtx;
+
         while (1) {
-         std::mutex mtx;
          std::unique_lock<std::mutex> lck(mtx); // wake up thread
          cv[k].wait(lck, [&]{return painters[k];});
+          painters[k] = false;
 
-//         std::cout << "SET" << std::endl;
+          for (unsigned y = std::round(segment * k);
+                        y < std::round(segment * (k + 1)); y++) {
 
-            painters[k] = false;
+            for (unsigned x = 0; x < target->width(); x++) {
 
-            for (unsigned y = std::round(segment * k); y < std::round(segment * (k + 1)); y++) {
-              for (unsigned x = 0; x < target->width(); x++) {
-                long int  location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
-                           (y+vinfo.yoffset) * finfo.line_length;
+              long int  location = (x+vinfo.xoffset) * (vinfo.bits_per_pixel/8) +
+                         (y+vinfo.yoffset) * finfo.line_length;
 
-                unsigned m_d = 2;
-                if constexpr (D == 3) {
-                  // B G R Alpha
-                 for (int i = m_d; i >= 0; i--) {
-                    auto a = target->get(x, y, i);
-                    *(fbp + location + m_d - i) = a;
-                  }
+              unsigned m_d = 2;
 
-                } else {
-
-                  for (int i = 0; i < 3; i++) {
-                    auto a = (target->get(x, y, i));
-
-                    if (a < INFINITY_DISTANCE) {
-                      const double slope_parameter = 0.12;
-                      a = -1/(slope_parameter * a - .1) + 1;
-                      a = 1 - a;
-                      a *= 255;
-                    } else {
-                      a = 0;
-                    }
-                    *(fbp + location + i) = static_cast<unsigned char>(a);
-                  }
+              if constexpr (D == 3) {
+                // B G R Alpha
+               for (int i = m_d; i >= 0; i--) {
+                  auto a = target->get(x, y, i);
+                  *(fbp + location + m_d - i) = a;
                 }
 
+              } else {
+
+                for (int i = 0; i < 3; i++) {
+                  auto a = (target->get(x, y, i));
+
+                  if (a < INFINITY_DISTANCE) {
+                    const double slope_parameter = 0.16;
+                    a = -1/(slope_parameter * a - .04) + 1;
+                    a = 1 - a;
+                    a *= 255;
+                  } else {
+                    a = 0;
+                  }
+                  *(fbp + location + i) = static_cast<unsigned char>(a);
+                }
+              }
             }
           }
         }
@@ -149,10 +149,9 @@ public:
     }
   }
 
-
   void paint() {
     for (unsigned i = 0; i < N_THREADS; i++) {
-      painters[i] = (true);
+      painters[i] = true;
       cv[i].notify_one();
     }
   }

@@ -14,12 +14,6 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
                                                   unsigned index) const {
 
   auto& tmp_triangle = buffers.triangles[index];
-/*
-  // 1. Face to triangle
-  tmp_triangle.a = face.a;
-  tmp_triangle.b = face.b;
-  tmp_triangle.c = face.c;
-*/
 
   // 1. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º insteads  
@@ -28,7 +22,7 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
   // 2. Calculate distance to camera
   tmp_triangle.a.Z = Vector3::vector_module(face.a);
   tmp_triangle.b.Z = Vector3::vector_module(face.b);
-  tmp_triangle.c.Z = Vector3::vector_module(face.c);
+  tmp_triangle.c.Z = Vector3::vector_module(face.c);  
 
   double z_min = std::min({tmp_triangle.a.Z,
                            tmp_triangle.b.Z,
@@ -43,13 +37,13 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
   if (!triangle_inside_camera(tmp_triangle)) return false;
 
   // 4. Copy normals. Global normal used to calculate depth of each pixel with plane equation
-  //tmp_triangle.normal   = face.normal;
+  tmp_triangle.normal   = face.normal;
   tmp_triangle.normal_a = {face.normal_a.X, face.normal_a.Y};
   tmp_triangle.normal_b = {face.normal_b.X, face.normal_b.Y};
-  tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};
+  tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};  
 
   // Set uv
-  tmp_triangle.uv = uv;
+  tmp_triangle.uv = uv;    
   return true;
 }
 
