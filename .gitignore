@@ -4,3 +4,6 @@ build/
 Makefile
 3D
 *.o
+_build/
+_build
+engine
