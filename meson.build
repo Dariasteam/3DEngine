@@ -35,4 +35,5 @@ executable('engine',
 	         'src/engine/renderengine.cpp',
 	         'src/main.cpp',
 	         dependencies : thread_dep,
+	         cpp_args : '-O3',
            install : false)
