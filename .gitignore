@@ -7,3 +7,4 @@ Makefile
 _build/
 _build
 engine
+conf/
