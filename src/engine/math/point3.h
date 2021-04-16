@@ -58,6 +58,21 @@ struct Point3 {
     set_z(z() / v);
   }
 
+  inline Point3 operator- (const Point3& v) const {
+    return Point3 {
+      x() - v.x(),
+      y() - v.y(),
+      z() - v.z()
+    };
+  }
+
+  inline Point3 operator/ (const double d) const {
+    return {x() / d,
+            y() / d,
+            z() / d};
+  }
+
+
   inline double x() const { return X;}
   inline double y() const { return Y;}
   inline double z() const { return Z;}
@@ -77,10 +92,5 @@ static double deg2rad (double deg) {
 
 typedef Point3 Color;
 
-inline void clamp_color (Color& color) {
-  color.set_x(std::max (0.0, std::min(color.x(), 255.0)));
-  color.set_y(std::max (0.0, std::min(color.y(), 255.0)));
-  color.set_z(std::max (0.0, std::min(color.z(), 255.0)));
-}
 
 #endif // POINT3_H

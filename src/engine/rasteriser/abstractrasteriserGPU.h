@@ -33,7 +33,7 @@ protected:
   void load_kernel (std::string path, std::string kernel_name);
 
 public:
-  AbstractRasteriserGPU(World* w, Canvas* cv) :
+  AbstractRasteriserGPU(World* w, FrameBufferHandler* cv) :
     AbstractRasteriser (w, cv),
     buffer_img (context, CL_MEM_WRITE_ONLY, sizeof(unsigned char) * SCREEN_SIZE * SCREEN_SIZE * 3),
     buffer_z   (context, CL_MEM_WRITE_ONLY, sizeof(float) * SCREEN_SIZE * SCREEN_SIZE)

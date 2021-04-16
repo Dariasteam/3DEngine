@@ -1,36 +1,38 @@
 #include "abstractrasteriserCPU.h"
 
-void AbstractRasteriserCPU::rasterise(std::vector<Triangle2i>* triangles,
-                                      unsigned sz) {
-  canvas->update_frame(camera->get_bounds());
+void AbstractRasteriserCPU::triangle_to_surface_space(Triangle &triangle) const {
+  double v_factor = camera->get_bounds().height * 2;
+  double h_factor = camera->get_bounds().width * 2;
 
-  // 1. Select unused buffer
-  canvas->lock_buffer_mutex();
-  if (canvas->reading_from_buffer_a())
-    buff = screen_buff_b;
-  else
-    buff = screen_buff_a;
+  double y_offset = camera->get_bounds().height;
+  double x_offset = camera->get_bounds().width;
 
-  // 2. Clear buffers
-  std::fill(z_buff, z_buff + SCREEN_SIZE * SCREEN_SIZE, 1000000000000);
-  std::fill(buff, buff + SCREEN_SIZE * SCREEN_SIZE * 3, 0);
+  triangle.a.set_x(std::round((triangle.a.x() + x_offset ) * height / v_factor));
+  triangle.a.set_y(std::round((triangle.a.y() + y_offset ) * width  / h_factor));
 
-  // 3. Rasterize
-  auto& m = MultithreadManager::get_instance();
+  triangle.b.set_x(std::round((triangle.b.x() + x_offset ) * height / v_factor));
+  triangle.b.set_y(std::round((triangle.b.y() + y_offset ) * width  / h_factor));
 
-  int t_size = sz;
-  int offset = (t_size / N_THREADS);
+  triangle.c.set_x(std::round((triangle.c.x() + x_offset ) * height / v_factor));
+  triangle.c.set_y(std::round((triangle.c.y() + y_offset ) * width  / h_factor));
+}
 
-  m.calculate_threaded(t_size, [&](unsigned i) {
 
-    //FIXME: This is because we are pre ordering triangles
-    // in base of z value
-    //int processing_block = floor(double(i) / offset);
-    //int iteration = i - (processing_block * offset);
-    //int pos = iteration * N_THREADS + processing_block;
-    rasterize_triangle(triangles->operator[](i));
+void AbstractRasteriserCPU::rasterise(const Camera& cam,
+                                      Texture<unsigned long, 1>& i_surface,
+                                      Texture<double, 1>& z_surface) {
+  camera = &cam;
+  indices_target_surface = &i_surface;
+  z_target_surface = &z_surface;
+
+  height = indices_target_surface->height();
+  width = indices_target_surface->width();
+
+  z_target_surface->fill(INFINITY_DISTANCE);
+
+  auto& m = MultithreadManager::get_instance();  
+  m.calculate_threaded(buffers.n_renderable_triangles, [&](unsigned i) {
+    unsigned t_index = buffers.triangle_indices[i];
+    rasterize_triangle(buffers.triangles[t_index], t_index);
   });
-
-  canvas->unlock_buffer_mutex();                 // Acts like Vsync
-  canvas->update_frame(camera->get_bounds());
 }

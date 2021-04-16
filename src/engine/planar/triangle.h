@@ -4,60 +4,67 @@
 #include "../math/point2.h"
 #include "../math/point3.h"
 #include "vertex.h"
+#include "../planar/texture.h"
+#include "../math/vector3.h"
 
-struct Triangle2 {
-  Point2 a;
-  Point2 b;
-  Point2 c;
+struct Triangle {
+  Point3 a;
+  Point3 b;
+  Point3 c;
 
-  double z_value;   // distance to camera
-  Color888 color = {0, 0, 0};
+  Vector3 normal;
 
-  Triangle2 (const Triangle2& t) :
+  Vector2 normal_a;
+  Vector2 normal_b;
+  Vector2 normal_c;
+
+  double plane_eq_d;
+
+  Triangle (const Triangle& t) :
     a (t.a),
     b (t.b),
     c (t.c),
-    z_value (t.z_value),
-    color (t.color)
+
+    normal  (t.normal),
+
+    normal_a(t.normal_a),
+    normal_b(t.normal_b),
+    normal_c(t.normal_c),
+
+    plane_eq_d (t.plane_eq_d)
   {}
 
-  Triangle2 () {}
+  UV uv = {};
 
-  Triangle2 (const Point2& aa,
-              const Point2& bb,
-              const Point2& cc,
-              const double z,
-              const Color& col) :
-    a (aa),
-    b (bb),
-    c (cc),
-    z_value (z),
-    color (col)
-  {}
+  Triangle () {}
+
+  void calculate_plane_equation_d () {
+    plane_eq_d = -normal.X * a.X
+                 -normal.Y * a.Y
+                 -normal.Z * a.Z;
+  }
 };
-
+/*
 struct Triangle2i {
   Point2i a;
   Point2i b;
   Point2i c;
 
   double z_value;   // distance to camera
-  Color888 color = {0, 0, 0};
+
+  UV uv = {};
 
   Triangle2i (const Triangle2i& t) :
     a (t.a),
     b (t.b),
     c (t.c),
-    z_value (t.z_value),
-    color (t.color)
+    z_value (t.z_value)
   {}
 
-  Triangle2i (const Triangle2& t) :
+  Triangle2i (const Triangle& t) :
     a (t.a),
     b (t.b),
-    c (t.c),
-    z_value (t.z_value),
-    color (t.color)
+    c (t.c)
   {}
 
   Triangle2i () {}
@@ -65,14 +72,12 @@ struct Triangle2i {
   Triangle2i (const Point2i& aa,
               const Point2i& bb,
               const Point2i& cc,
-              const double z,
-              const Color& col) :
+              const double z) :
     a (aa),
     b (bb),
     c (cc),
-    z_value (z),
-    color (col)
+    z_value (z)
   {}
 };
-
+*/
 #endif // TRIANGLE_H

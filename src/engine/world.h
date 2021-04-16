@@ -4,41 +4,38 @@
 #include "math/point3.h"
 #include "math/vector3.h"
 #include "spatial/mesh.h"
-#include "camera.h"
+#include "spatial/perspectivecamera.h"
+#include "spatial/parallelcamera.h"
+#include "spatial/directionallight.h"
 #include "../auxiliar/objparser.h"
 
 #include <vector>
-#include <algorithm>
-#include <future>
-
-struct DirectionalLight {
-  Vector3 direction;
-  Color color;
-  double intensity;
-};
 
 class World {
 private:
-  Camera* camera;
+  PerspectiveCamera principal_camera;
   std::vector <Mesh*> meshes;
+  DirectionalLight sun;
 
-  DirectionalLight sunlight {
-    Vector3 {1, 0.5, 0},
-    Color {255, 255, 255},
-    0.5 //1.2
-  };
-
+  World();
 public:
-  World (Camera* cm);
+  inline static World& get () {
+    static World instance;
+    return instance;
+  }
 
-  inline const std::vector <Mesh*>& get_elements () { return meshes; }
-  inline const DirectionalLight get_light () { return sunlight; }
+  World (MultithreadManager const &) = delete;
+  void operator= (World const &) = delete;
+
+  inline const std::vector <Mesh*>& get_elements () { return meshes; }  
 
   inline bool add_mesh (Mesh* mesh);
   inline void delete_mesh (Mesh* mesh);
-  inline Camera* get_camera () { return camera; }
 
-  void calculate_next_frame () const;
+  inline Camera& get_camera () { return principal_camera; }
+  inline DirectionalLight& get_light () { return sun; }
+
+  void calculate_next_frame ();
 
   ~World () {
     meshes.clear();

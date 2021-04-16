@@ -64,7 +64,7 @@ struct Point2 {
   }
 
   inline double operator/ (const Point2& p) const {
-    return x() * p.x() + y() * p.y();
+    return x() / p.x() + y() / p.y();
   }
 
   inline Point2 operator* (const double d) const {
@@ -73,7 +73,7 @@ struct Point2 {
 
   inline Point2 operator/ (const double d) const {
     return {x() / d, y() / d};
-  }
+  }  
 
   inline void operator+= (const Point2& p)  {
     set_x(x() + p.x());
@@ -93,6 +93,10 @@ struct Point2 {
   inline void operator/= (const double d) {
     set_x(x() / d);
     set_y(y() / d);
+  }
+
+  static double  vector_module (const Point2& v) {
+    return std::sqrt(v.x() * v.x() + v.y() * v.y());
   }
 };
 

@@ -3,3 +3,4 @@
 build/
 Makefile
 3D
+*.o

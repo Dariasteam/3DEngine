@@ -8,8 +8,9 @@
 #include <condition_variable>
 #include <iostream>
 #include <future>
+#include <cmath>
 
-#define N_THREADS 8
+#define N_THREADS 16
 
 class CallableThread {
 private:
@@ -19,46 +20,24 @@ private:
 
   std::mutex mtx;
   std::condition_variable cv;
-  bool active = false;
-  bool alive = true;
+  bool active {false};
+  bool alive {true};
 
 public:
-  CallableThread () :
-    t (&CallableThread::run, this)
-  {}
+  CallableThread ();
 
   bool send_function (const std::function<void (void)> func,
-                      const std::function<void (void)> callback) {
-    f = func;
-    c = callback;
-    active = true;
-    cv.notify_one();
-    return true;
-  }
+                      const std::function<void (void)> callback);
 
   void start () {
     t.detach();
   }
 
   bool is_active () { return active; }
-
-  void end_life () {
-    alive = false;
-    active = true;
-    f = [&]() {};
-    cv.notify_one();
-  }
+  void end_life ();
 
 private:
-  void run () {
-    while (alive) {
-      std::unique_lock<std::mutex> lck(mtx); // wake up thread
-      cv.wait(lck, [&]{return active;});
-      f ();
-      active = false;
-      c ();
-    }
-  }
+  void run ();
 };
 
 class MultithreadManager {

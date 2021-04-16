@@ -1,45 +1,41 @@
 #ifndef ABSTRACTRASTERISER_H
 #define ABSTRACTRASTERISER_H
 
-#include "../camera.h"
-#include "../world.h"
-#include "../../frontends/Qt/canvas.h"
+#include "../buffers/commonbuffers.h"
+#include "../spatial/camera.h"
+
+#include "../math/point2.h"
+#include "../math/point2d.h"
+#include "../math/point3.h"
+#include "../math/point3d.h"
+#include "../planar/triangle.h"
+#include "../planar/texture.h"
 
 #include <vector>
 #include <algorithm>
 
-
 class AbstractRasteriser {
 protected:
-  unsigned screen_size = SCREEN_SIZE;
+  CommonBuffers& buffers;
 
-  World* world;
-  Camera* camera;
-  Canvas* canvas;
+   void update_buffers(unsigned x,
+                       unsigned y,
+                       double z_value,
+                       unsigned long t_index) const;
 
-  double* z_buff = new double[SCREEN_SIZE * SCREEN_SIZE];
+  Texture<unsigned long, 1>* indices_target_surface;
+  Texture<double, 1>* z_target_surface;
+  const Camera* camera;
 
-  unsigned char* screen_buff_a = new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3];
-  unsigned char* screen_buff_b = new unsigned char [SCREEN_SIZE * SCREEN_SIZE * 3];
+  unsigned width;
+  unsigned height;
 
-  inline unsigned toScreenIndex (int x, int y) {
-    return y * (SCREEN_SIZE * 3) + (x * 3);
-  }
-
-  inline unsigned toDepthIndex (int x, int y) {
-    return y * SCREEN_SIZE + x;
-  }
 public:  
 
-  AbstractRasteriser(World* w, Canvas* cv) :
-    world (w),
-    camera (w->get_camera()),
-    canvas (cv)
-  {    
-    canvas->set_screen_buffers(screen_buff_a, screen_buff_b);
-  }
-
-  virtual void rasterise (std::vector<Triangle2i>* triangles, unsigned sz) = 0;
+  AbstractRasteriser() ;
+  virtual void rasterise (const Camera& cam,
+                          Texture<unsigned long, 1>& i_surface,
+                          Texture<double, 1>& z_surface) = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

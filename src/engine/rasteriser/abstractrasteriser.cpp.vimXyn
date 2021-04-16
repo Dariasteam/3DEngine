@@ -1,0 +1,10 @@
+#include "abstractrasteriser.h"
+
+AbstractRasteriser::AbstractRasteriser(World* w, FrameBufferHandler* cv) :
+  world (w),
+  camera (w->get_camera()),
+  canvas (cv)
+{
+  std::cout << "buffer 1: " << screen_buff_a << std::endl;
+  canvas->set_screen_buffers(screen_buff_a, screen_buff_b);
+}

@@ -1,0 +1,9 @@
+src/auxiliar
+src/engine
+src/engine/math
+src/engine/planar
+src/engine/rasteriser
+src/engine/spatial
+src/frontends
+src/engine/fragment
+src/engine/buffers

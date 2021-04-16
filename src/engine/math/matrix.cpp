@@ -236,7 +236,7 @@ void MatrixOps::generate_basis_change_matrix(const Matrix &A,
   for (unsigned i = 0; i < a_n_rows; i++) {
     // Copy the first vector of current basis in last column
     for (unsigned j = 0; j < a_n_rows; j++)
-      m.set(j, a_n_rows, A.get(i, j));
+      m.set(j, a_n_rows, A.get(j, i));
 
     // Make gauss
     g (m, r);
@@ -247,7 +247,7 @@ void MatrixOps::generate_basis_change_matrix(const Matrix &A,
   }  
 }
 
-Matrix MatrixOps::change_basis(const Matrix& matrix, const Matrix &element) {
-  return (matrix * element.get_transpose()).get_transpose();
+Matrix MatrixOps::change_basis(const Matrix& basis, const Matrix &element) {  
+  return element * basis;
 }
 
