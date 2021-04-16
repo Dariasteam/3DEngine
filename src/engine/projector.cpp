@@ -28,6 +28,3 @@ void Projector::set_projection_data(Camera& camera) {
   generate_mesh_list(World::get().get_elements());
 }
 
-#A629AF
-
-
