@@ -1,7 +1,6 @@
 #include "shadowlesslightning.h"
 
-void ShadowlessLightning::operator ()(unsigned pixel_index) {
-  unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
+void ShadowlessLightning::operator ()(unsigned pixel_index) {  
 
   Color base_color {
     double(buffers.screen_buffer.get(pixel_index * 3 +  0)),

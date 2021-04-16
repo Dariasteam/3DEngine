@@ -26,14 +26,14 @@ private:
   std::condition_variable cv[N_THREADS];
   bool painters [N_THREADS];
 
+  std::condition_variable cv_2;
+
   int fbfd = 0;
   struct fb_var_screeninfo vinfo;
   struct fb_fix_screeninfo finfo;
-  long int screensize = 0;
-  char *fbp = 0;  
+  long int screensize = 0;  
 
   char* fup[N_THREADS];
-
 
   bool initialized {false};
 
@@ -50,7 +50,9 @@ public:
   Texture<T, D>* target;
 
   ~FrameBufferHandler() {
-    munmap(fbp, screensize);
+    for (unsigned i = 0; i < N_THREADS; i++)
+      munmap(fup[i], screensize);
+
     close(fbfd);
   }
 
@@ -81,6 +83,7 @@ public:
     screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
 
     // Map the device to memory
+    /*
     fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 
     if ((long int)fbp == -1) {
@@ -88,7 +91,7 @@ public:
         exit(4);
     }
     printf("The framebuffer device was mapped to memory successfully.\n");
-
+    */
 
     double segment = double(1000 / N_THREADS);
 
@@ -98,16 +101,15 @@ public:
 
       threads[k] = new std::thread([&, k, segment]() -> void {
 
-        fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);        
+        fup[k] = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 
         std::mutex mtx;
 
         while (1) {
          std::unique_lock<std::mutex> lck(mtx); // wake up thread
-         cv[k].wait(lck, [&]{return painters[k];});
-          painters[k] = false;
+         cv[k].wait(lck, [&]{return painters[k];});          
 
-          for (unsigned y = std::round(segment * k);
+         for (unsigned y = std::round(segment * k);
                         y < std::round(segment * (k + 1)); y++) {
 
             for (unsigned x = 0; x < target->width(); x++) {
@@ -121,7 +123,7 @@ public:
                 // B G R Alpha
                for (int i = m_d; i >= 0; i--) {
                   auto a = target->get(x, y, i);
-                  *(fbp + location + m_d - i) = a;
+                  *(fup[k] + location + m_d - i) = a;
                 }
 
               } else {
@@ -130,18 +132,20 @@ public:
                   auto a = (target->get(x, y, i));
 
                   if (a < INFINITY_DISTANCE) {
-                    const double slope_parameter = 0.16;
-                    a = -1/(slope_parameter * a - .04) + 1;
+                    const double slope_parameter = 0.1;
+                    a = -1/(slope_parameter * a + 0.2) + 1;
                     a = 1 - a;
                     a *= 255;
                   } else {
                     a = 0;
                   }
-                  *(fbp + location + i) = static_cast<unsigned char>(a);
+                  *(fup[k] + location + i) = static_cast<unsigned char>(a);
                 }
               }
             }
           }
+         painters[k] = false;
+         cv_2.notify_one();
         }
       });
 
@@ -153,6 +157,18 @@ public:
     for (unsigned i = 0; i < N_THREADS; i++) {
       painters[i] = true;
       cv[i].notify_one();
+    }
+
+    // Prevent asynchronous painting
+    std::mutex mtx;
+    {
+      std::unique_lock<std::mutex> lck(mtx); // wake up thread
+      cv_2.wait(lck, [&]{
+        for (unsigned i = 0; i < N_THREADS; i++) {
+          if (painters[i]) return false;
+        }
+        return true;
+      });
     }
   }
 };

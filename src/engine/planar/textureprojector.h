@@ -53,25 +53,10 @@ public:
     int y_tex = std::round((uv_origin.Y + m2[0][1]) * texture.height());
 
     // FIXME: This should not exist, there should be no errors
-    if (x_tex < 0) {
-//      std::cout << "X < 0 -> " << x_tex << std::endl;
-      x_tex = 0;
-    }
-
-    if (y_tex < 0) {
-//      std::cout << "Y < 0 -> " << y_tex << std::endl;
-      y_tex = 0;
-    }
-
-    if (x_tex > (texture.width() - 1)) {
-//      std::cout << "X > max -> " << x_tex << std::endl;
-      x_tex = texture.width() - 1;
-    }
-
-    if (y_tex > (texture.height() - 1)) {
-//      std::cout << "Y > max -> " << y_tex << std::endl;
-      y_tex = texture.height() - 1;
-    }
+    x_tex = x_tex < 0 ? 0 : x_tex;
+    y_tex = y_tex < 0 ? 0 : y_tex;
+    x_tex = x_tex > texture.width()  ? texture.width()  - 1 : x_tex;
+    y_tex = y_tex > texture.height() ? texture.height() - 1 : y_tex;
 
     return {x_tex, y_tex};
   }

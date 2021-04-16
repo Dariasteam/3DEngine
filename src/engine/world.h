@@ -10,8 +10,6 @@
 #include "../auxiliar/objparser.h"
 
 #include <vector>
-#include <algorithm>
-#include <future>
 
 class World {
 private:

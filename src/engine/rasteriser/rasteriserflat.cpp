@@ -106,7 +106,7 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
     const double z_left  = (((double(y) - u3.y()) * v31.Z) / v31.y()) + u3.z();
     const double z_right = (((double(y) - u3.y()) * v32.Z) / v32.y()) + u3.z();
 
-    // FIXME: +0.0000001 for the pure vertices case where xmin = xmax = 0
+    // FIXME: +0.0000001 for the pure vertical case where xmin = xmax = 0
     const auto uL = Vector3{double(min_x), double(y), z_left};
     const auto uR = Vector3{double(max_x) + 0.000001, double(y), z_right};
 
@@ -164,8 +164,6 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
 
     Triangle aux_t_bttm {tmp_triangle};
     Triangle aux_t_top {tmp_triangle};
-
-    double aux_z;
 
     aux_t_bttm.c = u4;
 

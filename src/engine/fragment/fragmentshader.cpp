@@ -80,19 +80,22 @@ void FragmentShader::generate_light_projectors() {
 
         if (!FragmentOperation::l_matrices[t_index]) {
           FragmentOperation::l_matrices[t_index] = true;
-          unsigned lightmap_size = buffers.l_triangle_index_surface.height();
-          const Triangle& t = buffers.light_triangles[t_index];
-          UV fakeuv;
 
-          // Normalize UV to the lightmap size
-          fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
-          fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
-          fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
+          if (buffers.is_triangle_ocluded[t_index]) {
 
-          FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
-                                                   buffers.triangles[t_index],
-                                                   fakeuv);
+            unsigned lightmap_size = buffers.l_triangle_index_surface.height();
+            const Triangle& t = buffers.light_triangles[t_index];
+            UV fakeuv;
 
+            // Normalize UV to the lightmap size
+            fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
+            fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
+            fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
+
+            FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
+                                                     buffers.triangles[t_index],
+                                                     fakeuv);
+          }
         }
       }
     }

@@ -51,7 +51,7 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
         triangle_index++;
       }
     }
-  });  
+  });
 
   // Create a continuos vector of relevant indices
 

@@ -20,13 +20,13 @@ struct RasterTarget {
 class CommonBuffers {
 private:
   CommonBuffers () :
-    triangles (50000),
-    light_triangles (50000),
+    triangles (500000),
+    light_triangles (500000),
 
-    triangle_indices (50000),
-    l_triangle_indices (50000),
+    triangle_indices (500000),
+    l_triangle_indices (500000),
 
-    is_triangle_ocluded (50000),
+    is_triangle_ocluded (500000),
 
     n_renderable_triangles (0),
     n_l_renderable_triangles (0)

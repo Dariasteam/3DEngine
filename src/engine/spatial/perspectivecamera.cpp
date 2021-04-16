@@ -11,8 +11,7 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
 
 bool PerspectiveCamera::calculate_face_projection(const Face& face,
                                                   const UV& uv,
-                                                  unsigned index) const {
-
+                                                  unsigned index) const {  
   auto& tmp_triangle = buffers.triangles[index];
 
   // 1. Check normal of the face is towards camera, do not check angle,
@@ -36,14 +35,16 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
 
   if (!triangle_inside_camera(tmp_triangle)) return false;
 
-  // 4. Copy normals. Global normal used to calculate depth of each pixel with plane equation
+  // 4. Copy normals. Global normal used to calculate
+  // depth of each pixel with plane equation
   tmp_triangle.normal   = face.normal;
   tmp_triangle.normal_a = {face.normal_a.X, face.normal_a.Y};
   tmp_triangle.normal_b = {face.normal_b.X, face.normal_b.Y};
   tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};  
 
   // Set uv
-  tmp_triangle.uv = uv;    
+  tmp_triangle.uv = uv;
+
   return true;
 }
 
@@ -63,9 +64,11 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
  * */
 void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
                                             Point3& result) const {
-  const Vector3& dir_v = vertex;            // Since we are in camera space, the vertex is also the director vector of the line
+  const Vector3& dir_v = vertex;
+  // Since we are in camera space, the vertex is also the director vector of the line
 
   // Calc cut point line - plane
+
   // Since we are in camera space plane normal vector is (0, 0, 1)
   const double C = get_plane_vector().z();
 

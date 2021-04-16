@@ -3,11 +3,7 @@
 
 #include <chrono>
 #include <ctime>
-#include <thread>
 #include <string>
-
-#include <utility>
-#include <unordered_set>
 
 #include "math/point3.h"
 #include "math/point3.h"
@@ -62,7 +58,7 @@ class RenderEngine {
 private:
   Projector projector;
   RasteriserFlat rasteriser;
-  FrameBufferHandler<double, 1> canvas;
+  FrameBufferHandler<unsigned char, 3> canvas;
 
   FragmentShader fragmentShader;
   World& world;

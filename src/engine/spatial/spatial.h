@@ -31,7 +31,7 @@ struct Spatial {
   void scale (double s) {
     for (unsigned i = 0; i < 3; i++) {
       for (unsigned j = 0; j < 3; j++) {
-        basis[i][j] = basis[i][j] * 3;
+        basis[i][j] = basis[i][j] * s;
       }
     }
   }

@@ -45,7 +45,6 @@ void Lightness::operator ()(unsigned pixel_index) {
       Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
                                                                  buffers.l_triangle_index_surface);
 
-      unsigned i2 = buffers.l_triangle_index_surface.get(p_l.X, p_l.Y);
       std::vector<unsigned> sourrounding_t;
       if (p_l.x() > 0 && p_l.x() < buffers.z_light.width()  - 1 &&
           p_l.y() > 0 && p_l.y() < buffers.z_light.height() - 1) {
@@ -68,8 +67,7 @@ void Lightness::operator ()(unsigned pixel_index) {
       }
     } else {
       double intensity = light.get_intensity();
-      Color light_color = light.get_color();
-//      light_color = {255, 0, 0};
+      Color light_color = light.get_color();      
 
       light_contribution.X = (incidence * light_color.X * intensity);
       light_contribution.Y = (incidence * light_color.Y * intensity);

@@ -16,7 +16,7 @@ RenderEngine::RenderEngine() :
 
 void RenderEngine::render_loop () {
   auto& buffers = CommonBuffers::get();
-  canvas.target = &buffers.z_buffer;
+  canvas.target = &buffers.screen_buffer;
 
   while (1) {
     world.calculate_next_frame();
@@ -33,11 +33,11 @@ void RenderEngine::render_loop () {
       unsigned long triangle_index = buffers.l_triangle_indices[i];
       buffers.is_triangle_ocluded[triangle_index] = false;
     }
-/*
+
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
                          buffers.z_light);
-*/
+
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;    
     auto& m = MultithreadManager::get_instance();
@@ -52,6 +52,8 @@ void RenderEngine::render_loop () {
     rasteriser.rasterise(world.get_camera(),
                          buffers.triangle_index_surface,
                          buffers.z_buffer);
+
+    fps_render.update();
 
     fragmentShader();
     fps_render.update();
