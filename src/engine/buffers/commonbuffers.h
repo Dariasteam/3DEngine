@@ -6,7 +6,6 @@
 #include "../math/point2.h"
 #include "../math/point2d.h"
 #include "../math/point3.h"
-#include "../math/point3d.h"
 #include "../planar/triangle.h"
 
 #define INFINITY_DISTANCE 10000000
@@ -37,7 +36,7 @@ public:
     return instance;
   }
 
-  CommonBuffers (MultithreadManager const &) = delete;
+  CommonBuffers (const CommonBuffers &) = delete;
   void operator= (CommonBuffers const &) = delete;
 
   Texture<unsigned long, 1> triangle_index_surface;
@@ -49,7 +48,7 @@ public:
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
 
-  void set_dimension (unsigned w, unsigned h);;
+  void set_dimension (unsigned w, unsigned h);
 
   inline unsigned get_height() { return triangle_index_surface.height(); }
   inline unsigned get_width() { return triangle_index_surface.width(); }

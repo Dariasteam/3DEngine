@@ -1,0 +1,66 @@
+operator ()	flatnormals.cpp	/^void FlatNormals::operator ()(unsigned pixel_index) {$/;"	f	class:FlatNormals	typeref:typename:void
+NORMALS_H	flatnormals.h	/^#define NORMALS_H$/;"	d
+FlatNormals	flatnormals.h	/^class FlatNormals : public FragmentOperation {$/;"	c
+operator () 	flatnormals.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:FlatNormals	typeref:typename:void
+FRAGMENTSHADER_H	fragmentshader.h	/^#define FRAGMENTSHADER_H$/;"	d
+FragmentOperation	fragmentshader.h	/^class FragmentOperation {$/;"	c
+buffers	fragmentshader.h	/^  CommonBuffers& buffers;$/;"	m	class:FragmentOperation	typeref:typename:CommonBuffers &
+pixel_index_to_screen_coordenates	fragmentshader.h	/^  inline Point2i pixel_index_to_screen_coordenates(unsigned pixel_index) {$/;"	f	class:FragmentOperation	typeref:typename:Point2i
+get_triangle_index_at_pixel_index	fragmentshader.h	/^  inline unsigned get_triangle_index_at_pixel_index (unsigned pixel_index) {$/;"	f	class:FragmentOperation	typeref:typename:unsigned
+get_triangle_at_pixel_index	fragmentshader.h	/^  inline Triangle& get_triangle_at_pixel_index(unsigned pixel_index) {$/;"	f	class:FragmentOperation	typeref:typename:Triangle &
+clamp	fragmentshader.h	/^  inline unsigned char clamp (const T& c) const {$/;"	f	class:FragmentOperation	typeref:typename:unsigned char
+clamp_color	fragmentshader.h	/^  inline void clamp_color (Color& color) const {$/;"	f	class:FragmentOperation	typeref:typename:void
+texture_projectors	fragmentshader.h	/^  static std::vector<TextureProjector> texture_projectors;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<TextureProjector>
+lightness_projectors	fragmentshader.h	/^  static std::vector<TextureProjector> lightness_projectors;  $/;"	m	class:FragmentOperation	typeref:typename:std::vector<TextureProjector>
+l_matrices	fragmentshader.h	/^  static std::vector<bool> l_matrices;  $/;"	m	class:FragmentOperation	typeref:typename:std::vector<bool>
+t_matrices	fragmentshader.h	/^  static std::vector<bool> t_matrices;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<bool>
+texture	fragmentshader.h	/^  static Texture<unsigned char, 3> texture;$/;"	m	class:FragmentOperation	typeref:typename:Texture<unsigned char,3>
+normal_map	fragmentshader.h	/^  static Texture<unsigned char, 3> normal_map;$/;"	m	class:FragmentOperation	typeref:typename:Texture<unsigned char,3>
+operator ()	fragmentshader.h	/^  virtual void operator()(unsigned pixel_index) = 0;$/;"	p	class:FragmentOperation	typeref:typename:void
+FragmentOperation	fragmentshader.h	/^  FragmentOperation();$/;"	p	class:FragmentOperation
+FragmentShader	fragmentshader.h	/^class FragmentShader {$/;"	c
+operations	fragmentshader.h	/^  std::list<FragmentOperation*> operations;$/;"	m	class:FragmentShader	typeref:typename:std::list<FragmentOperation * >
+buffers	fragmentshader.h	/^  CommonBuffers& buffers;$/;"	m	class:FragmentShader	typeref:typename:CommonBuffers &
+FragmentShader	fragmentshader.h	/^  FragmentShader();$/;"	p	class:FragmentShader
+operator () 	fragmentshader.h	/^  void operator() ();$/;"	p	class:FragmentShader	typeref:typename:void
+generate_texture_projectors	fragmentshader.h	/^  void generate_texture_projectors();$/;"	p	class:FragmentShader	typeref:typename:void
+generate_light_projectors	fragmentshader.h	/^  void generate_light_projectors();$/;"	p	class:FragmentShader	typeref:typename:void
+push_operation	fragmentshader.h	/^  void push_operation(FragmentOperation* op);$/;"	p	class:FragmentShader	typeref:typename:void
+operator ()	lightness.cpp	/^void Lightness::operator ()(unsigned pixel_index) {    $/;"	f	class:Lightness	typeref:typename:void
+LIGHTNESS_H	lightness.h	/^#define LIGHTNESS_H$/;"	d
+Lightness	lightness.h	/^class Lightness : public FragmentOperation {$/;"	c
+operator () 	lightness.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:Lightness	typeref:typename:void
+operator ()	normalmapping.cpp	/^void NormalMapping::operator ()(unsigned pixel_index) {  $/;"	f	class:NormalMapping	typeref:typename:void
+NORMALMAPPING_H	normalmapping.h	/^#define NORMALMAPPING_H$/;"	d
+NormalMapping	normalmapping.h	/^class NormalMapping: public FragmentOperation {$/;"	c
+operator () 	normalmapping.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:NormalMapping	typeref:typename:void
+operator ()	shadowlesslightning.cpp	/^void ShadowlessLightning::operator ()(unsigned pixel_index) {  $/;"	f	class:ShadowlessLightning	typeref:typename:void
+LIGHTNESS_SHADOWLESS_H	shadowlesslightning.h	/^#define LIGHTNESS_SHADOWLESS_H$/;"	d
+ShadowlessLightning	shadowlesslightning.h	/^class ShadowlessLightning: public FragmentOperation {$/;"	c
+operator () 	shadowlesslightning.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:ShadowlessLightning	typeref:typename:void
+clamp_color	shadowlesslightning.h	/^  inline void clamp_color (Color& color) const {$/;"	f	class:ShadowlessLightning	typeref:typename:void
+cut_point	smoothnormals.cpp	/^Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,$/;"	f	class:SmoothNormals	typeref:typename:Vector2
+operator ()	smoothnormals.cpp	/^void SmoothNormals::operator ()(unsigned pixel_index) {$/;"	f	class:SmoothNormals	typeref:typename:void
+SMOOTHNORMALS_H	smoothnormals.h	/^#define SMOOTHNORMALS_H$/;"	d
+SmoothNormals	smoothnormals.h	/^class SmoothNormals: public FragmentOperation {$/;"	c
+operator () 	smoothnormals.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:SmoothNormals	typeref:typename:void
+cut_point	smoothnormals.h	/^  Vector2 cut_point(const Point2& p, const Point3& v1,$/;"	p	class:SmoothNormals	typeref:typename:Vector2
+operator ()	texturepainter.cpp	/^void TexturePainter::operator ()(unsigned pixel_index) {$/;"	f	class:TexturePainter	typeref:typename:void
+TEXTUREPROJECTORSHADER_H	texturepainter.h	/^#define TEXTUREPROJECTORSHADER_H$/;"	d
+TexturePainter	texturepainter.h	/^class TexturePainter : public FragmentOperation {$/;"	c
+operator () 	texturepainter.h	/^  void operator () (unsigned pixel_index);$/;"	p	class:TexturePainter	typeref:typename:void
+FragmentShader	fragmentshader.cpp	/^FragmentShader::FragmentShader() :$/;"	f	class:FragmentShader
+operator ()	fragmentshader.cpp	/^void FragmentShader::operator()() {$/;"	f	class:FragmentShader	typeref:typename:void
+__anona18cfca10102	fragmentshader.cpp	/^                                                        [&](unsigned pixel_index) {$/;"	f	function:FragmentShader::operator ()	file:
+generate_texture_projectors	fragmentshader.cpp	/^void FragmentShader::generate_texture_projectors() {$/;"	f	class:FragmentShader	typeref:typename:void
+__anona18cfca10202	fragmentshader.cpp	/^                                                        [&](unsigned x) {$/;"	f	function:FragmentShader::generate_texture_projectors	file:
+generate_light_projectors	fragmentshader.cpp	/^void FragmentShader::generate_light_projectors() {$/;"	f	class:FragmentShader	typeref:typename:void
+__anona18cfca10302	fragmentshader.cpp	/^                                                        [&](unsigned x) {$/;"	f	function:FragmentShader::generate_light_projectors	file:
+push_operation	fragmentshader.cpp	/^void FragmentShader::push_operation(FragmentOperation* op) {$/;"	f	class:FragmentShader	typeref:typename:void
+texture_projectors	fragmentshader.cpp	/^std::vector<TextureProjector> FragmentOperation::texture_projectors;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<TextureProjector>
+lightness_projectors	fragmentshader.cpp	/^std::vector<TextureProjector> FragmentOperation::lightness_projectors;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<TextureProjector>
+l_matrices	fragmentshader.cpp	/^std::vector<bool> FragmentOperation::l_matrices;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<bool>
+t_matrices	fragmentshader.cpp	/^std::vector<bool> FragmentOperation::t_matrices;$/;"	m	class:FragmentOperation	typeref:typename:std::vector<bool>
+texture	fragmentshader.cpp	/^Texture<unsigned char, 3> FragmentOperation::texture;$/;"	m	class:FragmentOperation	typeref:typename:Texture<unsigned char,3>
+normal_map	fragmentshader.cpp	/^Texture<unsigned char, 3> FragmentOperation::normal_map;$/;"	m	class:FragmentOperation	typeref:typename:Texture<unsigned char,3>
+FragmentOperation	fragmentshader.cpp	/^FragmentOperation::FragmentOperation() :$/;"	f	class:FragmentOperation

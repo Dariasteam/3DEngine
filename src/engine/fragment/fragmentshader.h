@@ -10,7 +10,6 @@
 #include "../math/point2.h"
 #include "../math/point2d.h"
 #include "../math/point3.h"
-#include "../math/point3d.h"
 #include "../planar/triangle.h"
 #include "../spatial/camera.h"
 #include "../world.h"

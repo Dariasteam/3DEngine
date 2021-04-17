@@ -62,8 +62,7 @@ public:
   }
 
   inline Point2 get_point_f_on_uv  (const unsigned x,
-                                    const unsigned y,
-                                    const RectF& bounds) const {
+                                    const unsigned y) const {
 
     Matrix m ({{double(x) - t_origin.X, double(y) - t_origin.Y}});
 

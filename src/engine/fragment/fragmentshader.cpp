@@ -62,12 +62,14 @@ void FragmentShader::generate_texture_projectors() {
 }
 
 void FragmentShader::generate_light_projectors() {
+
   FragmentOperation::lightness_projectors.resize(buffers.light_triangles.size());
   FragmentOperation::l_matrices.resize(buffers.light_triangles.size());
 
   std::fill(FragmentOperation::l_matrices.begin(),
             FragmentOperation::l_matrices.end(),
             false);
+
 
   MultithreadManager::get_instance().calculate_threaded(buffers.l_triangle_index_surface.width(),
                                                         [&](unsigned x) {
@@ -91,6 +93,7 @@ void FragmentShader::generate_light_projectors() {
             fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
             fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
             fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
+
 
             FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
                                                      buffers.triangles[t_index],

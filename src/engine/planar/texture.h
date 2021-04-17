@@ -36,8 +36,8 @@ public:
 
   void operator=(const Texture<T, D>& t);
 
-  inline int width() const { return w; }
-  inline int height() const { return h; }
+  inline unsigned width() const { return w; }
+  inline unsigned height() const { return h; }
   inline unsigned depth() const { return d; }
 
   inline T get (const unsigned x,

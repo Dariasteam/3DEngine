@@ -16,6 +16,7 @@ public:
                      const RectF& b);
 
   PerspectiveCamera (const PerspectiveCamera& cam);
+  ~PerspectiveCamera();
 };
 
 #endif // PERSPECTIVECAMERA_H

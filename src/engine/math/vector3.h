@@ -55,6 +55,13 @@ struct Vector3 : public Point3 {
            y() * u.y() +
            z() * u.z();
   }
+
+  inline void operator= (const Vector3& u) {
+    X = u.X;
+    Y = u.Y;
+    Z = u.Z;
+
+  }
 };
 
 #endif // VECTOR3_H

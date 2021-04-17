@@ -6,5 +6,5 @@ Makefile
 *.o
 _build/
 _build
-engine
 conf/
+.buildconfig

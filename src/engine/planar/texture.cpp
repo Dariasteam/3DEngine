@@ -65,7 +65,7 @@ void Texture<T, D>::write(const std::string& filename) const {
          << height() << " "
          << 255 << "\n";
 
-    for (unsigned i = 0; i <   height(); i++) {
+    for (unsigned i = 0; i < height(); i++) {
       for (unsigned j = 0; j < width(); j++) {
         for (unsigned d = 0; d < depth(); d++) {
           file << unsigned(content[i * width() * depth() +

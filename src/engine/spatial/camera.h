@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "../math/point3d.h"
 #include "../math/point2d.h"
 #include "../planar/rect.h"
 #include "spatial.h"

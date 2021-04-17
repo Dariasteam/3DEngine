@@ -5,6 +5,8 @@ PerspectiveCamera::PerspectiveCamera(const Vector3& v_plane,
   Camera (v_plane, b)
 {}
 
+PerspectiveCamera::~PerspectiveCamera() {}
+
 PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
   Camera (cam)
 {}

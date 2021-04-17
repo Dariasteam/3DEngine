@@ -50,7 +50,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         file >> i2;
         file >> i3;
 
-        // Fix posible negative indexes
+        // FIXME: posible negative indexes
         i1 = (i1 < 0 ? vertex_list.size() - i1 : i1 - 1);
         i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
         i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
@@ -59,6 +59,11 @@ Mesh *ObjParser::operator ()(std::string file_name) {
                               vertex_list[i1],
                               vertex_list[i2],
                               vertex_list[i3],
+
+                              {0, 0, 0},
+                              {0, 0, 0},
+                              {0, 0, 0},
+                              {0, 0, 0},
                             });
       } else {
         std::cerr << "[ERROR] Reading " << file_name << " expecting f at "

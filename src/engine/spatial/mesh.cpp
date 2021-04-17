@@ -59,7 +59,9 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
   return mesh_list;
 }
 
-std::vector<Vector3*> Mesh::get_adjacent_vertices(Point3& p, unsigned from, std::vector<bool>& vertex_normals) {
+std::vector<Vector3*> Mesh::get_adjacent_vertices(Point3& p,
+                                                  unsigned from,
+                                                  std::vector<bool>& vertex_normals) {
   std::vector<Vector3*> adjacents;
 
   for (unsigned i = from; i < local_coordenates_faces.size(); i++) {

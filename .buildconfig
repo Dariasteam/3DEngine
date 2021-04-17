@@ -2,7 +2,7 @@
 name=Default
 runtime=host
 toolchain=default
-config-opts=-j
+config-opts=
 run-opts=
 prefix=/home/darias/.cache/gnome-builder/install/3D/host
 app-id=
