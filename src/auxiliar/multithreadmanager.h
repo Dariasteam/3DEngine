@@ -21,7 +21,7 @@ private:
   std::mutex mtx;
   std::condition_variable cv;
   bool active {false};
-  bool alive {true};
+  bool alive  {true};
 
 public:
   CallableThread ();

@@ -22,11 +22,6 @@ struct Point2i {
     Y (static_cast<int>(std::round(p.y())))
 //    color (c)
   {}
-  Point2i (const Point2i& p) :
-    X (p.x()),
-    Y (p.y()),
-    color (p.color)
-  {}
 
   inline int x() const { return X;}
   inline int y() const { return Y;}

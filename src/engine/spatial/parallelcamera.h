@@ -13,6 +13,7 @@ public:
                  const RectF& b);
 
   ParallelCamera(const ParallelCamera& cam);
+  virtual ~ParallelCamera() {}
 };
 
 #endif // PARALLELCAMERA_H

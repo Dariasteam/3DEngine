@@ -1,7 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "../math/point2d.h"
 #include "../planar/rect.h"
 #include "spatial.h"
 #include "../buffers/commonbuffers.h"
@@ -43,6 +42,7 @@ public:
          const RectF& b);
 
   Camera (const Camera& cam);
+  virtual ~Camera() {}
 
   inline const Vector3& get_plane_vector() const { return local_vector_plane; }
   inline const Point3&  get_plane_point() const { return local_point_plane; }

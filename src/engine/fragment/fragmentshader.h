@@ -8,7 +8,6 @@
 #include "../planar/textureprojector.h"
 
 #include "../math/point2.h"
-#include "../math/point2d.h"
 #include "../math/point3.h"
 #include "../planar/triangle.h"
 #include "../spatial/camera.h"
@@ -63,6 +62,7 @@ public:
 public:
   virtual void operator()(unsigned pixel_index) = 0;
   FragmentOperation();
+  virtual ~FragmentOperation() {}
 };
 
 class FragmentShader {
@@ -71,6 +71,7 @@ private:
   CommonBuffers& buffers;
 public:
   FragmentShader();
+  ~FragmentShader() {}
   void operator() ();
   void generate_texture_projectors();
   void generate_light_projectors();

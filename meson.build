@@ -7,7 +7,6 @@ thread_dep = dependency('threads')
 executable('engine',
  	   'src/engine/buffers/commonbuffers.cpp',
            'src/engine/math/matrix.cpp',
- 	   'src/engine/math/point2d.cpp',
            'src/engine/planar/texture.cpp',
            'src/engine/spatial/mesh.cpp',
            'src/engine/fragment/texturepainter.cpp',

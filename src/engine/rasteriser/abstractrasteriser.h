@@ -5,7 +5,6 @@
 #include "../spatial/camera.h"
 
 #include "../math/point2.h"
-#include "../math/point2d.h"
 #include "../math/point3.h"
 #include "../planar/triangle.h"
 #include "../planar/texture.h"
@@ -17,10 +16,32 @@ class AbstractRasteriser {
 protected:
   CommonBuffers& buffers;
 
-   void update_buffers(unsigned x,
+   inline void update_buffers(unsigned x,
                        unsigned y,
                        double z_value,
-                       unsigned long t_index) const;
+                       unsigned long t_index) const {
+
+    double current_z = z_target_surface->get(x, y);
+
+    bool occlusion = false;
+
+    if (fabs(z_value - current_z) > .35 &&
+      current_z != INFINITY_DISTANCE) {
+      occlusion = true;
+    }
+
+    if (z_value < current_z) {
+      if (occlusion) {
+        unsigned long current_t = indices_target_surface->get(x, y);
+        buffers.is_triangle_ocluded[current_t] = true;
+      }
+
+      z_target_surface->set(x, y, z_value);
+      indices_target_surface->set(x, y, t_index);
+    } else if (occlusion) {
+      buffers.is_triangle_ocluded[t_index] = true;
+    }
+  }
 
   Texture<unsigned long, 1>* indices_target_surface;
   Texture<double, 1>* z_target_surface;
@@ -32,6 +53,7 @@ protected:
 public:  
 
   AbstractRasteriser() ;
+  virtual ~AbstractRasteriser() {}
   virtual void rasterise (const Camera& cam,
                           Texture<unsigned long, 1>& i_surface,
                           Texture<double, 1>& z_surface) = 0;

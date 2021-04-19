@@ -82,17 +82,6 @@ public:
     // Figure out the size of the screen in bytes
     screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
 
-    // Map the device to memory
-    /*
-    fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-
-    if ((long int)fbp == -1) {
-        perror("Error: failed to map framebuffer device to memory");
-        exit(4);
-    }
-    printf("The framebuffer device was mapped to memory successfully.\n");
-    */
-
     double segment = double(1000 / N_THREADS);
 
     for (unsigned k = 0; k < N_THREADS; k++) {
@@ -163,7 +152,7 @@ public:
     std::mutex mtx;
     {
       std::unique_lock<std::mutex> lck(mtx); // wake up thread
-      cv_2.wait(lck, [&]{
+      cv_2.wait(lck, [&] {
         for (unsigned i = 0; i < N_THREADS; i++) {
           if (painters[i]) return false;
         }
