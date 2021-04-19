@@ -6,6 +6,7 @@
 #include "triangle.h"
 #include "vertex.h"
 #include "rect.h"
+#include "../planar/color888.h"
 
 #include <algorithm>
 #include <iostream>

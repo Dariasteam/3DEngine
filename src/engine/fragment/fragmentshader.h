@@ -6,6 +6,8 @@
 #include "../projector.h"
 #include "../world.h"
 #include "../planar/textureprojector.h"
+#include "../planar/color.h"
+#include "../planar/color888.h"
 
 #include "../math/point2.h"
 #include "../math/point3.h"

@@ -1,8 +1,6 @@
 #ifndef POINT2_H
 #define POINT2_H
 
-#include "../planar/color.h"
-
 struct Point2 {
   double X;
   double Y;
@@ -47,7 +45,7 @@ struct Point2 {
 
   inline Point2 operator/ (const double d) const {
     return {x() / d, y() / d};
-  }  
+  }
 
   inline void operator+= (const Point2& p)  {
     set_x(x() + p.x());

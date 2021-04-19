@@ -90,7 +90,4 @@ static double deg2rad (double deg) {
   return deg * PI / 180.0;
 }
 
-typedef Point3 Color;
-
-
 #endif // POINT3_H
