@@ -2,7 +2,7 @@
 #define MATERIAL_H
 
 #include "texture.h"
-#include "vertex.h"
+#include "../math/point2i.h"
 
 #include <vector>
 

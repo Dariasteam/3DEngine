@@ -25,7 +25,7 @@ void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
   // Generate matrix to change between basis
   MatrixOps::generate_basis_change_matrix(texture_basis,
                                           screen_basis,
-                                          basis_changer);  
+                                          basis_changer);
 }
 
 Color888 TextureProjector::get_color_on_uv(const unsigned x,

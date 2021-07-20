@@ -1,15 +1,16 @@
 #include "../math/point3.h"
 #include "../math/vector3.h"
+#include "../math/vector3unitary.h"
 
 struct Face {
   Point3 a;
   Point3 b;
   Point3 c;
-  Vector3 normal;
+  Normal3 normal;
 
-  Vector3 normal_a;
-  Vector3 normal_b;
-  Vector3 normal_c;
+  Normal3 normal_a;
+  Normal3 normal_b;
+  Normal3 normal_c;
 
   inline const Point3& operator[] (unsigned i) const {
     switch (i) {
@@ -33,7 +34,7 @@ struct Face {
     }
   }
 
-  inline Vector3& get_normal (unsigned i) {
+  inline Normal3& get_normal (unsigned i) {
     switch (i) {
       case 0:
         return normal_a;
@@ -61,8 +62,10 @@ struct Face {
                a.z() * v.x() * u.y();
     */
 
-    normal = {X, Y, Z};
-    normal.normalize();
+    Vector3 tmp = {X, Y, Z};
+
+    tmp.normalize();
+    normal = Normal3(tmp);
 
     normal_a = normal;
     normal_b = normal;

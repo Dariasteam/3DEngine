@@ -47,7 +47,7 @@ struct Point2 {
 
   inline Point2 operator/ (const double d) const {
     return {x() / d, y() / d};
-  }  
+  }
 
   inline void operator+= (const Point2& p)  {
     set_x(x() + p.x());

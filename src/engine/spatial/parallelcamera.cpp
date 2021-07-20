@@ -23,11 +23,11 @@ inline bool ParallelCamera::calculate_face_projection(const Face& face,
   if (face.normal.Z > 0) return false;
 
   // 2. Check triangle between camera bounds
-  if (!triangle_inside_camera(tmp_triangle)) return false;  
+  if (!triangle_inside_camera(tmp_triangle)) return false;
 
   // 3. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º instead  
-  if ((face.normal * face.a) >= 0) return false;
+  // only if it's bigger than 90º instead
+  if ((face.normal.toVector3() * face.a) >= 0) return false;
 
   // 4. Calculate distance to camera
   double mod_v1 = face.a.Z;
@@ -36,7 +36,7 @@ inline bool ParallelCamera::calculate_face_projection(const Face& face,
 
   double z_min = std::min({mod_v1, mod_v2, mod_v3});
 
-  if (z_min > INFINITY_DISTANCE) return false;      
+  if (z_min > INFINITY_DISTANCE) return false;
 
   // Set uv
   tmp_triangle.uv = uv;

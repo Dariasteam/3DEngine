@@ -1,4 +1,6 @@
 #include "matrix.h"
+#include "src/auxiliar/multithreadmanager.h"
+#include <iostream>
 
 Matrix::~Matrix() {}
 
@@ -83,7 +85,6 @@ void Matrix::resize(unsigned rows, unsigned cols) {
 
 for (auto& row : matrix)
   row.resize(cols, 0);
-
 }
 
 Matrix Matrix::operator*(const Matrix &mtx) const {
@@ -155,7 +156,7 @@ void Gauss::operate_gauss(Matrix &matrix, unsigned row, unsigned col) {
   multiply_row(fullrow1, b);
   multiply_row(fullrow2, a);
 
-  add_rows(fullrow2, fullrow1);
+  add_rows(fullrow2, fullrow1);  
 
   replace_row(matrix, row, fullrow2);
 }

@@ -13,17 +13,17 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
 
 bool PerspectiveCamera::calculate_face_projection(const Face& face,
                                                   const UV& uv,
-                                                  unsigned index) const {  
+                                                  unsigned index) const {
   auto& tmp_triangle = buffers.triangles[index];
 
   // 1. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º insteads  
-  if ((face.normal * face.a) >= 0) return false;
+  // only if it's bigger than 90º insteads
+  if ((face.normal.toVector3() * face.a) >= 0) return false;
 
   // 2. Calculate distance to camera
   tmp_triangle.a.Z = Vector3::vector_module(face.a);
   tmp_triangle.b.Z = Vector3::vector_module(face.b);
-  tmp_triangle.c.Z = Vector3::vector_module(face.c);  
+  tmp_triangle.c.Z = Vector3::vector_module(face.c);
 
   double z_min = std::min({tmp_triangle.a.Z,
                            tmp_triangle.b.Z,
@@ -42,7 +42,7 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
   tmp_triangle.normal   = face.normal;
   tmp_triangle.normal_a = {face.normal_a.X, face.normal_a.Y};
   tmp_triangle.normal_b = {face.normal_b.X, face.normal_b.Y};
-  tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};  
+  tmp_triangle.normal_c = {face.normal_c.X, face.normal_c.Y};
 
   // Set uv
   tmp_triangle.uv = uv;
@@ -90,5 +90,5 @@ void PerspectiveCamera::calculate_cut_point(const Point3& vertex,
 
   // Intersection in camera coordinates
   result.set_x(a + b * beta);
-  result.set_y(-(c + d * beta));    
+  result.set_y(-(c + d * beta));
 }

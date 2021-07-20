@@ -1,6 +1,7 @@
 #include "../math/point3.h"
 #include "../math/vector3.h"
 
+//FIXME: This whole file should not exist
 struct Face {
   Point3 a;
   Point3 b;

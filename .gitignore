@@ -8,3 +8,7 @@ _build/
 _build
 conf/
 .buildconfig
+.cache
+.cache/
+settings.json
+launch.json

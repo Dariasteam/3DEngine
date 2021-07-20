@@ -7,17 +7,17 @@
 #include "../math/vector3.h"
 #include "../math/matrix3.h"
 #include "spatial.h"
-#include "face3.h"
+#include "face.h"
 
 #include <future>
 #include <functional>
 #include <list>
 
-struct Mesh : public Spatial {  
+struct Mesh : public Spatial {
   std::vector<Face> local_coordenates_faces;
   std::vector<Face> global_coordenates_faces;
 
-  std::vector<Mesh*> nested_meshes;  
+  std::vector<Mesh*> nested_meshes;
 
   std::vector<UV> uv_per_face;
   Texture<unsigned char, 3> texture;
@@ -32,8 +32,8 @@ struct Mesh : public Spatial {
 
   Mesh (const Mesh& m) :
     Spatial(m.basis, m.position),
-    local_coordenates_faces (m.local_coordenates_faces),    
-    global_coordenates_faces (m.global_coordenates_faces),    
+    local_coordenates_faces (m.local_coordenates_faces),
+    global_coordenates_faces (m.global_coordenates_faces),
     uv_per_face(m.uv_per_face)
   {}
 
@@ -48,9 +48,9 @@ struct Mesh : public Spatial {
   void generate_normals () {
     for (auto& face : local_coordenates_faces)
       face.generate_normal();
-  }  
+  }
 
-  inline std::vector<Vector3*> get_adjacent_vertices (Point3& p,
+  inline std::vector<Normal3*> get_adjacent_vertices (Point3& p,
                                                       unsigned from,
                                                       std::vector<bool>& vertex_normals);
 

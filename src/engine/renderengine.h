@@ -1,10 +1,6 @@
 #ifndef RENDERENGINE_H
 #define RENDERENGINE_H
 
-#include <chrono>
-#include <ctime>
-#include <string>
-
 #include "math/point3.h"
 #include "math/point3.h"
 #include "projector.h"
@@ -21,6 +17,10 @@
 #include "fragment/texturepainter.h"
 #include "fragment/shadowlesslightning.h"
 #include "fragment/lightness.h"
+
+#include <chrono>
+#include <ctime>
+#include <string>
 
 #include "../frontends/framebufferhandler.h"
 

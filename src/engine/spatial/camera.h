@@ -8,8 +8,8 @@
 
 class Camera : public Spatial {
 protected:
-  Vector3 local_vector_plane;
-  Vector3 global_vector_plane;
+  Normal3 local_vector_plane;
+  Normal3 global_vector_plane;
 
   // FIXME: only use height and width?
   RectF bounds;
@@ -44,7 +44,7 @@ public:
   Camera (const Camera& cam);
   virtual ~Camera() {}
 
-  inline const Vector3& get_plane_vector() const { return local_vector_plane; }
+  inline const Normal3& get_plane_vector() const { return local_vector_plane; }
   inline const Point3&  get_plane_point() const { return local_point_plane; }
   inline const RectF& get_bounds() const { return bounds; }
 
@@ -55,7 +55,7 @@ public:
   void project (const std::vector<Mesh*> meshes_vector) const;
 
 
-  inline const Vector3& get_global_plane_vector() const { return global_vector_plane; }
+  inline const Normal3& get_global_plane_vector() const { return global_vector_plane; }
 
 
   // FIXME: This is not a significative name
