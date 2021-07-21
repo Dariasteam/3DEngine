@@ -81,8 +81,8 @@ struct Point2i {
 
   // FIXME: Do we really need to round?
   inline void operator*= (const double d) {
-    set_x(std::round(double(x()) * d));
-    set_y(std::round(double(y()) * d));
+    set_x(x() * d);
+    set_y(y() * d);
   }
 
   inline void operator/= (const double d) {

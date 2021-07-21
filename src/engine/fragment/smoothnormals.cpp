@@ -38,7 +38,7 @@ Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,
 
 void SmoothNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
-  Point2i p1 = pixel_index_to_screen_coordinates(pixel_index);
+  P2i p1 = pixel_index_to_screen_coordinates(pixel_index);
   Point2 p {double(p1.X), double(p1.Y)};
 
   // Cut point between vertex-point line and vertex-vertex line (triangle edge)
@@ -62,30 +62,16 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   double C_d = 1.0 - Point2::vector_module(C) / max_distance_C;
 
   // Normal vectors of the vertices
-  /*
-  Normal2 n_a = {triangle.normal_a.X, triangle.normal_a.Y};
-  Normal2 n_b = {triangle.normal_b.X, triangle.normal_b.Y};
-  Normal2 n_c = {triangle.normal_c.X, triangle.normal_c.Y};
+  const Normal2& n_a = triangle.normal_a;
+  const Normal2& n_b = triangle.normal_b;
+  const Normal2& n_c = triangle.normal_c;
 
-  Normal2 n = {triangle.normal.x(), triangle.normal.y()};
-*/
-  Normal2 n_a = triangle.normal_a;
-  Normal2 n_b = triangle.normal_b;
-  Normal2 n_c = triangle.normal_c;
-
-  Normal3 n = triangle.normal;
+  const Normal3& n = triangle.normal;
 
   Vector2i final_vec = (n_a * A_d) + (n_b * B_d) + (n_c * C_d);
-/*
-  double x = final_vec.X;
-  double y = final_vec.Y;
 
-  unsigned char r = 128 + std::round(127.0 * x);
-  unsigned char g = 128 + std::round(127.0 * y);
-*/
-
-  unsigned char r = 128 + final_vec.X;
-  unsigned char g = 128 + final_vec.Y;
+  unsigned char r = 127 + final_vec.X;
+  unsigned char g = 127 + final_vec.Y;
 
   buffers.normal_buffer.set(pixel_index * 3 + 0, r);
   buffers.normal_buffer.set(pixel_index * 3 + 1, g);
