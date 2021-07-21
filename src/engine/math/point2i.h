@@ -6,22 +6,23 @@
 
 // FIXME Use templates for generating both point2 and point2i
 
+template <typename T>
 struct Point2i {
-  signed char X;
-  signed char Y;
+  T X;
+  T Y;
 
   Color color = {0,0,0};
 
   Point2i () : Point2i (0, 0) {}
 
   Point2i (double x, double y) :
-    X (static_cast<signed char>(x)),
-    Y (static_cast<signed char>(y))
+    X (static_cast<T>(x)),
+    Y (static_cast<T>(y))
   {}
 
   Point2i (const Point2& p) :
-    X (static_cast<signed char>(std::round(p.x()))),
-    Y (static_cast<signed char>(std::round(p.y())))
+    X (static_cast<T>(std::round(p.x()))),
+    Y (static_cast<T>(std::round(p.y())))
   {}
 
   Point2i (int x, int y) :
@@ -34,12 +35,12 @@ struct Point2i {
     Y(y)
   {}
 
-  inline signed char x() const { return X;}
-  inline signed char y() const { return Y;}
+  inline T x() const { return X;}
+  inline T y() const { return Y;}
 
-  inline void set_x (signed char v) { X = v; }
-  inline void set_y (signed char v) { Y = v; }
-  inline void set_values (signed char vx, signed char vy) {
+  inline void set_x (T v) { X = v; }
+  inline void set_y (T v) { Y = v; }
+  inline void set_values (T vx, T vy) {
     X = vx;
     Y = vy;
   }
@@ -94,6 +95,7 @@ struct Point2i {
   }
 };
 
-typedef Point2i Vector2i;
+typedef Point2i<signed char> Vector2i;
+typedef Point2i<int> P2i;
 
 #endif // POINT2I_H

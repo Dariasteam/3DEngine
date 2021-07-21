@@ -15,7 +15,7 @@ class TextureProjector {
 private:
   Matrix2 basis_changer;
 
-  Point2i t_origin;
+  P2i t_origin;
   Point2 uv_origin;
 public:
   TextureProjector();
@@ -42,9 +42,9 @@ public:
   }
 
   template <typename T, unsigned D>
-  inline Point2i get_point_on_uv  (const unsigned x,
-                                   const unsigned y,
-                                   const Texture<T, D>& texture) const {
+  inline P2i get_point_on_uv  (const unsigned x,
+                               const unsigned y,
+                               const Texture<T, D>& texture) const {
 
     Matrix V ({{double(x) - t_origin.X, double(y) - t_origin.Y}});
 

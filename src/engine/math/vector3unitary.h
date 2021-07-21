@@ -61,9 +61,9 @@ struct Vector3Unitary : public Point3i {
 
   inline Vector3 toVector3 () const {
     return Vector3 {
-      double(X) / INT_MAX,
-      double(Y) / INT_MAX,
-      double(Z) / INT_MAX
+      double(X) / SCHAR_MAX,
+      double(Y) / SCHAR_MAX,
+      double(Z) / SCHAR_MAX
     };
   }
 };

@@ -1,7 +1,7 @@
 #include "texturepainter.h"
 
 void TexturePainter::operator ()(unsigned pixel_index) {
-  Point2i p = pixel_index_to_screen_coordinates(pixel_index);
+  P2i p = pixel_index_to_screen_coordinates(pixel_index);
 
   unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
 

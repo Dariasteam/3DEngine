@@ -37,11 +37,7 @@ struct Point3i {
     Z(z)
   {}
 
-  Point3i (const Point3& p) :
-    X (p.x() * SCHAR_MAX),
-    Y (p.y() * SCHAR_MAX),
-    Z (p.z() * SCHAR_MAX)
-  {}
+  Point3i (const Point3& p) : Point3i (p.X, p.Y, p.Z) {}
 
   inline void operator= (const Point3i& p) {
     set_x(p.x());

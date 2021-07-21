@@ -83,6 +83,7 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   unsigned char r = 128 + std::round(127.0 * x);
   unsigned char g = 128 + std::round(127.0 * y);
 */
+
   unsigned char r = 128 + final_vec.X;
   unsigned char g = 128 + final_vec.Y;
 

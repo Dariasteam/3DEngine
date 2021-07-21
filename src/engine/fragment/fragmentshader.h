@@ -24,13 +24,13 @@ protected:
 
   CommonBuffers& buffers;
 
-  inline Point2i pixel_index_to_screen_coordinates(unsigned pixel_index) {
+  inline P2i pixel_index_to_screen_coordinates(unsigned pixel_index) {
     unsigned width = CommonBuffers::get().get_width();
 
     unsigned y = pixel_index / width;
     unsigned x = pixel_index  - (y * width);
 
-    return Point2i(x, y);
+    return P2i(x, y);
   }
 
   inline unsigned get_triangle_index_at_pixel_index (unsigned pixel_index) {
