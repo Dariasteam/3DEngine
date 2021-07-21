@@ -44,6 +44,7 @@ public:
   Texture<double, 1> z_buffer;
   Texture<double, 1> z_light;
 
+  // FIXME: Use a 2 depth buffer for normals?
   Texture<unsigned char, 3> normal_buffer;
   Texture<unsigned char, 3> screen_buffer;
 

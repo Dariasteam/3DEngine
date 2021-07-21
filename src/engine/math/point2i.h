@@ -13,6 +13,7 @@ struct Point2i {
   Color color = {0,0,0};
 
   Point2i () : Point2i (0, 0) {}
+
   Point2i (double x, double y) :
     X (static_cast<signed char>(x)),
     Y (static_cast<signed char>(y))
@@ -77,9 +78,10 @@ struct Point2i {
     set_y(y() - p.y());
   }
 
+  // FIXME: Do we really need to round?
   inline void operator*= (const double d) {
-    set_x(x() * d);
-    set_y(y() * d);
+    set_x(std::round(double(x()) * d));
+    set_y(std::round(double(y()) * d));
   }
 
   inline void operator/= (const double d) {
