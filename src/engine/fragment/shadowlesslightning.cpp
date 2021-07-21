@@ -1,6 +1,6 @@
 #include "shadowlesslightning.h"
 
-void ShadowlessLightning::operator ()(unsigned pixel_index) {  
+void ShadowlessLightning::operator ()(unsigned pixel_index) {
 
   Color base_color {
     double(buffers.screen_buffer.get(pixel_index * 3 +  0)),
@@ -23,8 +23,8 @@ void ShadowlessLightning::operator ()(unsigned pixel_index) {
   };
 
   Vector2 lightVec = {
-    light.get_global_plane_vector().X,
-    light.get_global_plane_vector().Y
+    light.get_global_plane_vector().toVector3().X,
+    light.get_global_plane_vector().toVector3().Y
   };
 
   double incidence = lightVec * normalVec;

@@ -32,7 +32,7 @@ Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,
  * 3. Assign a weight as normalice(vec1) / normalice(vec2) to each vertex
  *
  *
- * 4. Calculate the influece of each vertex normal with the weights and assign
+ * 4. Calculate the influence of each vertex normal with the weights and assign
  * to the current point
  */
 
@@ -62,9 +62,9 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   double C_d = 1.0 - Point2::vector_module(C) / max_distance_C;
 
   // Normal vectors of the vertices
-  Vector2 n_a = {triangle.normal_a.X, triangle.normal_a.Y};
-  Vector2 n_b = {triangle.normal_b.X, triangle.normal_b.Y};
-  Vector2 n_c = {triangle.normal_c.X, triangle.normal_c.Y};
+  Vector2 n_a = {triangle.normal_a.toVector2().X, triangle.normal_a.toVector2().Y};
+  Vector2 n_b = {triangle.normal_b.toVector2().X, triangle.normal_b.toVector2().Y};
+  Vector2 n_c = {triangle.normal_c.toVector2().X, triangle.normal_c.toVector2().Y};
 
   Vector2 n = {triangle.normal.x(), triangle.normal.y()};
 

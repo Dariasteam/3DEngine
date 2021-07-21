@@ -7,20 +7,20 @@
 // FIXME Use templates for generating both point2 and point2i
 
 struct Point2i {
-  int X;
-  int Y;
+  signed char X;
+  signed char Y;
 
   Color color = {0,0,0};
 
   Point2i () : Point2i (0, 0) {}
   Point2i (double x, double y) :
-    X (static_cast<int>(x)),
-    Y (static_cast<int>(y))
+    X (static_cast<signed char>(x)),
+    Y (static_cast<signed char>(y))
   {}
 
   Point2i (const Point2& p) :
-    X (static_cast<int>(std::round(p.x()))),
-    Y (static_cast<int>(std::round(p.y())))
+    X (static_cast<signed char>(std::round(p.x()))),
+    Y (static_cast<signed char>(std::round(p.y())))
   {}
 
   Point2i (int x, int y) :
@@ -33,12 +33,12 @@ struct Point2i {
     Y(y)
   {}
 
-  inline int x() const { return X;}
-  inline int y() const { return Y;}
+  inline signed char x() const { return X;}
+  inline signed char y() const { return Y;}
 
-  inline void set_x (double v) { X = v; }
-  inline void set_y (double v) { Y = v; }
-  inline void set_values (double vx, double vy) {
+  inline void set_x (signed char v) { X = v; }
+  inline void set_y (signed char v) { Y = v; }
+  inline void set_values (signed char vx, signed char vy) {
     X = vx;
     Y = vy;
   }

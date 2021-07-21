@@ -1,6 +1,6 @@
 #include "lightness.h"
 
-void Lightness::operator ()(unsigned pixel_index) {    
+void Lightness::operator ()(unsigned pixel_index) {
   unsigned t_index = get_triangle_index_at_pixel_index(pixel_index);
 
   Color base_color {
@@ -29,8 +29,8 @@ void Lightness::operator ()(unsigned pixel_index) {
 
 
   Vector2 lightVec = {
-    light.get_global_plane_vector().X,
-    light.get_global_plane_vector().Y
+    light.get_global_plane_vector().toVector3().X,
+    light.get_global_plane_vector().toVector3().Y
   };
 
   incidence = lightVec * normalVec;
@@ -67,7 +67,7 @@ void Lightness::operator ()(unsigned pixel_index) {
       }
     } else {
       double intensity = light.get_intensity();
-      Color light_color = light.get_color();      
+      Color light_color = light.get_color();
 
       light_contribution.X = (incidence * light_color.X * intensity);
       light_contribution.Y = (incidence * light_color.Y * intensity);
