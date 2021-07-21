@@ -126,8 +126,8 @@ void Mesh::generate_data() {
         p_normal += aux_p->toVector3();
       }
 
-      //p_normal /= (adjacents.size() + 1);
-      p_normal.normalize();
+      p_normal /= (adjacents.size() + 1);
+      //p_normal.normalize();
 
       for (Normal3* aux_p : adjacents)
         (*aux_p) = Normal3(p_normal);

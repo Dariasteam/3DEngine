@@ -6,12 +6,12 @@ RenderEngine::RenderEngine() :
   {
   CommonBuffers::get().set_dimension(1000, 1000);
 
-  fragmentShader.push_operation(new FlatNormals());
+  //fragmentShader.push_operation(new FlatNormals());
   fragmentShader.push_operation(new SmoothNormals());
 //  fragmentShader.push_operation(new NormalMapping());
   fragmentShader.push_operation(new TexturePainter());
   //fragmentShader.push_operation(new ShadowlessLightning());
-  //fragmentShader.push_operation(new Lightness());
+  fragmentShader.push_operation(new Lightness());
 }
 
 void RenderEngine::render_loop () {
