@@ -24,7 +24,7 @@ protected:
 
   CommonBuffers& buffers;
 
-  inline Point2i pixel_index_to_screen_coordenates(unsigned pixel_index) {
+  inline Point2i pixel_index_to_screen_coordinates(unsigned pixel_index) {
     unsigned width = CommonBuffers::get().get_width();
 
     unsigned y = pixel_index / width;
@@ -55,8 +55,8 @@ protected:
 
 public:
   static std::vector<TextureProjector> texture_projectors;
-  static std::vector<TextureProjector> lightness_projectors;  
-  static std::vector<bool> l_matrices;  
+  static std::vector<TextureProjector> lightness_projectors;
+  static std::vector<bool> l_matrices;
   static std::vector<bool> t_matrices;
 
   static Texture<unsigned char, 3> texture;

@@ -17,7 +17,7 @@ void Lightness::operator ()(unsigned pixel_index) {
                                 minimum_light_contribution};
 
   // Calculate incidence
-  Point2i p = pixel_index_to_screen_coordenates(pixel_index);
+  Point2i p = pixel_index_to_screen_coordinates(pixel_index);
   const DirectionalLight& light = World::get().get_light();
 
 

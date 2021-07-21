@@ -9,7 +9,7 @@ RenderEngine::RenderEngine() :
   fragmentShader.push_operation(new FlatNormals());
   //fragmentShader.push_operation(new SmoothNormals());
 //  fragmentShader.push_operation(new NormalMapping());
-  //fragmentShader.push_operation(new TexturePainter());
+  fragmentShader.push_operation(new TexturePainter());
   //fragmentShader.push_operation(new ShadowlessLightning());
   //fragmentShader.push_operation(new Lightness());
 }
