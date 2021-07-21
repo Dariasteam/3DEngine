@@ -3,7 +3,6 @@
 
 #include "matrix.h"
 #include "point3.h"
-#include "point3i.h"
 
 struct Matrix3 : public Matrix {
   Matrix3 (const Matrix &mtx) : Matrix (mtx) {}
@@ -32,22 +31,10 @@ struct Matrix3 : public Matrix {
 typedef Matrix3 Basis3;
 
 struct Point3Ops {
+  template<typename T>
   static void change_basis (const Basis3& basis,
-                            const Point3& element,
-                            Point3& result) {
-
-    double a = (basis[0][0] * element.x() + basis[0][1] * element.y() + basis[0][2] * element.z());
-    double b = (basis[1][0] * element.x() + basis[1][1] * element.y() + basis[1][2] * element.z());
-    double c = (basis[2][0] * element.x() + basis[2][1] * element.y() + basis[2][2] * element.z());
-
-    result.set_x(a);
-    result.set_y(b);
-    result.set_z(c);
-  }
-
-  static void change_basis (const Basis3& basis,
-                            const Point3i& element,
-                            Point3i& result) {
+                            const T& element,
+                            T& result) {
 
     double a = (basis[0][0] * element.x() + basis[0][1] * element.y() + basis[0][2] * element.z());
     double b = (basis[1][0] * element.x() + basis[1][1] * element.y() + basis[1][2] * element.z());

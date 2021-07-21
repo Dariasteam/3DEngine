@@ -3,7 +3,7 @@
 
 #include "point3.h"
 
-struct Vector3 : public Point3 {  
+struct Vector3 : public Point3 {
   Vector3 () : Point3 (0, 0, 0) {}
   Vector3 (double x, double y, double z) : Point3 (x, y, z) {}
   Vector3 (const Vector3& vec) : Point3 (vec) {}
@@ -44,23 +44,10 @@ struct Vector3 : public Point3 {
     set_z(z() / module);
   }
 
-  Vector3 operator/ (double d) const {
-    return {x() / d,
-            y() / d,
-            z() / d};
-  }
-
   inline double operator* (const Vector3& u) const {
     return x() * u.x() +
            y() * u.y() +
            z() * u.z();
-  }
-
-  inline void operator= (const Vector3& u) {
-    X = u.X;
-    Y = u.Y;
-    Z = u.Z;
-
   }
 };
 

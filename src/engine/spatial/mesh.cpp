@@ -23,7 +23,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
   MatrixOps::generate_basis_change_matrix(basis, new_basis, camera_basis_changer);
 
   Vector3 aux_pos;
-  Point3Ops::change_basis(new_basis, (position - pos), aux_pos);
+  Point3Ops::change_basis(new_basis, (Vector3)(position - pos), aux_pos);
 
   global_coordenates_faces = local_coordenates_faces;
   const auto& lambda = [&](Mesh* mesh, unsigned from, unsigned to) {

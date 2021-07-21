@@ -49,7 +49,7 @@ public:
   inline const RectF& get_bounds() const { return bounds; }
 
   inline void set_bounds(const RectF& b) { bounds = b; }
-  inline void set_plane_vector(const Vector3& p) { local_vector_plane = p; }
+  inline void set_plane_vector(const Normal3& p) { local_vector_plane = p; }
   inline void set_plane_point (const Point3& p)  { local_point_plane  = p; }
 
   void project (const std::vector<Mesh*> meshes_vector) const;
