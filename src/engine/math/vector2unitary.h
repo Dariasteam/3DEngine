@@ -1,17 +1,18 @@
 #ifndef VECTOR2UNITARY_H
 #define VECTOR2UNITARY_
 
-#include "point2i.h"
+#include <climits>
+#include "point2.h"
 
-struct Vector2Unitary : public Vector2i {
-  Vector2Unitary() : Vector2i (0, 0) {}
-  Vector2Unitary (double x, double y) : Vector2i(
+struct Vector2Unitary : public P2<signed char> {
+  Vector2Unitary() : P2 (0, 0) {}
+  Vector2Unitary (double x, double y) : P2(
     x * SCHAR_MAX,
     y * SCHAR_MAX
   )
   {}
 
-  Vector2Unitary (int x, int y) : Vector2i (x, y) {}
+  Vector2Unitary (int x, int y) : P2 (x, y) {}
 
   Vector2 toVector2 () const {
     return Vector2 {

@@ -2,7 +2,6 @@
 #define TEXTUREPROJECTOR_H
 
 #include "../math/matrix2.h"
-#include "../math/point2i.h"
 #include "texture.h"
 #include "triangle.h"
 #include "rect.h"

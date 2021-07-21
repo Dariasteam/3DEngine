@@ -3,58 +3,61 @@
 
 #include "../planar/color.h"
 
-struct Point2 {
-  double X;
-  double Y;
+template<typename T>
+struct P2 {
+  T X;
+  T Y;
 
   Color color = {0,0,0};
 
-  Point2 () : Point2 (0, 0) {}
-  Point2 (double x, double y) :
+  P2 () : P2 (0, 0) {}
+  P2 (T x, T y) :
     X(x),
     Y(y)
   {}
 
-  inline double x() const { return X;}
-  inline double y() const { return Y;}
+  inline T x() const { return X;}
+  inline T y() const { return Y;}
 
-  inline void set_x (double v) { X = v; }
-  inline void set_y (double v) { Y = v; }
-  inline void set_values (double vx, double vy) {
+  inline void set_x (T v) { X = v; }
+  inline void set_y (T v) { Y = v; }
+  inline void set_values (T vx, T vy) {
     X = vx;
     Y = vy;
   }
 
-  inline Point2 operator- (const Point2& p) const {
+  inline P2<T> operator- (const P2<T>& p) const {
     return {x() - p.x(), y() - p.y()};
   }
 
-  inline Point2 operator+ (const Point2& p) const {
+  template<typename M>
+  inline P2<T> operator+ (const P2<M>& p) const {
     return {x() + p.x(), y() + p.y()};
   }
 
-  inline double operator* (const Point2& p) const {
+  template<typename M>
+  inline double operator* (const P2<M>& p) const {
     return x() * p.x() + y() * p.y();
   }
 
-  inline double operator/ (const Point2& p) const {
+  inline double operator/ (const P2<T>& p) const {
     return x() / p.x() + y() / p.y();
   }
 
-  inline Point2 operator* (const double d) const {
+  inline P2<T> operator* (const double d) const {
     return {x() * d, y() * d};
   }
 
-  inline Point2 operator/ (const double d) const {
+  inline P2 operator/ (const double d) const {
     return {x() / d, y() / d};
   }
 
-  inline void operator+= (const Point2& p)  {
+  inline void operator+= (const P2<T>& p)  {
     set_x(x() + p.x());
     set_y(y() + p.y());
   }
 
-  inline void operator-= (const Point2& p)  {
+  inline void operator-= (const P2<T>& p)  {
     set_x(x() - p.x());
     set_y(y() - p.y());
   }
@@ -69,11 +72,14 @@ struct Point2 {
     set_y(y() / d);
   }
 
-  static double  vector_module (const Point2& v) {
+  static double  vector_module (const P2<T>& v) {
     return std::sqrt(v.x() * v.x() + v.y() * v.y());
   }
 };
 
-typedef Point2 Vector2;
+using Vector2  = P2<double>;
+using Point2   = P2<double>;
+using P2i  = P2<int>;
+using Vector2i = P2<int>;
 
 #endif // POINT2_H

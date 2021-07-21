@@ -4,7 +4,12 @@ TextureProjector::TextureProjector() {}
 
 void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
                                              const UV& uv) {
-  t_origin  = Vector2(projected_triangle.a.X, projected_triangle.a.Y);
+  auto tmp = Vector2(projected_triangle.a.X, projected_triangle.a.Y);
+  t_origin  = P2i{
+    static_cast<int>(std::round(tmp.X)),
+    static_cast<int>(std::round(tmp.Y))
+  };
+
   uv_origin = uv.p;
 
   // UV of the triangle as Texture basis (destination)

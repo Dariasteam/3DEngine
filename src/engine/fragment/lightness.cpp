@@ -17,7 +17,7 @@ void Lightness::operator ()(unsigned pixel_index) {
                                 minimum_light_contribution};
 
   // Calculate incidence
-  Point2i p = pixel_index_to_screen_coordinates(pixel_index);
+  P2i p = pixel_index_to_screen_coordinates(pixel_index);
   const DirectionalLight& light = World::get().get_light();
 
 
@@ -38,11 +38,11 @@ void Lightness::operator ()(unsigned pixel_index) {
   // Check the triangle exist in the lightmapper
   if (l_matrices[t_index] && incidence > 0) {
 
-    if (buffers.is_triangle_ocluded[t_index]) {
+    if (buffers.is_triangle_occluded[t_index]) {
       // Get the point in the light
       // Check the triangle index in the lightmapper equals the one at this pixel
 
-      Point2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
+      P2i p_l = lightness_projectors[t_index].get_point_on_uv(p.X, p.Y,
                                                                  buffers.l_triangle_index_surface);
 
       std::vector<unsigned> sourrounding_t;

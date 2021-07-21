@@ -3,7 +3,6 @@
 
 #include "../math/point2.h"
 #include "../math/point3.h"
-#include "../math/point2i.h"
 #include "../planar/texture.h"
 #include "../math/vector3.h"
 #include "../math/vector2unitary.h"

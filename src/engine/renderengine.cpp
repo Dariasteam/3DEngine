@@ -8,7 +8,7 @@ RenderEngine::RenderEngine() :
 
   //fragmentShader.push_operation(new FlatNormals());
   fragmentShader.push_operation(new SmoothNormals());
-//  fragmentShader.push_operation(new NormalMapping());
+  //fragmentShader.push_operation(new NormalMapping());
   fragmentShader.push_operation(new TexturePainter());
   //fragmentShader.push_operation(new ShadowlessLightning());
   fragmentShader.push_operation(new Lightness());
@@ -16,14 +16,14 @@ RenderEngine::RenderEngine() :
 
 void RenderEngine::render_loop () {
   auto& buffers = CommonBuffers::get();
-  canvas.target = &buffers.normal_buffer;
+  canvas.target = &buffers.screen_buffer;
 
   while (1) {
     world.calculate_next_frame();
 
     // Occlude all triangle
-    std::fill(buffers.is_triangle_ocluded.begin(),
-              buffers.is_triangle_ocluded.end(),
+    std::fill(buffers.is_triangle_occluded.begin(),
+              buffers.is_triangle_occluded.end(),
               true);
 
     projector.project_camera(world.get_light());
@@ -31,7 +31,7 @@ void RenderEngine::render_loop () {
     // Set as unoccluded the triangles visible by the directional light
     for (unsigned i = 0; i < buffers.n_l_renderable_triangles; i++) {
       unsigned long triangle_index = buffers.l_triangle_indices[i];
-      buffers.is_triangle_ocluded[triangle_index] = false;
+      buffers.is_triangle_occluded[triangle_index] = false;
     }
 
     rasteriser.rasterise(world.get_light(),

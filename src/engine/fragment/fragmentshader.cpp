@@ -14,7 +14,7 @@ void FragmentShader::operator()() {
   generate_texture_projectors();
   generate_light_projectors();
 
-  // Begin shading process  
+  // Begin shading process
   MultithreadManager::get_instance().calculate_threaded(n_pixels,
                                                         [&](unsigned pixel_index) {
 
@@ -24,7 +24,7 @@ void FragmentShader::operator()() {
       buffers.screen_buffer.set(pixel_index * 3 + 1, 255);
       buffers.screen_buffer.set(pixel_index * 3 + 2, 255);
       return;
-    }    
+    }
 
     for (auto& operation : operations) {
       operation->operator()(pixel_index);
@@ -83,7 +83,7 @@ void FragmentShader::generate_light_projectors() {
         if (!FragmentOperation::l_matrices[t_index]) {
           FragmentOperation::l_matrices[t_index] = true;
 
-          if (buffers.is_triangle_ocluded[t_index]) {
+          if (buffers.is_triangle_occluded[t_index]) {
 
             unsigned lightmap_size = buffers.l_triangle_index_surface.height();
             const Triangle& t = buffers.light_triangles[t_index];
