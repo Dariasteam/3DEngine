@@ -61,7 +61,6 @@ public:
   // We can share this between directional light and camera
   // since the ocluded objects in directional_light space will be
   // black and the ones in camera space won't be rendered anyway
-  //std::vector<bool> is_triangle_occluded;
   std::bitset<500000> is_triangle_occluded;
 
   void reset_z_buffer();

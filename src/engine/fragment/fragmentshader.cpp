@@ -35,11 +35,7 @@ void FragmentShader::operator()() {
 
 void FragmentShader::generate_texture_projectors() {
   FragmentOperation::texture_projectors.resize(buffers.triangles.size());
-  FragmentOperation::t_matrices.resize(buffers.triangles.size());
-
-  std::fill(FragmentOperation::t_matrices.begin(),
-            FragmentOperation::t_matrices.end(),
-            false);
+  FragmentOperation::t_matrices.reset();
 
   MultithreadManager::get_instance().calculate_threaded(buffers.triangle_index_surface.width(),
                                                         [&](unsigned x) {
@@ -64,12 +60,8 @@ void FragmentShader::generate_texture_projectors() {
 void FragmentShader::generate_light_projectors() {
 
   FragmentOperation::lightness_projectors.resize(buffers.light_triangles.size());
-  FragmentOperation::l_matrices.resize(buffers.light_triangles.size());
-
-  std::fill(FragmentOperation::l_matrices.begin(),
-            FragmentOperation::l_matrices.end(),
-            false);
-
+  //FragmentOperation::l_matrices.resize(buffers.light_triangles.size());
+  FragmentOperation::l_matrices.reset();
 
   MultithreadManager::get_instance().calculate_threaded(buffers.l_triangle_index_surface.width(),
                                                         [&](unsigned x) {
@@ -112,8 +104,8 @@ void FragmentShader::push_operation(FragmentOperation* op) {
 std::vector<TextureProjector> FragmentOperation::texture_projectors;
 
 std::vector<TextureProjector> FragmentOperation::lightness_projectors;
-std::vector<bool> FragmentOperation::l_matrices;
-std::vector<bool> FragmentOperation::t_matrices;
+std::bitset<500000> FragmentOperation::l_matrices;
+std::bitset<500000> FragmentOperation::t_matrices;
 
 RGBTexture FragmentOperation::texture;
 RGBTexture FragmentOperation::normal_map;
