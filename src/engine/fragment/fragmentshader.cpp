@@ -76,41 +76,6 @@ void FragmentShader::generate_light_projectors() {
       }
     }
   });
-
-/*
-  MultithreadManager::get_instance().calculate_threaded(buffers.l_triangle_index_surface.width(),
-                                                        [&](unsigned x) {
-
-    for (int y = 0; y < buffers.l_triangle_index_surface.height(); y++) {
-
-      if (buffers.z_light.get(x, y) != INFINITY_DISTANCE) {
-
-        unsigned t_index = buffers.l_triangle_index_surface.get(x, y);
-
-        if (!FragmentOperation::l_matrices[t_index]) {
-          FragmentOperation::l_matrices[t_index] = true;
-
-          if (buffers.is_triangle_occluded.test(t_index)) {
-
-            unsigned lightmap_size = buffers.l_triangle_index_surface.height();
-            const Triangle& t = buffers.light_triangles[t_index];
-            UV fakeuv;
-
-            // Normalize UV to the lightmap size
-            fakeuv.p = Point2{t.a.x(), t.a.y()} / lightmap_size;
-            fakeuv.u = Point2{t.b.x(), t.b.y()} / lightmap_size;
-            fakeuv.v = Point2{t.c.x(), t.c.y()} / lightmap_size;
-
-
-            FragmentOperation::lightness_projectors[t_index].generate_uv_projector(
-                                                     buffers.triangles[t_index],
-                                                     fakeuv);
-          }
-        }
-      }
-    }
-  });
-  */
 }
 
 void FragmentShader::push_operation(FragmentOperation* op) {

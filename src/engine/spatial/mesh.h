@@ -53,16 +53,6 @@ struct Mesh : public Spatial {
                                           const Basis3& new_basis,
                                           const Point3& position);
 
-  void inline change_basis (const std::list<Mesh*> mesh_list,
-                            const Basis3& new_basis,
-                            const Point3& camera_translation,
-                            bool update_rotation,
-                            bool update_translation);
-
-  void inline apply_translation_part (const Vector3& translation,
-                                      unsigned from, unsigned to);
-
-
   void apply_rotations ();
 };
 
