@@ -4,7 +4,7 @@ project('3D', 'cpp',
 
 thread_dep = dependency('threads')
 
-add_project_arguments('-ggdb', language : 'cpp')
+add_project_arguments('-O3', language : 'cpp')
 
 executable('engine',
 		'src/engine/buffers/commonbuffers.cpp',
@@ -35,5 +35,5 @@ executable('engine',
 	   	'src/engine/renderengine.cpp',
 	   	'src/main.cpp',
 	   	dependencies : thread_dep,
-	   	cpp_args : '-Og',
+	   	cpp_args : '-O3',
 		install : true)
