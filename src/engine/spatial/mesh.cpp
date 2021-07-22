@@ -26,9 +26,6 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
   Point3Ops::change_basis(new_basis, Vector3(position - pos), aux_pos);
 
   global_coordenates_faces = local_coordenates_faces;
-  const auto& lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
-    mesh->change_basis_part(camera_basis_changer, aux_pos, from, to);
-  };
 
   for (const auto& mesh : mesh_list) {
     unsigned size = mesh->global_coordenates_faces.size();
@@ -36,7 +33,10 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
 
     auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(N_THREADS, [&](unsigned i) {
-      lambda (mesh, i * segment, (i + 1) * segment);
+      unsigned from = i * segment;
+      unsigned to = (i + 1) * segment;
+
+      mesh->change_basis_part(camera_basis_changer, aux_pos, from, to);
     });
   }
 }
