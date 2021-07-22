@@ -16,7 +16,7 @@ RenderEngine::RenderEngine() :
 
 void RenderEngine::render_loop () {
   auto& buffers = CommonBuffers::get();
-  canvas.target = &buffers.normal_buffer;
+  canvas.target = &buffers.screen_buffer;
 
   while (1) {
     world.calculate_next_frame();
