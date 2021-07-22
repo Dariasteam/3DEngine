@@ -38,14 +38,10 @@ void RenderEngine::render_loop () {
 
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;
-
-    auto& m = MultithreadManager::get_instance();
     for (unsigned i = 0; i < buffers.n_l_renderable_triangles; i++) {
-    //m.calculate_threaded(buffers.n_l_renderable_triangles, [&](unsigned i) {
       unsigned t_index = buffers.triangle_indices[i];
       buffers.l_triangle_indices[i] = t_index;
       buffers.light_triangles[t_index] = buffers.triangles[t_index];
-    //});
     }
 
     projector.project_camera(world.get_camera());
