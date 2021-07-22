@@ -66,8 +66,6 @@ Mesh *ObjParser::operator ()(std::string file_name) {
                                         &aux_mesh->vertices[i1],
                                         &aux_mesh->vertices[i2],
                                         &aux_mesh->vertices[i3],
-
-                                        {0, 0, 0},
                                       });
       } else {
         std::cerr << "[ERROR] Reading " << file_name << " expecting f at "
@@ -83,10 +81,10 @@ Mesh *ObjParser::operator ()(std::string file_name) {
     n_line++;
   }
 
-  aux_mesh->generate_data();
-
   std::cout << "Succesfully loaded " << file_name << "\n"
             << " → Faces: " << aux_mesh->faces.size() << "\n";
+
+  aux_mesh->generate_data();
 
   return aux_mesh;
 }
