@@ -65,8 +65,8 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   const Normal2& n_a = triangle.normal_a;
   const Normal2& n_b = triangle.normal_b;
   const Normal2& n_c = triangle.normal_c;
-/*
-  P2<signed char> final_vec = (n_a * A_d) + (n_b * B_d) + (n_c * C_d);
+
+  auto final_vec = (n_a * A_d) + (n_b * B_d) + (n_c * C_d);
 
   unsigned char r = 128 + final_vec.X;
   unsigned char g = 128 + final_vec.Y;
@@ -74,5 +74,4 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
   buffers.normal_buffer.set(pixel_index * 3 + 0, r);
   buffers.normal_buffer.set(pixel_index * 3 + 1, g);
   //buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
-  */
 }
