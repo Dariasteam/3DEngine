@@ -23,7 +23,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
   MatrixOps::generate_basis_change_matrix(basis, new_basis, camera_basis_changer);
 
   Vector3 aux_pos;
-  Point3Ops::change_basis(new_basis, (Vector3)(position - pos), aux_pos);
+  Point3Ops::change_basis(new_basis, Vector3(position - pos), aux_pos);
 
   global_coordenates_faces = local_coordenates_faces;
   const auto& lambda = [&](Mesh* mesh, unsigned from, unsigned to) {
@@ -87,6 +87,8 @@ void Mesh::generate_data() {
   // Calculate interploted normals of the Vertices
   auto lambda = [&](unsigned i_thread) {
     unsigned init = last_index;
+    unsigned j = 0;
+    unsigned k = 0;
     bool end = false;
 
     // find next point not used by another thread
@@ -94,8 +96,8 @@ void Mesh::generate_data() {
       mtx.lock();
       init = last_index;
       do {
-        for (int j = 0; j < 3; j++) {
-          for (int k = 0; k < current_point_per_thread.size(); k++) {
+        for (j = 0; j < 3; j++) {
+          for (k = 0; k < current_point_per_thread.size(); k++) {
             end = true;
             if (vertex_normals[init * 3 + j] || current_point_per_thread[k] == local_coordenates_faces[init][j]) {
               end = false;
@@ -116,20 +118,20 @@ void Mesh::generate_data() {
       std::cout << '\r' << 100 * double(init) / double(local_coordenates_faces.size()) << " % " << std::flush;
       mtx.unlock();
 
-      Point3 point = local_coordenates_faces[init][0];
-      Vector3 p_normal = local_coordenates_faces[init].normal.toVector3();
+      Point3 point = local_coordenates_faces[init][j];
+      Normal3& p_normal = local_coordenates_faces[init].get_normal(j);
       auto adjacents = get_adjacent_vertices(point, ++init, vertex_normals);
 
-      for (Normal3* aux_p : adjacents) {
-        p_normal += aux_p->toVector3();
-      }
+      Vector3 ac = p_normal.toVector3();
+      for (Normal3* aux_p : adjacents)
+        ac += aux_p->toVector3();
 
-      //p_normal /= (adjacents.size());
-      p_normal.normalize();
+      ac /= (adjacents.size() + 1);
 
       for (Normal3* aux_p : adjacents)
-        (*aux_p) = Normal3(p_normal);
+        (*aux_p) = Normal3(ac);
 
+      p_normal = Normal3(ac);
     } while (init < local_coordenates_faces.size());
   };
 
