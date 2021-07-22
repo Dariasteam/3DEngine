@@ -34,7 +34,7 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
     unsigned triangle_index = std::round(regular_segment * thread_indx);
 
     for (const auto* mesh : meshes_vector) {
-      const auto& faces = mesh->global_coordenates_faces;
+      const auto& faces = mesh->faces;
 
       double local_segment = double(faces.size()) / N_THREADS;
 

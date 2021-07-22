@@ -3,6 +3,7 @@
 void FlatNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
 
+
   unsigned char r = 128 + triangle.normal.X;
   unsigned char g = 128 + triangle.normal.Y;
 

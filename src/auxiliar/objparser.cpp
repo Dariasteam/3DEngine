@@ -22,6 +22,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
   Mesh* aux_mesh = new Mesh ();
   bool end = false;
 
+  // Vertices
   while (!end) {
     try {
       file >> c;
@@ -42,6 +43,12 @@ Mesh *ObjParser::operator ()(std::string file_name) {
     n_line++;
   }
 
+  // Copy points of the vertices
+  aux_mesh->vertices.resize(vertex_list.size());
+  for (unsigned i = 0; i < vertex_list.size(); i++) {
+    aux_mesh->vertices[i].point_local = vertex_list[i];
+  }
+
   // Read faces
   while (!file.eof()) {
     try {
@@ -55,16 +62,13 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
         i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
 
-        aux_mesh->local_coordenates_faces.push_back(Face {
-                              vertex_list[i1],
-                              vertex_list[i2],
-                              vertex_list[i3],
+        aux_mesh->faces.push_back(Face {
+                                        &aux_mesh->vertices[i1],
+                                        &aux_mesh->vertices[i2],
+                                        &aux_mesh->vertices[i3],
 
-                              {0, 0, 0},
-                              {0, 0, 0},
-                              {0, 0, 0},
-                              {0, 0, 0},
-                            });
+                                        {0, 0, 0},
+                                      });
       } else {
         std::cerr << "[ERROR] Reading " << file_name << " expecting f at "
                   << n_line << "instead of " << c << "\n";
@@ -82,7 +86,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
   aux_mesh->generate_data();
 
   std::cout << "Succesfully loaded " << file_name << "\n"
-            << " → Faces: " << aux_mesh->local_coordenates_faces.size() << "\n";
+            << " → Faces: " << aux_mesh->faces.size() << "\n";
 
   return aux_mesh;
 }

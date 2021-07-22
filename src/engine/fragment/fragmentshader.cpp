@@ -102,8 +102,8 @@ void FragmentShader::push_operation(FragmentOperation* op) {
 }
 
 std::vector<TextureProjector> FragmentOperation::texture_projectors;
-
 std::vector<TextureProjector> FragmentOperation::lightness_projectors;
+
 std::bitset<500000> FragmentOperation::l_matrices;
 std::bitset<500000> FragmentOperation::t_matrices;
 

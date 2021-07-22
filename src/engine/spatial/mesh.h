@@ -8,14 +8,22 @@
 #include "../math/matrix3.h"
 #include "spatial.h"
 #include "face.h"
+#include "vertex.h"
 
 #include <future>
 #include <functional>
 #include <list>
+#include <vector>
 
 struct Mesh : public Spatial {
+  std::vector<Vertex> vertices;
+  std::vector<Face> faces;
+
+  // FIXME: Delete this
+  /*
   std::vector<Face> local_coordenates_faces;
   std::vector<Face> global_coordenates_faces;
+  */
 
   std::vector<Mesh*> nested_meshes;
 
@@ -26,14 +34,13 @@ struct Mesh : public Spatial {
   ~Mesh () {}
 
   Mesh (unsigned i) :
-    local_coordenates_faces(i),
-    global_coordenates_faces(i)
+    vertices(i)
   {}
 
   Mesh (const Mesh& m) :
     Spatial(m.basis, m.position),
-    local_coordenates_faces (m.local_coordenates_faces),
-    global_coordenates_faces (m.global_coordenates_faces),
+    vertices(m.vertices),
+    faces(m.faces),
     uv_per_face(m.uv_per_face)
   {}
 
@@ -46,8 +53,40 @@ struct Mesh : public Spatial {
   }
 
   void generate_normals () {
-    for (auto& face : local_coordenates_faces)
-      face.generate_normal();
+    for (auto& face : faces) {
+      const auto a = face.a->point_local;
+      const auto b = face.b->point_local;
+      const auto c = face.c->point_local;
+
+      const Vector3& u = Vector3::create_vector(b, a);
+      const Vector3& v = Vector3::create_vector(a, c);
+
+      double X = (v.y() * u.z() - v.z() * u.y());
+      double Y = (v.z() * u.x() - v.x() * u.z());
+      double Z = (v.x() * u.y() - v.y() * u.x());
+
+      /*
+      double D = a.z() * v.y() * u.x() +
+                a.x() * v.z() * u.y() +
+                a.y() * v.x() * u.z() -
+                a.x() * v.y() * u.z() -
+                a.y() * v.z() * u.x() -
+                a.z() * v.x() * u.y();
+      */
+
+      Vector3 tmp = {X, Y, Z};
+      tmp.normalize();
+      auto normal = Normal3(tmp);
+
+      face.normal = normal;
+
+      // FIXME: Delete this
+      /*
+      face.a->normal = normal;
+      face.b->normal = normal;
+      face.c->normal = normal;
+      */
+    }
   }
 
   inline std::vector<Normal3*> get_adjacent_vertices (Point3& p,
