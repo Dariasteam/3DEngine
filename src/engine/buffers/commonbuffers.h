@@ -6,6 +6,8 @@
 #include "../math/point3.h"
 #include "../planar/triangle.h"
 
+#include <bitset>
+
 #define INFINITY_DISTANCE 10000000
 
 struct RasterTarget {
@@ -22,8 +24,6 @@ private:
 
     triangle_indices (500000),
     l_triangle_indices (500000),
-
-    is_triangle_occluded (500000),
 
     n_renderable_triangles (0),
     n_l_renderable_triangles (0)
@@ -61,7 +61,8 @@ public:
   // We can share this between directional light and camera
   // since the ocluded objects in directional_light space will be
   // black and the ones in camera space won't be rendered anyway
-  std::vector<bool> is_triangle_occluded;
+  //std::vector<bool> is_triangle_occluded;
+  std::bitset<500000> is_triangle_occluded;
 
   void reset_z_buffer();
 

@@ -22,8 +22,6 @@ void Projector::set_projection_data(Camera& camera) {
                                         camera.position);
   }
 
-
-
   meshes_vector.clear();
   generate_mesh_list(World::get().get_elements());
 }

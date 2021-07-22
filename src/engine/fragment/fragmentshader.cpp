@@ -83,7 +83,7 @@ void FragmentShader::generate_light_projectors() {
         if (!FragmentOperation::l_matrices[t_index]) {
           FragmentOperation::l_matrices[t_index] = true;
 
-          if (buffers.is_triangle_occluded[t_index]) {
+          if (buffers.is_triangle_occluded.test(t_index)) {
 
             unsigned lightmap_size = buffers.l_triangle_index_surface.height();
             const Triangle& t = buffers.light_triangles[t_index];

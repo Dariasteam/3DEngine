@@ -35,7 +35,7 @@ void Lightness::operator ()(unsigned pixel_index) {
 
   // Check the triangle exist in the lightmapper
   if (l_matrices[t_index] && incidence > 0) {
-    if (buffers.is_triangle_occluded[t_index]) {
+    if (buffers.is_triangle_occluded.test(t_index)) {
       // Get the point in the light
       // Check the triangle index in the lightmapper equals the one at this pixel
 

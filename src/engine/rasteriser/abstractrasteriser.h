@@ -33,13 +33,13 @@ protected:
     if (z_value < current_z) {
       if (occlusion) {
         unsigned long current_t = indices_target_surface->get(x, y);
-        buffers.is_triangle_occluded[current_t] = true;
+        buffers.is_triangle_occluded.set(current_t, true);
       }
 
       z_target_surface->set(x, y, z_value);
       indices_target_surface->set(x, y, t_index);
     } else if (occlusion) {
-      buffers.is_triangle_occluded[t_index] = true;
+      buffers.is_triangle_occluded.set(t_index, true);
     }
   }
 
