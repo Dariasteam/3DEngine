@@ -1,16 +1,5 @@
 #include "mesh.h"
 
-void Mesh::change_basis_part (const Matrix3& basis_changer,
-                              const Vector3& translation,
-                              unsigned from, unsigned to) {
-  for (unsigned k = from; k < to; k++) {
-    auto& vertex = vertices[k];
-    Point3Ops::change_basis(basis_changer, vertex.point_local, vertex.point_global);
-    Point3Ops::change_basis(basis_changer, vertex.normal_local, vertex.normal_global);
-    vertex.point_global += translation;
-  }
-}
-
 // Multithreaded change basis
 void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
                                       const Basis3& new_basis,
@@ -26,30 +15,18 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
 
     auto& m = MultithreadManager::get_instance();
 
-    std::function<void(Face& f)> a = [&](Face& face) -> void {
+    std::function<void(Face& f)> face_basis_changer = [&](Face& face) {
       Point3Ops::change_basis(camera_basis_changer, face.normal_local, face.normal_global);
     };
 
-    std::function<void(Vertex& f)> b = [&](Vertex& vertex) -> void {
+    std::function<void(Vertex& f)> vertex_basis_changer = [&](Vertex& vertex) {
       Point3Ops::change_basis(camera_basis_changer, vertex.point_local, vertex.point_global);
       Point3Ops::change_basis(camera_basis_changer, vertex.normal_local, vertex.normal_global);
       vertex.point_global += aux_pos;
     };
 
-    m.calculate_threaded(mesh->faces, a);
-    m.calculate_threaded(mesh->vertices, b);
-
-//    for (Face& face : faces)
-  //    Point3Ops::change_basis(camera_basis_changer, face.normal_local, face.normal_global);
-
-/*
-    m.calculate_threaded(mesh->vertices.size(), [&](unsigned i) {
-        auto& vertex = mesh->vertices[i];
-        Point3Ops::change_basis(camera_basis_changer, vertex.point_local, vertex.point_global);
-        Point3Ops::change_basis(camera_basis_changer, vertex.normal_local, vertex.normal_global);
-        vertex.point_global += aux_pos;
-    });
-    */
+    m.calculate_threaded(mesh->faces, face_basis_changer);
+    m.calculate_threaded(mesh->vertices, vertex_basis_changer);
   }
 }
 

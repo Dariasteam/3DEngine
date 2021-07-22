@@ -106,10 +106,6 @@ struct Mesh : public Spatial {
 
 
   void apply_rotations ();
-
-  void inline change_basis_part (const Matrix3& basis_changer,
-                                 const Vector3& translation,
-                                 unsigned from, unsigned to);
 };
 
 #endif // MESH_H

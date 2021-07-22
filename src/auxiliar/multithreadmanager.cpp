@@ -34,47 +34,7 @@ void MultithreadManager::calculate_threaded(unsigned size,
   cv.wait(lck, [&]{return active;});
   lck.unlock();
 }
-/*
-template <typename It, typename N>
-void MultithreadManager::calculate_threaded (const It& begin, const It& end, unsigned size,
-                                             const N& f) {
 
-  auto lambda = [&](unsigned from, unsigned to) {
-    auto it1 = begin + from;
-    auto it2 = begin + to;
-    while (it1 != it2) {
-      f(*it1);
-    }
-  };
-
-  double segment = double(size) / N_THREADS;
-  unsigned counter = 0;
-
-  active = false;
-
-  std::mutex local_mtx;
-  auto callback = [&] () {
-    local_mtx.lock();
-    counter++;
-    unsigned c = counter;
-    local_mtx.unlock ();
-
-    if (c == N_THREADS) {
-      active = true;
-      cv.notify_one();
-    }
-  };
-
-  for (unsigned i = 0; i < N_THREADS; i++)
-    threads[i].send_function(std::bind(lambda, std::round(i * segment),
-                                               std::round((i + 1) * segment)),
-                                               callback);
-
-  std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&]{return active;});
-  lck.unlock();
-}
-*/
 CallableThread::CallableThread() :
   t (&CallableThread::run, this)
 {}
