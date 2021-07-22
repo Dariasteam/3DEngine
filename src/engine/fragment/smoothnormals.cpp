@@ -73,5 +73,5 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
 
   buffers.normal_buffer.set(pixel_index * 3 + 0, r);
   buffers.normal_buffer.set(pixel_index * 3 + 1, g);
-  buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
+  //buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
 }

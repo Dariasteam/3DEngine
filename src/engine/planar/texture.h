@@ -25,6 +25,7 @@ protected:
 public:
   Texture();
   Texture(unsigned w, unsigned h);
+  Texture(unsigned w, unsigned h, T value);
 
   // FIXME: This causes an error
   ~Texture() {
@@ -64,5 +65,12 @@ public:
 
   void fill (T value);
 };
+
+using NormalBuffer        = Texture<unsigned char, 3>;
+using ZBuffer             = Texture<double, 1>;
+using LightMapBuffer      = Texture<bool, 1>;
+using TriangleIndexBuffer = Texture<unsigned long, 1>;
+using RGBTexture          = Texture<unsigned char, 3>;
+using RGBATexture         = Texture<unsigned char, 4>;
 
 #endif // TEXTURE_H

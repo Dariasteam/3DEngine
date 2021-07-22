@@ -17,5 +17,5 @@ void NormalMapping::operator ()(unsigned pixel_index) {
 
   buffers.normal_buffer.set(pixel_index * 3 + 0, (unsigned char)r);
   buffers.normal_buffer.set(pixel_index * 3 + 1, (unsigned char)g);
-  buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
+//  buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
 }

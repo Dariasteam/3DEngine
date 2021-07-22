@@ -9,6 +9,16 @@ Texture<T, D>::Texture() :
 {}
 
 template <typename T, unsigned D>
+Texture<T, D>::Texture(unsigned w, unsigned h, T value) :
+  w(0),
+  h(0),
+  d(D),
+  content(new T[w * h * D])
+{
+  fill(value);
+}
+
+template <typename T, unsigned D>
 Texture<T, D>::Texture(unsigned w, unsigned h) :
   w(w),
   h(h),
@@ -92,7 +102,9 @@ void Texture<T, D>::operator=(const Texture<T, D>& t) {
 
 }
 
+template class Texture<unsigned char, 2>;  // Normal map
 template class Texture<unsigned char, 3>; // Regular Texture
+template class Texture<unsigned char, 4>; // Transparency Texture
 template class Texture<double, 1>;        // Z Buffer
 template class Texture<unsigned long, 1>; // Triangle Buffer
 template class Texture<bool, 1>;          // Light mapper

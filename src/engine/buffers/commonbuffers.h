@@ -2,7 +2,6 @@
 #define COMMONBUFFERS_H
 
 #include "../planar/texture.h"
-
 #include "../math/point2.h"
 #include "../math/point3.h"
 #include "../planar/triangle.h"
@@ -38,15 +37,15 @@ public:
   CommonBuffers (const CommonBuffers &) = delete;
   void operator= (CommonBuffers const &) = delete;
 
-  Texture<unsigned long, 1> triangle_index_surface;
-  Texture<unsigned long, 1> l_triangle_index_surface;
+  TriangleIndexBuffer triangle_index_surface;
+  TriangleIndexBuffer l_triangle_index_surface;
 
-  Texture<double, 1> z_buffer;
-  Texture<double, 1> z_light;
+  ZBuffer z_buffer;
+  ZBuffer z_light;
 
   // FIXME: Use a 2 depth buffer for normals?
-  Texture<unsigned char, 3> normal_buffer;
-  Texture<unsigned char, 3> screen_buffer;
+  NormalBuffer normal_buffer;
+  RGBTexture screen_buffer;
 
   void set_dimension (unsigned w, unsigned h);
 
