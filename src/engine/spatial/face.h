@@ -3,6 +3,7 @@
 #include "../math/vector3unitary.h"
 #include "vertex.h"
 
+// FIXME: Declare copy constructor?
 struct Face {
   Vertex* a;
   Vertex* b;

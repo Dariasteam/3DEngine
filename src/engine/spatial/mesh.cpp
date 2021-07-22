@@ -58,27 +58,25 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
 }
 
 void Mesh::generate_data() {
-  generate_normals();
+  generate_face_normals();
 
-  for (Vertex& vertex: vertices) {
+  for (Vertex& vertex : vertices) {
     std::list<const Face*> contiguous_faces;
 
     // Search for a contiguous faces
-    for (const Face face : faces) {
-      for (unsigned i = 0; i < 3; i++) {
-        if (face[i] == &vertex) {
-          contiguous_faces.push_back(&face);
-          break;
-        }
+    for (const Face& face : faces) {
+      if (face.a == &vertex || face.b == &vertex || face.c == &vertex) {
+        contiguous_faces.push_back(&face);
       }
     }
 
     // Calculate normal
     Vector3 normal {0, 0, 0};
+
     for (const Face* face : contiguous_faces)
       normal += face->normal_local.toVector3();
 
-    normal /= (contiguous_faces.size());
+    normal.normalize();
 
     vertex.normal_local = Normal3(normal);
   }

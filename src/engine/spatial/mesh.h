@@ -52,7 +52,7 @@ struct Mesh : public Spatial {
     return nested_meshes;
   }
 
-  void generate_normals () {
+  void generate_face_normals () {
     for (auto& face : faces) {
       const auto a = face.a->point_local;
       const auto b = face.b->point_local;
