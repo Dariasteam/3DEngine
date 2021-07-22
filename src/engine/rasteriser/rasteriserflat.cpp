@@ -19,7 +19,7 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
                                             unsigned t_index) const {
   auto u1 = triangle.a;
   auto u2 = triangle.b;
-  auto u3 = triangle.c;    
+  auto u3 = triangle.c;
 
   if (u3.y() == u1.y()) return; // we already know u2 = u3, triangle would be a line
 
@@ -50,7 +50,7 @@ void RasteriserFlat::fillBottomFlatTriangle(const Triangle& triangle,
 
     const auto vLR = uL - uR;
 
-    for (unsigned x = min_x; x <= max_x; x++) {      
+    for (unsigned x = min_x; x <= max_x; x++) {
      const double z = (((double(x) - uL.x()) * vLR.Z) / vLR.x()) + uL.z();
      update_buffers(x, y, z, t_index);
     }
@@ -122,7 +122,7 @@ void RasteriserFlat::fillTopFlatTriangle(const Triangle& triangle,
   }
 }
 
-void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) const {  
+void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) const {
   triangle_to_surface_space(triangle);
 
   // Sort vertices by Y
@@ -138,7 +138,7 @@ void RasteriserFlat::rasterize_triangle (Triangle& triangle, unsigned t_index) c
 
   tmp_triangle.a = aux_vec[0];
   tmp_triangle.b = aux_vec[1];
-  tmp_triangle.c = aux_vec[2];  
+  tmp_triangle.c = aux_vec[2];
 
   Point3& u1 = aux_vec[0];
   Point3& u2 = aux_vec[1];
