@@ -73,8 +73,8 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         Vector3 normal = tmp_face.normal_local.toVector3();
 
         vertex_normals[i1] += normal;
-        vertex_normals[i1] += normal;
-        vertex_normals[i1] += normal;
+        vertex_normals[i2] += normal;
+        vertex_normals[i3] += normal;
 
         aux_mesh->faces.push_back(tmp_face);
       } else {

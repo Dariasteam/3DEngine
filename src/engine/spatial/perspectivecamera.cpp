@@ -17,7 +17,7 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
   auto& tmp_triangle = buffers.triangles[index];
 
   // 1. Check normal of the face is towards camera, do not check angle,
-  // only if it's bigger than 90º insteads
+  // only if it's bigger than 90º instead
   if ((face.normal_global * face.a->point_global) >= 0) return false;
 
   // 2. Calculate distance to camera
@@ -52,8 +52,8 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
 
 // Calculate the intersection point between the camera plane and the
 // line described by vertex and camera_fugue (dir_v)
-/* Plane expresed as Ax + By + Cz + D = 0
- * Rect expresed as
+/* Plane expressed as Ax + By + Cz + D = 0
+ * Rect expressed as
  *  x = a + bß
  *  y = c + dß
  *  z = e + fß
