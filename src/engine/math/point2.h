@@ -81,5 +81,6 @@ using Vector2  = P2<double>;
 using Point2   = P2<double>;
 using P2i  = P2<int>;
 using Vector2i = P2<int>;
+using Normal2  = P2<double>;
 
 #endif // POINT2_H

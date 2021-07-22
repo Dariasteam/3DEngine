@@ -64,6 +64,6 @@ struct Vector3Unitary : public P3<signed char> {
   }
 };
 
-typedef Vector3Unitary Normal3;
+//typedef Vector3Unitary Normal3;
 
 #endif // VECTOR3UNITARY_H

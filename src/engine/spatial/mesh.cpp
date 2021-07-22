@@ -117,15 +117,15 @@ void Mesh::generate_data() {
       mtx.unlock();
 
       Point3 point = local_coordenates_faces[init][0];
-      Vector3 p_normal = local_coordenates_faces[init].normal.toVector3();
+      Normal3 p_normal = local_coordenates_faces[init].normal;
       auto adjacents = get_adjacent_vertices(point, ++init, vertex_normals);
 
       for (Normal3* aux_p : adjacents) {
-        p_normal += aux_p->toVector3();
+        p_normal += aux_p;
       }
 
-      //p_normal /= (adjacents.size());
-      p_normal.normalize();
+      p_normal /= (adjacents.size());
+      //p_normal.normalize();
 
       for (Normal3* aux_p : adjacents)
         (*aux_p) = Normal3(p_normal);

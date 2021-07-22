@@ -35,7 +35,7 @@ struct P3 {
             z() == p.z());
   }
 
-  inline void operator+= (const P3<T>& p) {
+  inline void operator+= (const P3& p) {
     set_x(p.x() + x());
     set_y(p.y() + y());
     set_z(p.z() + z());
@@ -73,7 +73,6 @@ struct P3 {
             z() / d};
   }
 
-
   inline T x() const { return X;}
   inline T y() const { return Y;}
   inline T z() const { return Z;}
@@ -95,6 +94,7 @@ using Point3 = P3<double>;
 using Point3i  = P3<int>;
 using P3i  = P3<int>;
 using Vector3i = P3<int>;
+using Normal3 = P3<double>;
 
 #endif // POINT3_H
 
