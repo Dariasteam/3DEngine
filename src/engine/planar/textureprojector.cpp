@@ -35,7 +35,7 @@ void TextureProjector::generate_uv_projector(const Triangle& projected_triangle,
 
 Color888 TextureProjector::get_color_on_uv(const unsigned x,
                                            const unsigned y,
-                                           const Texture<unsigned char, 3>& tex)
+                                           const RGBTexture& tex)
                                            const {
 
   const auto& point = get_point_on_uv(x, y, tex);

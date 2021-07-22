@@ -115,8 +115,8 @@ std::vector<TextureProjector> FragmentOperation::lightness_projectors;
 std::vector<bool> FragmentOperation::l_matrices;
 std::vector<bool> FragmentOperation::t_matrices;
 
-Texture<unsigned char, 3> FragmentOperation::texture;
-Texture<unsigned char, 3> FragmentOperation::normal_map;
+RGBTexture FragmentOperation::texture;
+RGBTexture FragmentOperation::normal_map;
 
 FragmentOperation::FragmentOperation() :
   buffers (CommonBuffers::get())

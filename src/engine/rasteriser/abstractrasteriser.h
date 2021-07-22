@@ -43,8 +43,8 @@ protected:
     }
   }
 
-  Texture<unsigned long, 1>* indices_target_surface;
-  Texture<double, 1>* z_target_surface;
+  TriangleIndexBuffer* indices_target_surface;
+  ZBuffer* z_target_surface;
   const Camera* camera;
 
   unsigned width;
@@ -55,8 +55,8 @@ public:
   AbstractRasteriser() ;
   virtual ~AbstractRasteriser() {}
   virtual void rasterise (const Camera& cam,
-                          Texture<unsigned long, 1>& i_surface,
-                          Texture<double, 1>& z_surface) = 0;
+                          TriangleIndexBuffer& i_surface,
+                          ZBuffer& z_surface) = 0;
 };
 
 #endif // ABSTRACTRASTERISER_H

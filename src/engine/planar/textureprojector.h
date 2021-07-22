@@ -24,7 +24,7 @@ public:
 
   Color888 get_color_on_uv (const unsigned x,
                             const unsigned y,
-                            const Texture<unsigned char, 3>& tex) const;
+                            const RGBTexture& tex) const;
 
 
   template <typename T, unsigned D>

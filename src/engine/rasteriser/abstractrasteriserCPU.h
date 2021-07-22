@@ -17,8 +17,8 @@ public:
   {}
 
   void rasterise (const Camera& cam,
-                  Texture<unsigned long, 1>& i_surface,
-                  Texture<double, 1>& z_surface) ;
+                  TriangleIndexBuffer& i_surface,
+                  ZBuffer& z_surface) ;
 };
 
 #endif // PROJECTOR_H

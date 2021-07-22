@@ -20,7 +20,7 @@ struct Mesh : public Spatial {
   std::vector<Mesh*> nested_meshes;
 
   std::vector<UV> uv_per_face;
-  Texture<unsigned char, 3> texture;
+  RGBTexture texture;
 
   Mesh () {}
   ~Mesh () {}

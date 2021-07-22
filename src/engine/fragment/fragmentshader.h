@@ -59,8 +59,8 @@ public:
   static std::vector<bool> l_matrices;
   static std::vector<bool> t_matrices;
 
-  static Texture<unsigned char, 3> texture;
-  static Texture<unsigned char, 3> normal_map;
+  static RGBTexture texture;
+  static RGBTexture normal_map;
 public:
   virtual void operator()(unsigned pixel_index) = 0;
   FragmentOperation();
