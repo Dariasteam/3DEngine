@@ -55,8 +55,8 @@ public:
     // FIXME: This should not exist, there should be no errors
     x_tex = x_tex < 0 ? 0 : x_tex;
     y_tex = y_tex < 0 ? 0 : y_tex;
-    x_tex = x_tex > texture.width()  ? texture.width()  - 1 : x_tex;
-    y_tex = y_tex > texture.height() ? texture.height() - 1 : y_tex;
+    x_tex = x_tex >= texture.width()  ? texture.width()  - 1 : x_tex;
+    y_tex = y_tex >= texture.height() ? texture.height() - 1 : y_tex;
 
     return {x_tex, y_tex};
   }

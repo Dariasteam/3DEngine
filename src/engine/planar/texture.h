@@ -27,7 +27,6 @@ public:
   Texture(unsigned w, unsigned h);
   Texture(unsigned w, unsigned h, T value);
 
-  // FIXME: This causes an error
   ~Texture() {
     delete[] content;
   }
