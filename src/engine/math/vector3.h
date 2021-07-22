@@ -51,4 +51,6 @@ struct Vector3 : public Point3 {
   }
 };
 
+using Normal3 = Vector3;
+
 #endif // VECTOR3_H

@@ -4,6 +4,7 @@
 #include <climits>
 #include "point2.h"
 
+/*
 struct Vector2Unitary : public P2<signed char> {
   Vector2Unitary() : P2 (0, 0) {}
   Vector2Unitary (double x, double y) : P2(
@@ -20,8 +21,10 @@ struct Vector2Unitary : public P2<signed char> {
       double(Y) / SCHAR_MAX,
     };
   }
+
+
 };
 
-typedef Vector2Unitary Normal2;
-
+//typedef Vector2Unitary Normal2;
+*/
 #endif // VECTOR2UNITARY_H

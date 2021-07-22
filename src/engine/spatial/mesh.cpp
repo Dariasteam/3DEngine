@@ -121,7 +121,7 @@ void Mesh::generate_data() {
       auto adjacents = get_adjacent_vertices(point, ++init, vertex_normals);
 
       for (Normal3* aux_p : adjacents) {
-        p_normal += aux_p;
+        p_normal += *aux_p;
       }
 
       p_normal /= (adjacents.size());

@@ -29,8 +29,8 @@ void Lightness::operator ()(unsigned pixel_index) {
 
 
   Vector2 lightVec = {
-    light.get_global_plane_vector().toVector3().X,
-    light.get_global_plane_vector().toVector3().Y
+    light.get_global_plane_vector().X,
+    light.get_global_plane_vector().Y
   };
 
   incidence = lightVec * normalVec;
