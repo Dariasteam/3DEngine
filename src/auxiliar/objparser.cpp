@@ -1,9 +1,6 @@
 #include "objparser.h"
 
-
-ObjParser::ObjParser() {
-
-}
+ObjParser::ObjParser() {}
 
 Mesh *ObjParser::operator ()(std::string file_name) {
   std::ifstream file;
@@ -82,7 +79,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
                   << n_line << "instead of " << c << "\n";
       }
     } catch (...) {
-      std::cerr << "[ERROR] Readin " << file_name << " bad formattin at line "
+      std::cerr << "[ERROR] Reading " << file_name << " bad formattin at line "
                 << n_line << "\n";
       delete aux_mesh;
       return nullptr;
@@ -98,7 +95,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
     aux_mesh->vertices[i].normal_local = Normal3(vertex_normals[i]);
   }
 
-  std::cout << "Succesfully loaded " << file_name << "\n"
+  std::cout << "Successfully loaded " << file_name << "\n"
             << " → Faces: " << aux_mesh->faces.size() << "\n";
 
   return aux_mesh;
