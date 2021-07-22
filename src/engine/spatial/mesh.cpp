@@ -27,7 +27,7 @@ void Mesh::change_basis_multithreaded(const std::list<Mesh*>& mesh_list,
     double segment = double(size) / N_THREADS;
 
     for (Face& face : faces)
-      Point3Ops::change_basis(camera_basis_changer, face.normal, face.normal);
+      Point3Ops::change_basis(camera_basis_changer, face.normal_local, face.normal_global);
 
     auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(N_THREADS, [&](unsigned i) {
@@ -76,7 +76,7 @@ void Mesh::generate_data() {
     // Calculate normal
     Vector3 normal {0, 0, 0};
     for (const Face* face : contiguous_faces)
-      normal += face->normal.toVector3();
+      normal += face->normal_local.toVector3();
 
     normal /= (contiguous_faces.size());
 

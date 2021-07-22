@@ -8,17 +8,9 @@ struct Face {
   Vertex* b;
   Vertex* c;
 
-  Normal3 normal;
+  Normal3 normal_local;
+  Normal3 normal_global;
 
-  /*
-  Point3 a;
-  Point3 b;
-  Point3 c;
-
-  Normal3 normal_a;
-  Normal3 normal_b;
-  Normal3 normal_c;
-*/
   inline const Vertex* operator[] (unsigned i) const {
     switch (i) {
       case 0:
@@ -40,18 +32,5 @@ struct Face {
         return c;
     }
   }
-
-/*
-  inline Normal3& get_normal (unsigned i) {
-    switch (i) {
-      case 0:
-        return normal_a;
-      case 1:
-        return normal_b;
-      default:
-        return normal_c;
-    }
-  }
-*/
 };
 

@@ -20,6 +20,7 @@
 
 #define SCREEN_SIZE 1000
 
+// FIXME Use a texture alias as template
 template <typename T,unsigned D>
 class FrameBufferHandler {
 private:
@@ -31,7 +32,7 @@ private:
   int fbfd = 0;
   struct fb_var_screeninfo vinfo;
   struct fb_fix_screeninfo finfo;
-  long int screensize = 0;  
+  long int screensize = 0;
 
   char* fup[N_THREADS];
 
@@ -96,7 +97,7 @@ public:
 
         while (1) {
          std::unique_lock<std::mutex> lck(mtx); // wake up thread
-         cv[k].wait(lck, [&]{return painters[k];});          
+         cv[k].wait(lck, [&]{return painters[k];});
 
          for (unsigned y = std::round(segment * k);
                         y < std::round(segment * (k + 1)); y++) {

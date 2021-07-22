@@ -78,14 +78,7 @@ struct Mesh : public Spatial {
       tmp.normalize();
       auto normal = Normal3(tmp);
 
-      face.normal = normal;
-
-      // FIXME: Delete this
-      /*
-      face.a->normal = normal;
-      face.b->normal = normal;
-      face.c->normal = normal;
-      */
+      face.normal_local = normal;
     }
   }
 

@@ -58,7 +58,7 @@ class RenderEngine {
 private:
   Projector projector;
   RasteriserFlat rasteriser;
-  FrameBufferHandler<unsigned char, 3> canvas;
+  FrameBufferHandler<double, 1> canvas;
 
   FragmentShader fragmentShader;
   World& world;
