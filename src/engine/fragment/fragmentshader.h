@@ -55,6 +55,9 @@ protected:
   }
 
 public:
+  // FIXME: Currently we have 500.000 length texture_projectors
+  // Ideally we would have a more compact vector to avoid memory fragmentation
+  // We can achieve this by using a translation vector in a similar way to the t_triangles
   static std::vector<TextureProjector> texture_projectors;
   static std::vector<TextureProjector> lightness_projectors;
   static std::bitset<500000> l_matrices;

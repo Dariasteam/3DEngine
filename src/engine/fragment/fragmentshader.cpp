@@ -34,7 +34,6 @@ void FragmentShader::operator()() {
 }
 
 void FragmentShader::generate_texture_projectors() {
-  FragmentOperation::texture_projectors.resize(buffers.triangles.size());
   FragmentOperation::t_matrices.reset();
 
   auto& m = MultithreadManager::get_instance();
@@ -47,8 +46,6 @@ void FragmentShader::generate_texture_projectors() {
 }
 
 void FragmentShader::generate_light_projectors() {
-
-  FragmentOperation::lightness_projectors.resize(buffers.light_triangles.size());
   FragmentOperation::l_matrices.reset();
 
   auto& m = MultithreadManager::get_instance();
@@ -82,8 +79,8 @@ void FragmentShader::push_operation(FragmentOperation* op) {
   operations.push_back(op);
 }
 
-std::vector<TextureProjector> FragmentOperation::texture_projectors;
-std::vector<TextureProjector> FragmentOperation::lightness_projectors;
+std::vector<TextureProjector> FragmentOperation::texture_projectors(500000);
+std::vector<TextureProjector> FragmentOperation::lightness_projectors(500000);
 
 std::bitset<500000> FragmentOperation::l_matrices;
 std::bitset<500000> FragmentOperation::t_matrices;

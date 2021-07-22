@@ -55,7 +55,7 @@ public:
   inline void set (const unsigned x,
                    const unsigned y,
                    const T c,
-                  const unsigned i = 0) {
+                   const unsigned i = 0) {
     content[y * w * d + x * d + i] = c;
   }
 

@@ -109,7 +109,6 @@ void Texture<T, D>::operator=(const Texture<T, D>& t) {
   for (unsigned i = 0; i < width() * height() * depth(); i++) {
     content[i] = t.get(i);
   }
-
 }
 
 template class Texture<unsigned char, 2>;  // Normal map
