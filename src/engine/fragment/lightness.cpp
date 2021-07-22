@@ -20,24 +20,21 @@ void Lightness::operator ()(unsigned pixel_index) {
   P2i p = pixel_index_to_screen_coordinates(pixel_index);
   const DirectionalLight& light = World::get().get_light();
 
-
   // Calculate normal maps
   Vector2 normalVec {
     double(buffers.normal_buffer.get(pixel_index * 3 + 0) - 128) / 127,
     double(buffers.normal_buffer.get(pixel_index * 3 + 1) - 128) / 127
   };
 
-
   Vector2 lightVec = {
-    light.get_global_plane_vector().toVector3().X,
-    light.get_global_plane_vector().toVector3().Y
+    light.get_global_plane_vector().X,
+    light.get_global_plane_vector().Y
   };
 
   incidence = lightVec * normalVec;
 
   // Check the triangle exist in the lightmapper
   if (l_matrices[t_index] && incidence > 0) {
-
     if (buffers.is_triangle_occluded[t_index]) {
       // Get the point in the light
       // Check the triangle index in the lightmapper equals the one at this pixel

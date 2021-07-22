@@ -8,8 +8,10 @@
 
 class Camera : public Spatial {
 protected:
-  Normal3 local_vector_plane;
-  Normal3 global_vector_plane;
+  //FIXME: Should we have two vectors? When rendering local vector is just
+  //       0,0,1, since everything is in camera basis
+  Vector3 local_vector_plane;
+  Vector3 global_vector_plane;
 
   // FIXME: only use height and width?
   RectF bounds;
@@ -44,18 +46,18 @@ public:
   Camera (const Camera& cam);
   virtual ~Camera() {}
 
-  inline const Normal3& get_plane_vector() const { return local_vector_plane; }
+  inline const Vector3& get_plane_vector() const { return local_vector_plane; }
   inline const Point3&  get_plane_point() const { return local_point_plane; }
   inline const RectF& get_bounds() const { return bounds; }
 
   inline void set_bounds(const RectF& b) { bounds = b; }
-  inline void set_plane_vector(const Normal3& p) { local_vector_plane = p; }
+  inline void set_plane_vector(const Vector3& p) { local_vector_plane = p; }
   inline void set_plane_point (const Point3& p)  { local_point_plane  = p; }
 
   void project (const std::vector<Mesh*> meshes_vector) const;
 
 
-  inline const Normal3& get_global_plane_vector() const { return global_vector_plane; }
+  inline const Vector3& get_global_plane_vector() const { return global_vector_plane; }
 
 
   // FIXME: This is not a significative name

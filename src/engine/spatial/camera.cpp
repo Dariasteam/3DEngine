@@ -33,7 +33,7 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
   m.calculate_threaded(N_THREADS, [&](unsigned thread_indx) {
     unsigned triangle_index = std::round(regular_segment * thread_indx);
 
-    for (const auto* mesh : meshes_vector) {      
+    for (const auto* mesh : meshes_vector) {
       const auto& faces = mesh->global_coordenates_faces;
 
       double local_segment = double(faces.size()) / N_THREADS;
@@ -65,5 +65,5 @@ void Camera::project(const std::vector<Mesh*> meshes_vector) const {
 
     it += relevant_triangle_indices[i].size();
     buffers.n_renderable_triangles += relevant_triangle_indices[i].size();
-  }     
+  }
 }

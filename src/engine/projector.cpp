@@ -3,7 +3,7 @@
 Projector::Projector() {}
 
 void Projector::project_camera(Camera& camera) {
-  set_projection_data(camera);
+  set_projection_data(camera);    // FIXME: Does this function cost us too much?
   camera.project(meshes_vector);
 }
 

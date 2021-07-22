@@ -13,7 +13,6 @@ public:
                    const double instensity);
   inline const Color& get_color () const { return color; }
   inline double get_intensity () const { return intensity; }
-//  inline const Vector3& get_direction () const { return global_vector_plane; }
 };
 
 #endif // DIRECTIONALLIGHT_H

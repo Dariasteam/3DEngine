@@ -22,21 +22,7 @@ struct Vector3Unitary : public P3<signed char> {
   Vector3Unitary (const Point3i& p) : P3<signed char> (static_cast<signed char>(p.X * SCHAR_MAX),
                                                        static_cast<signed char>(p.Y * SCHAR_MAX),
                                                        static_cast<signed char>(p.Z * SCHAR_MAX)) {}
-/*
-  static inline void create_vector (const Point3i& a, const Point3i& b, Vector3Unitary& vec) {
-    vec.set_x(a.x() - b.x());
-    vec.set_y(a.y() - b.y());
-    vec.set_z(a.z() - b.z());
-  }
 
-  static double vector_module (const Vector3Unitary& v) {
-    return std::sqrt(v.x() * v.x() + v.y() * v.y() + v.z() * v.z());
-  }
-
-  static double angle_between (const Vector3Unitary& v, const Vector3Unitary& u) {
-    return rad2deg(std::acos((u * v) / (vector_module(u) * vector_module(v))));
-  }
-*/
   Vector3Unitary operator/ (double d) const {
     return {x() / d,
             y() / d,
@@ -44,6 +30,13 @@ struct Vector3Unitary : public P3<signed char> {
   }
 
   inline double operator* (const Vector3Unitary& u) const {
+    return x() * u.x() +
+           y() * u.y() +
+           z() * u.z();
+  }
+
+
+  inline double operator* (const Vector3& u) const {
     return x() * u.x() +
            y() * u.y() +
            z() * u.z();

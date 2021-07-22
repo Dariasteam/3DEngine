@@ -18,7 +18,7 @@ bool PerspectiveCamera::calculate_face_projection(const Face& face,
 
   // 1. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º insteads
-  if ((face.normal.toVector3() * face.a) >= 0) return false;
+  if ((face.normal * face.a) >= 0) return false;
 
   // 2. Calculate distance to camera
   tmp_triangle.a.Z = Vector3::vector_module(face.a);

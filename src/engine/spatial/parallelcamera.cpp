@@ -27,7 +27,7 @@ inline bool ParallelCamera::calculate_face_projection(const Face& face,
 
   // 3. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º instead
-  if ((face.normal.toVector3() * face.a) >= 0) return false;
+  if ((face.normal * face.a) >= 0) return false;
 
   // 4. Calculate distance to camera
   double mod_v1 = face.a.Z;

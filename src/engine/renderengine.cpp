@@ -40,8 +40,8 @@ void RenderEngine::render_loop () {
 
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;
-    auto& m = MultithreadManager::get_instance();
 
+    auto& m = MultithreadManager::get_instance();
     m.calculate_threaded(buffers.n_l_renderable_triangles, [&](unsigned i) {
       unsigned t_index = buffers.triangle_indices[i];
       buffers.l_triangle_indices[i] = t_index;
