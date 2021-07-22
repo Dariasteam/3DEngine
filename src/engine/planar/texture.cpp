@@ -28,7 +28,17 @@ Texture<T, D>::Texture(unsigned w, unsigned h) :
 
 template<typename T, unsigned D>
 void Texture<T, D>::fill(T value) {
-  std::fill(content, content + (width() * height() * depth()), value);
+
+  auto& m = MultithreadManager::get_instance();
+  double segment = double(w * h * d) / N_THREADS;
+
+  m.calculate_threaded(N_THREADS, [&](unsigned i) {
+    for (unsigned j = std::round(segment * i); j < std::round(segment * (i + 1)); j++) {
+      content[j] = value;
+    }
+  });
+
+  //std::fill(content, content + (width() * height() * depth()), value);
 }
 
 template <typename T, unsigned D>

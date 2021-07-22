@@ -7,6 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include "../math/point2.h"
+#include "../../auxiliar/multithreadmanager.h"
 
 // Fixme use a triangle instead?
 struct UV {
