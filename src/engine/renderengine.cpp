@@ -18,12 +18,20 @@ void RenderEngine::render_loop () {
   auto& buffers = CommonBuffers::get();
   canvas.target = &buffers.screen_buffer;
 
+  world.get_light().set_triangle_buffer(&buffers.light_triangles);
+  world.get_camera().set_triangle_buffer(&buffers.triangles);
+
+  world.get_light().set_n_triangle_buffer(&buffers.n_l_renderable_triangles);
+  world.get_camera().set_n_triangle_buffer(&buffers.n_renderable_triangles);
+
+  world.get_light().set_t_indices(&buffers.l_triangle_indices);
+  world.get_camera().set_t_indices(&buffers.triangle_indices);
+
   while (1) {
     world.calculate_next_frame();
 
     // Occlude all triangle
     buffers.is_triangle_occluded.set();
-
     projector.project_camera(world.get_light());
 
     // Set as unoccluded the triangles visible by the directional light
@@ -35,14 +43,6 @@ void RenderEngine::render_loop () {
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
                          buffers.z_light); // FIXME: use z_buffer instead?
-
-    // Copy light values
-    buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;
-    for (unsigned i = 0; i < buffers.n_l_renderable_triangles; i++) {
-      unsigned t_index = buffers.triangle_indices[i];
-      buffers.l_triangle_indices[i] = t_index;
-      buffers.light_triangles[t_index] = buffers.triangles[t_index];
-    }
 
     projector.project_camera(world.get_camera());
     rasteriser.rasterise(world.get_camera(),

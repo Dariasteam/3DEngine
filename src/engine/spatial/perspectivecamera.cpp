@@ -14,7 +14,7 @@ PerspectiveCamera::PerspectiveCamera(const PerspectiveCamera& cam) :
 bool PerspectiveCamera::calculate_face_projection(const Face& face,
                                                   const UV& uv,
                                                   unsigned index) const {
-  auto& tmp_triangle = buffers.triangles[index];
+  auto& tmp_triangle = (*triangle_buffer)[index];
 
   // 1. Check normal of the face is towards camera, do not check angle,
   // only if it's bigger than 90º instead

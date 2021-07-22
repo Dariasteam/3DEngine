@@ -13,7 +13,7 @@ inline bool ParallelCamera::calculate_face_projection(const Face& face,
                                                       const UV& uv,
                                                       unsigned index) const {
 
-  auto& tmp_triangle = buffers.triangles[index];
+  auto& tmp_triangle = (*triangle_buffer)[index];
 
   // 1. Face to triangle
   tmp_triangle.a = face.a->point_global;

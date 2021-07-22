@@ -2,8 +2,9 @@
 #define CAMERA_H
 
 #include "../planar/rect.h"
-#include "spatial.h"
+#include "../planar/triangle.h"
 #include "../buffers/commonbuffers.h"
+#include "spatial.h"
 #include "mesh.h"
 
 class Camera : public Spatial {
@@ -19,7 +20,9 @@ protected:
   Point3 local_point_plane {0, 0, 3};
   Point3 global_point_plane {0, 0, 3};
 
-  CommonBuffers& buffers;
+  std::vector<Triangle>* triangle_buffer;
+  unsigned* n_triangles_buffer;
+  std::vector<unsigned long>* t_indices;
 
   inline bool is_point_between_bounds (const Point3& p) const {
     return p.x() >= get_bounds().x       &
@@ -33,7 +36,6 @@ protected:
            is_point_between_bounds(t.b) &
            is_point_between_bounds(t.c);
   };
-
 
   virtual bool calculate_face_projection (const Face& face,
                                           const UV& uv,
@@ -53,6 +55,14 @@ public:
   inline void set_bounds(const RectF& b) { bounds = b; }
   inline void set_plane_vector(const Vector3& p) { local_vector_plane = p; }
   inline void set_plane_point (const Point3& p)  { local_point_plane  = p; }
+
+  inline void set_triangle_buffer (std::vector<Triangle>* t) { triangle_buffer = t; }
+  inline void set_n_triangle_buffer (unsigned* i) { n_triangles_buffer = i;}
+  inline void set_t_indices (std::vector<unsigned long>* t) { t_indices = t;}
+
+  inline std::vector<Triangle>* get_triangle_buffer () const { return triangle_buffer;}
+  inline unsigned get_n_triangle_buffer () const { return *n_triangles_buffer; }
+  inline std::vector<unsigned long>* get_t_indices () const { return t_indices;}
 
   void project (const std::vector<Mesh*> meshes_vector) const;
 

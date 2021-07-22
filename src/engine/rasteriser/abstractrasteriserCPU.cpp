@@ -31,8 +31,8 @@ void AbstractRasteriserCPU::rasterise(const Camera& cam,
   z_target_surface->fill(INFINITY_DISTANCE);
 
   auto& m = MultithreadManager::get_instance();
-  m.calculate_threaded(buffers.n_renderable_triangles, [&](unsigned i) {
-    unsigned t_index = buffers.triangle_indices[i];
-    rasterize_triangle(buffers.triangles[t_index], t_index);
+  m.calculate_threaded(cam.get_n_triangle_buffer(), [&](unsigned i) {
+    unsigned t_index = (*cam.get_t_indices())[i];
+    rasterize_triangle((*cam.get_triangle_buffer())[t_index], t_index);
   });
 }
