@@ -9,7 +9,7 @@ World::World() :
       3)
 {
   ObjParser parser;
-  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/car.obj");
+  Mesh* mesh_1 = parser ("/home/darias/Desarrollo/3D/mesh_examples/file.obj");
   mesh_1->uv_per_face.resize(mesh_1->faces.size());
   unsigned size = mesh_1->uv_per_face.size();
   for (unsigned i = 0; i < size; i++) {

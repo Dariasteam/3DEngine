@@ -50,7 +50,51 @@ public:
     return instance;
   }
 
-  void calculate_threaded (unsigned size, std::function<void (unsigned i)> f);
+  void calculate_threaded (unsigned size, const std::function<void (unsigned i)>& f);
+
+  template <typename iterable, typename N>
+  void calculate_threaded (iterable& collection,
+                           const std::function<void (N& i)>& f) {
+
+  auto begin     = collection.begin();
+  auto size = collection.size();
+
+  auto lambda = [&](unsigned from, unsigned to) {
+    auto it1 = begin + from;
+    auto it2 = begin + to;
+    while (it1 != it2) {
+      f(*it1);
+      it1++;
+    }
+  };
+
+  double segment = double(size) / N_THREADS;
+  unsigned counter = 0;
+
+  active = false;
+
+  std::mutex local_mtx;
+  auto callback = [&] () {
+    local_mtx.lock();
+    counter++;
+    unsigned c = counter;
+    local_mtx.unlock ();
+
+    if (c == N_THREADS) {
+      active = true;
+      cv.notify_one();
+    }
+  };
+
+  for (unsigned i = 0; i < N_THREADS; i++)
+    threads[i].send_function(std::bind(lambda, std::round(i * segment),
+                                               std::round((i + 1) * segment)),
+                                               callback);
+
+  std::unique_lock<std::mutex> lck(mtx);
+  cv.wait(lck, [&]{return active;});
+  lck.unlock();
+}
 
 private:
   std::mutex mtx;
