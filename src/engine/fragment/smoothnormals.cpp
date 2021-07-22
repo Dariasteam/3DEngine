@@ -38,7 +38,7 @@ Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,
 
 void SmoothNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
-  Point2i p1 = pixel_index_to_screen_coordenates(pixel_index);
+  auto p1 = pixel_index_to_screen_coordinates(pixel_index);
   Point2 p {double(p1.X), double(p1.Y)};
 
   // Cut point between vertex-point line and vertex-vertex line
@@ -70,7 +70,6 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
 
   Vector2 final_vec = (n_a * A_d) + (n_b * B_d) + (n_c * C_d);
 
-
   double x = final_vec.X;
   double y = final_vec.Y;
 
@@ -79,5 +78,5 @@ void SmoothNormals::operator ()(unsigned pixel_index) {
 
   buffers.normal_buffer.set(pixel_index * 3 + 0, r);
   buffers.normal_buffer.set(pixel_index * 3 + 1, g);
-  buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
+  //buffers.normal_buffer.set(pixel_index * 3 + 2, 255);
 }
