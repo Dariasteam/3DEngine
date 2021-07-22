@@ -1,5 +1,4 @@
 #include "matrix.h"
-#include "src/auxiliar/multithreadmanager.h"
 #include <iostream>
 
 Matrix::~Matrix() {}
@@ -37,7 +36,7 @@ void Matrix::operator+=(const Matrix &mtx) {
 
 void Matrix::operator=(const Matrix &mtx) {
   unsigned n_rows = mtx.size_rows();
-  unsigned n_cols = mtx.size_cols();   
+  unsigned n_cols = mtx.size_cols();
 
   matrix.clear();
   matrix.resize(n_rows);
@@ -156,7 +155,7 @@ void Gauss::operate_gauss(Matrix &matrix, unsigned row, unsigned col) {
   multiply_row(fullrow1, b);
   multiply_row(fullrow2, a);
 
-  add_rows(fullrow2, fullrow1);  
+  add_rows(fullrow2, fullrow1);
 
   replace_row(matrix, row, fullrow2);
 }
@@ -182,7 +181,7 @@ void Gauss::next_step(Matrix &matrix, unsigned col) {
 
 void Gauss::next_step_reverse(Matrix &matrix, unsigned col) {
   bool end = false;
-  unsigned row = col - 1;  
+  unsigned row = col - 1;
 
   reorder_rows_non_zero_first (matrix, col);
 
@@ -223,15 +222,15 @@ void MatrixOps::generate_basis_change_matrix(const Matrix &A,
   Matrix r;                                 // result matrix
   Matrix m(a_n_rows, a_n_rows + 1);         // equation matrix
   result.resize(a_n_rows, a_n_rows);        // basis changer matrix
-  Gauss g;  
+  Gauss g;
 
   if (!(a_n_rows == a_n_cols && b_n_rows == b_n_cols && a_n_rows == b_n_rows))
-    std::cerr << "ERROR basis change is not defined" << std::endl;      
+    std::cerr << "ERROR basis change is not defined" << std::endl;
 
   // Copy values to new matrix
   for (unsigned i = 0; i < a_n_rows; i++) {
     for (unsigned j = 0; j < a_n_rows; j++)
-      m.set(i, j, B[i][j]);    
+      m.set(i, j, B[i][j]);
   }
 
   for (unsigned i = 0; i < a_n_rows; i++) {
@@ -245,10 +244,10 @@ void MatrixOps::generate_basis_change_matrix(const Matrix &A,
     // Obtain the solutions
     for (unsigned j = 0; j < a_n_rows; j++)
       result[j][i] = r.get(j, a_n_cols) / r.get(j, j);
-  }  
+  }
 }
 
-Matrix MatrixOps::change_basis(const Matrix& basis, const Matrix &element) {  
+Matrix MatrixOps::change_basis(const Matrix& basis, const Matrix &element) {
   return element * basis;
 }
 
