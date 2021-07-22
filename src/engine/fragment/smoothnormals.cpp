@@ -38,6 +38,7 @@ Vector2 SmoothNormals::cut_point(const Point2& p, const Point3& v1,
 
 void SmoothNormals::operator ()(unsigned pixel_index) {
   auto& triangle = get_triangle_at_pixel_index(pixel_index);
+
   P2i p1 = pixel_index_to_screen_coordinates(pixel_index);
   Point2 p {double(p1.X), double(p1.Y)};
 

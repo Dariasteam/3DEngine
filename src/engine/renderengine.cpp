@@ -34,7 +34,7 @@ void RenderEngine::render_loop () {
 
     rasteriser.rasterise(world.get_light(),
                          buffers.l_triangle_index_surface,
-                         buffers.z_light);
+                         buffers.z_light); // FIXME: use z_buffer instead?
 
     // Copy light values
     buffers.n_l_renderable_triangles = buffers.n_renderable_triangles;

@@ -47,37 +47,3 @@ std::list<Mesh*> Mesh::express_in_parents_basis(const Basis3& new_basis,
 
   return mesh_list;
 }
-
-// FIXME Make this inside the parser
-void Mesh::generate_data() {
-  generate_face_normals();
-  std::cout << "Face normals generated" << "\n";
-
-  long long n = vertices.size();
-  long long c = 0;
-
-  for (Vertex& vertex : vertices) {
-    std::cout << "\r" << (double(c) / n) * 100 << "%" << std::flush;
-    std::list<const Face*> contiguous_faces;
-
-    // Search for a contiguous faces
-    for (const Face& face : faces) {
-      if (face.a == &vertex || face.b == &vertex || face.c == &vertex) {
-        contiguous_faces.push_back(&face);
-      }
-    }
-
-    // Calculate normal
-    Vector3 normal {0, 0, 0};
-
-    for (const Face* face : contiguous_faces)
-      normal += face->normal_local.toVector3();
-
-    normal.normalize();
-
-    vertex.normal_local = Normal3(normal);
-    c++;
-  }
-  std::cout << "Vertex normal generated" << "\n";
-}
-
