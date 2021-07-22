@@ -59,10 +59,9 @@ Mesh *ObjParser::operator ()(std::string file_name) {
         file >> i2;
         file >> i3;
 
-        // FIXME: posible negative indexes
-        i1 = (i1 < 0 ? vertex_list.size() - i1 : i1 - 1);
-        i2 = (i2 < 0 ? vertex_list.size() - i2 : i2 - 1);
-        i3 = (i3 < 0 ? vertex_list.size() - i3 : i3 - 1);
+        i1--;
+        i2--;
+        i3--;
 
         Face tmp_face = Face {
                               &aux_mesh->vertices[i1],
@@ -92,7 +91,7 @@ Mesh *ObjParser::operator ()(std::string file_name) {
     n_line++;
   }
 
-  std::cout << "Generating vertex normals: " << std::flush;
+  std::cout << "Generating vertex normals" << std::endl;
   // Per vertex normals
   for (int i = 0; i < vertex_normals.size(); i++) {
     vertex_normals[i].normalize();
