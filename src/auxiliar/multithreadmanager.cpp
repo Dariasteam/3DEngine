@@ -1,4 +1,5 @@
 #include "multithreadmanager.h"
+#include <thread>
 
 void MultithreadManager::calculate_threaded(unsigned size,
                                             const std::function<void (unsigned)>& f) {
@@ -9,8 +10,6 @@ void MultithreadManager::calculate_threaded(unsigned size,
   bool finished = false;
 
   std::mutex local_mtx;
-  std::mutex mtx;
-  std::condition_variable cv;
 
   auto callback = [&] () {
     local_mtx.lock();
@@ -43,12 +42,8 @@ CallableThread::CallableThread() :
 
 bool CallableThread::send_function(const std::function<void ()>& func,
                                    const std::function<void ()>& callback) {
-
-  std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&]{return !active;});
   f = func;
   c = callback;
-  lck.unlock();
   active = true;
   cv.notify_one();
   return true;
@@ -63,12 +58,13 @@ void CallableThread::end_life() {
 
 void CallableThread::run() {
   while (alive) {
-    std::unique_lock<std::mutex> lck(mtx); // wake up thread
-    cv.wait(lck, [&]{return active;});
-    f ();
+    {
+      std::unique_lock<std::mutex> lck(mtx); // wake up thread
+      cv.wait(lck, [&]{return active;});
+    }
     active = false;
+    f ();
     c ();
-    lck.unlock();
   }
 }
 

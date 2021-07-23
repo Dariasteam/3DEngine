@@ -9,6 +9,7 @@
 #include <iostream>
 #include <future>
 #include <cmath>
+#include <future>
 
 #define N_THREADS 16
 
@@ -20,6 +21,7 @@ private:
 
   std::mutex mtx;
   std::condition_variable cv;
+
   bool active {false};
   bool alive  {true};
 
@@ -28,10 +30,6 @@ public:
 
   bool send_function (const std::function<void (void)>& func,
                       const std::function<void (void)>& callback);
-
-  void start () {
-    t.detach();
-  }
 
   bool is_active () { return active; }
   void end_life ();
@@ -43,6 +41,8 @@ private:
 class MultithreadManager {
 private:
   CallableThread threads[N_THREADS];
+  std::mutex mtx;
+  std::condition_variable cv;
 public:
 
   static MultithreadManager& get_instance () {
@@ -65,8 +65,6 @@ public:
   bool finished = false;
 
   std::mutex local_mtx;
-  std::mutex mtx;
-  std::condition_variable cv;
 
   auto callback = [&] () {
     local_mtx.lock();
@@ -100,15 +98,8 @@ public:
 }
 
 private:
-  //std::mutex mtx;
-  //std::condition_variable cv;
 
-  void thread_function ();
-
-  MultithreadManager () {
-    for (auto& callable_thread : threads)
-      callable_thread.start();
-  }
+  MultithreadManager () {}
 
   MultithreadManager (MultithreadManager const &) = delete;
   void operator= (MultithreadManager const &) = delete;
