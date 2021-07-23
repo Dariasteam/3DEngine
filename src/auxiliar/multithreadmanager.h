@@ -9,29 +9,27 @@
 #include <iostream>
 #include <future>
 #include <cmath>
+#include <future>
 
 #define N_THREADS 16
 
 class CallableThread {
 private:
   std::thread t;
-  std::function<void (void)> f;
-  std::function<void (void)> c;
+
+  std::function<void(void)> empty_f = [](){};
+  std::function<void (void)>* f = &empty_f;
 
   std::mutex mtx;
   std::condition_variable cv;
+
   bool active {false};
   bool alive  {true};
 
 public:
   CallableThread ();
 
-  bool send_function (const std::function<void (void)>& func,
-                      const std::function<void (void)>& callback);
-
-  void start () {
-    t.detach();
-  }
+  bool send_function (std::function<void (void)>& func);
 
   bool is_active () { return active; }
   void end_life ();
@@ -62,24 +60,16 @@ public:
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
-  active = false;
+  bool finished = false;
 
   std::mutex local_mtx;
-  auto callback = [&] () {
-    local_mtx.lock();
-    counter++;
-    unsigned c = counter;
-    local_mtx.unlock ();
+  std::mutex mtx;
+  std::condition_variable cv;
 
-    if (c == N_THREADS) {
-      active = true;
-      std::unique_lock<std::mutex> lck(mtx);
-      cv.notify_one();
-    }
-  };
+  std::function<void(void)> functions [N_THREADS];
 
   for (unsigned i = 0; i < N_THREADS; i++) {
-    threads[i].send_function([=, &f]() {
+    functions[i] = [&, segment, i]() {
       unsigned from = std::round(i * segment);
       unsigned to   = std::round((i + 1) * segment);
 
@@ -90,24 +80,27 @@ public:
         f(*it1);
         it1++;
       }
-    }, callback);
+
+      local_mtx.lock();
+        counter++;
+        unsigned c = counter;
+      local_mtx.unlock ();
+
+      if (c == N_THREADS) {
+        finished = true;
+        cv.notify_one();
+      }
+    };
+    threads[i].send_function(functions[i]);
   }
 
   std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&]{return active;});
+  cv.wait(lck, [&]{return finished;});
 }
 
 private:
-  std::mutex mtx;
-  std::condition_variable cv;
-  bool active = false;
 
-  void thread_function ();
-
-  MultithreadManager () {
-    for (auto& callable_thread : threads)
-      callable_thread.start();
-  }
+  MultithreadManager () {}
 
   MultithreadManager (MultithreadManager const &) = delete;
   void operator= (MultithreadManager const &) = delete;

@@ -83,23 +83,22 @@ public:
     // Figure out the size of the screen in bytes
     screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
 
-    double segment = double(1000 / N_THREADS);
+    double segment = 1000.0 / N_THREADS;
 
     for (unsigned k = 0; k < N_THREADS; k++) {
       painters[k] = false;
-
 
       threads[k] = new std::thread([&, k, segment]() -> void {
 
         fup[k] = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
 
-        std::mutex mtx;
-
         while (1) {
-         std::unique_lock<std::mutex> lck(mtx); // wake up thread
-         cv[k].wait(lck, [&]{return painters[k];});
+          std::mutex mtx;
+          std::unique_lock<std::mutex> lck(mtx); // wake up thread
+          cv[k].wait(lck, [&]{return painters[k];});
+          painters[k] = false;
 
-         for (unsigned y = std::round(segment * k);
+          for (unsigned y = std::round(segment * k);
                         y < std::round(segment * (k + 1)); y++) {
 
             for (unsigned x = 0; x < target->width(); x++) {
@@ -134,8 +133,8 @@ public:
               }
             }
           }
-         painters[k] = false;
-         cv_2.notify_one();
+          painters[k] = false;
+          cv_2.notify_one();
         }
       });
 
@@ -151,15 +150,13 @@ public:
 
     // Prevent asynchronous painting
     std::mutex mtx;
-    {
-      std::unique_lock<std::mutex> lck(mtx); // wake up thread
-      cv_2.wait(lck, [&] {
-        for (unsigned i = 0; i < N_THREADS; i++) {
-          if (painters[i]) return false;
-        }
-        return true;
-      });
-    }
+    std::unique_lock<std::mutex> lck(mtx); // wake up thread
+    cv_2.wait(lck, [&] {
+      for (unsigned i = 0; i < N_THREADS; i++) {
+        if (painters[i]) return false;
+      }
+      return true;
+    });
   }
 };
 
