@@ -32,7 +32,6 @@ void MultithreadManager::calculate_threaded(unsigned size,
 
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck, [&]{return active;});
-  lck.unlock();
 }
 
 CallableThread::CallableThread() :
@@ -60,7 +59,6 @@ void CallableThread::run() {
   while (alive) {
     std::unique_lock<std::mutex> lck(mtx); // wake up thread
     cv.wait(lck, [&]{return active;});
-    lck.unlock();
     f ();
     active = false;
     c ();

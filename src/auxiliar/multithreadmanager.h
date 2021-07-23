@@ -42,7 +42,7 @@ private:
 
 class MultithreadManager {
 private:
-  std::vector<CallableThread> threads;
+  CallableThread threads[N_THREADS];
 public:
 
   static MultithreadManager& get_instance () {
@@ -59,15 +59,6 @@ public:
   auto begin     = collection.begin();
   auto size = collection.size();
 
-  auto lambda = [&](unsigned from, unsigned to) {
-    auto it1 = begin + from;
-    auto it2 = begin + to;
-    while (it1 != it2) {
-      f(*it1);
-      it1++;
-    }
-  };
-
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
@@ -82,18 +73,28 @@ public:
 
     if (c == N_THREADS) {
       active = true;
+      std::unique_lock<std::mutex> lck(mtx);
       cv.notify_one();
     }
   };
 
-  for (unsigned i = 0; i < N_THREADS; i++)
-    threads[i].send_function(std::bind(lambda, std::round(i * segment),
-                                               std::round((i + 1) * segment)),
-                                               callback);
+  for (unsigned i = 0; i < N_THREADS; i++) {
+    threads[i].send_function([=, &f]() {
+      unsigned from = std::round(i * segment);
+      unsigned to   = std::round((i + 1) * segment);
+
+      auto it1 = begin + from;
+      auto it2 = begin + to;
+
+      while (it1 != it2) {
+        f(*it1);
+        it1++;
+      }
+    }, callback);
+  }
 
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck, [&]{return active;});
-  lck.unlock();
 }
 
 private:
@@ -103,9 +104,7 @@ private:
 
   void thread_function ();
 
-  MultithreadManager () :
-    threads (N_THREADS)
-  {
+  MultithreadManager () {
     for (auto& callable_thread : threads)
       callable_thread.start();
   }
