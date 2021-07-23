@@ -26,8 +26,8 @@ private:
 public:
   CallableThread ();
 
-  bool send_function (const std::function<void (void)> func,
-                      const std::function<void (void)> callback);
+  bool send_function (const std::function<void (void)>& func,
+                      const std::function<void (void)>& callback);
 
   void start () {
     t.detach();

@@ -2,7 +2,7 @@
 
 void MultithreadManager::calculate_threaded(unsigned size,
                                             const std::function<void (unsigned)>& f) {
-  auto lambda = [&](unsigned from, unsigned to) {
+  const auto lambda = [&](unsigned from, unsigned to) {
     for (unsigned i = from; i < to; i++)
       f(i);
   };
@@ -39,8 +39,8 @@ CallableThread::CallableThread() :
   t (&CallableThread::run, this)
 {}
 
-bool CallableThread::send_function(const std::function<void ()> func,
-                                   const std::function<void ()> callback) {
+bool CallableThread::send_function(const std::function<void ()>& func,
+                                   const std::function<void ()>& callback) {
   f = func;
   c = callback;
   active = true;
