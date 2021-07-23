@@ -42,7 +42,7 @@ private:
 
 class MultithreadManager {
 private:
-  std::vector<CallableThread> threads;
+  CallableThread threads[N_THREADS];
 public:
 
   static MultithreadManager& get_instance () {
@@ -104,9 +104,7 @@ private:
 
   void thread_function ();
 
-  MultithreadManager () :
-    threads (N_THREADS)
-  {
+  MultithreadManager () {
     for (auto& callable_thread : threads)
       callable_thread.start();
   }

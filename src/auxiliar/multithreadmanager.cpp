@@ -55,7 +55,6 @@ void CallableThread::end_life() {
   cv.notify_one();
 }
 
-
 void CallableThread::run() {
   while (alive) {
     std::unique_lock<std::mutex> lck(mtx); // wake up thread
