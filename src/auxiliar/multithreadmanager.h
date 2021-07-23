@@ -62,7 +62,7 @@ public:
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
-  active = false;
+  bool finished = false;
 
   std::mutex local_mtx;
   auto callback = [&] () {
@@ -72,7 +72,7 @@ public:
     local_mtx.unlock ();
 
     if (c == N_THREADS) {
-      active = true;
+      finished = true;
       cv.notify_one();
     }
   };
@@ -93,14 +93,12 @@ public:
   }
 
   std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&]{return active;});
-  lck.unlock();
+  cv.wait(lck, [&]{return finished;});
 }
 
 private:
   std::mutex mtx;
   std::condition_variable cv;
-  bool active = false;
 
   void thread_function ();
 

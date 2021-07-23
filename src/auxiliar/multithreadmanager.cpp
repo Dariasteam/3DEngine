@@ -6,7 +6,7 @@ void MultithreadManager::calculate_threaded(unsigned size,
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
-  active = false;
+  bool finished = false;
 
   std::mutex local_mtx;
   auto callback = [&] () {
@@ -16,7 +16,7 @@ void MultithreadManager::calculate_threaded(unsigned size,
     local_mtx.unlock ();
 
     if (c == N_THREADS) {
-      active = true;
+      finished = true;
       cv.notify_one();
     }
   };
@@ -31,8 +31,7 @@ void MultithreadManager::calculate_threaded(unsigned size,
   }
 
   std::unique_lock<std::mutex> lck(mtx);
-  cv.wait(lck, [&]{return active;});
-  lck.unlock();
+  cv.wait(lck, [&]{return finished;});
 }
 
 CallableThread::CallableThread() :
@@ -41,8 +40,12 @@ CallableThread::CallableThread() :
 
 bool CallableThread::send_function(const std::function<void ()>& func,
                                    const std::function<void ()>& callback) {
+
+  std::unique_lock<std::mutex> lck(mtx);
+  cv.wait(lck, [&]{return !active;});
   f = func;
   c = callback;
+  lck.unlock();
   active = true;
   cv.notify_one();
   return true;
@@ -59,10 +62,10 @@ void CallableThread::run() {
   while (alive) {
     std::unique_lock<std::mutex> lck(mtx); // wake up thread
     cv.wait(lck, [&]{return active;});
-    lck.unlock();
     f ();
     active = false;
     c ();
+    lck.unlock();
   }
 }
 
