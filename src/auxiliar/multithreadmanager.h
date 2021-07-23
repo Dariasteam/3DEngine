@@ -65,6 +65,9 @@ public:
   bool finished = false;
 
   std::mutex local_mtx;
+  std::mutex mtx;
+  std::condition_variable cv;
+
   auto callback = [&] () {
     local_mtx.lock();
     counter++;
@@ -97,8 +100,8 @@ public:
 }
 
 private:
-  std::mutex mtx;
-  std::condition_variable cv;
+  //std::mutex mtx;
+  //std::condition_variable cv;
 
   void thread_function ();
 

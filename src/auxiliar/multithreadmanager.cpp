@@ -9,6 +9,9 @@ void MultithreadManager::calculate_threaded(unsigned size,
   bool finished = false;
 
   std::mutex local_mtx;
+  std::mutex mtx;
+  std::condition_variable cv;
+
   auto callback = [&] () {
     local_mtx.lock();
     counter++;
