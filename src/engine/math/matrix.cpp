@@ -77,13 +77,16 @@ Matrix Matrix::get_transpose() const {
 }
 
 void Matrix::resize(unsigned rows, unsigned cols) {
+  if (rows == n_rows && cols == n_cols)
+    return;
+
   n_rows = rows;
   n_cols = cols;
 
   matrix.resize(rows);
 
-for (auto& row : matrix)
-  row.resize(cols, 0);
+  for (auto& row : matrix)
+    row.resize(cols, 0);
 }
 
 Matrix Matrix::operator*(const Matrix &mtx) const {
