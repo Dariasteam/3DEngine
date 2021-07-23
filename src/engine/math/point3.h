@@ -11,13 +11,13 @@ struct P3 {
   T Y {0};
   T Z {0};
 
-  P3<T> () {}
-  P3<T> (const P3<T>& p) :
+  P3 () {}
+  P3 (const P3<T>& p) :
     X (p.x()),
     Y (p.y()),
     Z (p.z())
   {}
-  P3<T> (T x, T y, T z) :
+  P3 (T x, T y, T z) :
     X(x),
     Y(y),
     Z(z)

@@ -3,6 +3,6 @@
 
 #include "../math/point3.h"
 
-typedef Point3 Color;
+using Color = Point3;
 
 #endif // COLOR_H
