@@ -59,15 +59,6 @@ public:
   auto begin     = collection.begin();
   auto size = collection.size();
 
-  auto lambda = [&](unsigned from, unsigned to) {
-    auto it1 = begin + from;
-    auto it2 = begin + to;
-    while (it1 != it2) {
-      f(*it1);
-      it1++;
-    }
-  };
-
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
 
@@ -86,10 +77,20 @@ public:
     }
   };
 
-  for (unsigned i = 0; i < N_THREADS; i++)
-    threads[i].send_function(std::bind(lambda, std::round(i * segment),
-                                               std::round((i + 1) * segment)),
-                                               callback);
+  for (unsigned i = 0; i < N_THREADS; i++) {
+    threads[i].send_function([=, &f]() {
+      unsigned from = std::round(i * segment);
+      unsigned to   = std::round((i + 1) * segment);
+
+      auto it1 = begin + from;
+      auto it2 = begin + to;
+
+      while (it1 != it2) {
+        f(*it1);
+        it1++;
+      }
+    }, callback);
+  }
 
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck, [&]{return active;});

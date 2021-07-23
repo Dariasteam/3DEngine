@@ -2,10 +2,6 @@
 
 void MultithreadManager::calculate_threaded(unsigned size,
                                             const std::function<void (unsigned)>& f) {
-  const auto lambda = [&](unsigned from, unsigned to) {
-    for (unsigned i = from; i < to; i++)
-      f(i);
-  };
 
   double segment = double(size) / N_THREADS;
   unsigned counter = 0;
@@ -25,10 +21,14 @@ void MultithreadManager::calculate_threaded(unsigned size,
     }
   };
 
-  for (unsigned i = 0; i < N_THREADS; i++)
-    threads[i].send_function(std::bind(lambda, std::round(i * segment),
-                                               std::round((i + 1) * segment)),
-                                               callback);
+  for (unsigned i = 0; i < N_THREADS; i++) {
+    threads[i].send_function([=, &f]() {
+      unsigned from = std::round(i * segment);
+      unsigned to   = std::round((i + 1) * segment);
+      for (unsigned j = from; j < to; j++)
+        f(j);
+    }, callback);
+  }
 
   std::unique_lock<std::mutex> lck(mtx);
   cv.wait(lck, [&]{return active;});
