@@ -10,11 +10,13 @@ void MultithreadManager::calculate_threaded(unsigned size,
   bool finished = false;
 
   std::mutex local_mtx;
+  std::mutex mtx;
+  std::condition_variable cv;
 
   std::function<void(void)> functions [N_THREADS];
 
   for (unsigned i = 0; i < N_THREADS; i++) {
-    functions[i] = [=, &f, &local_mtx, &counter, &finished]() {
+    functions[i] = [&, segment, i]() {
       unsigned from = std::round(i * segment);
       unsigned to   = std::round((i + 1) * segment);
       for (unsigned j = from; j < to; j++)

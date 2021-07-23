@@ -41,8 +41,6 @@ private:
 class MultithreadManager {
 private:
   CallableThread threads[N_THREADS];
-  std::mutex mtx;
-  std::condition_variable cv;
 public:
 
   static MultithreadManager& get_instance () {
@@ -65,11 +63,13 @@ public:
   bool finished = false;
 
   std::mutex local_mtx;
+  std::mutex mtx;
+  std::condition_variable cv;
 
   std::function<void(void)> functions [N_THREADS];
 
   for (unsigned i = 0; i < N_THREADS; i++) {
-    functions[i] = [=, &f, &local_mtx, &counter, &finished]() {
+    functions[i] = [&, segment, i]() {
       unsigned from = std::round(i * segment);
       unsigned to   = std::round((i + 1) * segment);
 
@@ -80,9 +80,10 @@ public:
         f(*it1);
         it1++;
       }
+
       local_mtx.lock();
-      counter++;
-      unsigned c = counter;
+        counter++;
+        unsigned c = counter;
       local_mtx.unlock ();
 
       if (c == N_THREADS) {
