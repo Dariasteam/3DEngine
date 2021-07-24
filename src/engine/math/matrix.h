@@ -33,7 +33,7 @@ struct Matrix {
   {
     for (auto& row : matrix)
       row.resize(cols, 0);
-  }  
+  }
 
   Matrix (const Matrix& mtx):
     n_rows (mtx.n_rows),

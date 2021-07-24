@@ -76,7 +76,7 @@ Matrix Matrix::get_transpose() const {
   return result_mtx;
 }
 
-void Matrix::resize(unsigned rows, unsigned cols) {
+inline void Matrix::resize(unsigned rows, unsigned cols) {
   if (rows == n_rows && cols == n_cols)
     return;
 
